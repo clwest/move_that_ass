@@ -13,6 +13,7 @@ from .views import (
     leave_herd,
     my_herd,
     dashboard_feed,
+    update_mood,
 )
 
 router = DefaultRouter()
@@ -30,4 +31,5 @@ urlpatterns = router.urls + [
     path("leave-herd/", leave_herd),
     path("my-herd/", my_herd),
     path("dashboard/", dashboard_feed),
+    path("update-mood/", update_mood),
 ]

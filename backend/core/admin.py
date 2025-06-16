@@ -12,7 +12,13 @@ from .models import (
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "display_name", "streak_count", "last_active")
+    list_display = (
+        "user",
+        "display_name",
+        "streak_count",
+        "last_active",
+        "current_mood",
+    )
 
 
 @admin.register(DailyLockout)

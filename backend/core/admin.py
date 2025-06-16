@@ -7,6 +7,7 @@ from .models import (
     ShamePost,
     VoiceJournal,
     Herd,
+    Badge,
 )
 
 
@@ -44,3 +45,8 @@ class VoiceJournalAdmin(admin.ModelAdmin):
 @admin.register(Herd)
 class HerdAdmin(admin.ModelAdmin):
     list_display = ("name", "created_by", "tone", "invite_code")
+
+
+@admin.register(Badge)
+class BadgeAdmin(admin.ModelAdmin):
+    list_display = ("code", "name", "is_active")

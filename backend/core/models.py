@@ -2,6 +2,22 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Badge(models.Model):
+    """Awarded to users when they hit certain milestones."""
+
+    code = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    emoji = models.CharField(max_length=10)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return self.code
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=64)
@@ -10,6 +26,9 @@ class Profile(models.Model):
     last_active = models.DateTimeField(null=True, blank=True)
     current_mood = models.CharField(max_length=20, default="neutral")
     mood_last_updated = models.DateTimeField(null=True, blank=True)
+    badges = models.ManyToManyField(
+        Badge, related_name="owners", blank=True
+    )
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return self.display_name

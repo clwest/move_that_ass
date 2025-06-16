@@ -17,6 +17,7 @@ from .utils.voice_helpers import (
 from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
+from .utils.badge_engine import evaluate_badges
 
 from .utils.herdmood_engine import evaluate_herd_mood
 
@@ -40,6 +41,7 @@ from .serializers import (
     VoiceJournalSerializer,
     UserSerializer,
     HerdSerializer,
+    BadgeSerializer,
 )
 
 
@@ -291,4 +293,13 @@ def herd_mood_view(request):
         "herd_size": herd.members.count(),
         "herd_mood": mood,
     })
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def check_badges(request):
+    """Evaluate badge rules for the current user."""
+    new_badges = evaluate_badges(request.user)
+    serialized = BadgeSerializer(new_badges, many=True).data
+    return Response({"new_badges": serialized})
 

@@ -17,6 +17,7 @@ from .views import (
     get_mood_avatar_view,
 
     herd_mood_view,
+    check_badges,
 
 )
 
@@ -39,5 +40,6 @@ urlpatterns = router.urls + [
     path("mood-avatar/", get_mood_avatar_view),
 
     path("herd-mood/", herd_mood_view),
+    path("check-badges/", check_badges),
 
 ]

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import GeneratedImage, SocialPost
+from .models import GeneratedImage, SocialPost, GeneratedMeme
 
 
 class GeneratedImageSerializer(serializers.ModelSerializer):
@@ -12,4 +12,10 @@ class GeneratedImageSerializer(serializers.ModelSerializer):
 class SocialPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialPost
+        fields = "__all__"
+
+
+class GeneratedMemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GeneratedMeme
         fields = "__all__"

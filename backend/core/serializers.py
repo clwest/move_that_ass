@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Profile, DailyLockout, ShamePost, PaddleLog
+from .models import (
+    Profile,
+    DailyLockout,
+    ShamePost,
+    PaddleLog,
+    VoiceJournal,
+)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,3 +34,12 @@ class PaddleLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaddleLog
         fields = "__all__"
+
+
+class VoiceJournalSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = VoiceJournal
+        fields = "__all__"
+        read_only_fields = ["user", "transcript", "summary", "created_at"]

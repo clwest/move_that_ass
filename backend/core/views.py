@@ -17,7 +17,9 @@ from .utils.voice_helpers import (
 from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
+
 from .utils.recap_engine import generate_weekly_recap
+
 import uuid
 
 
@@ -275,7 +277,9 @@ def get_mood_avatar_view(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
+
 def weekly_recap(request):
     """Return a weekly activity recap for the authenticated user."""
     recap = generate_weekly_recap(request.user)
     return Response({"recap": recap})
+

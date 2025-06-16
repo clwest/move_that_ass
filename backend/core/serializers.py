@@ -42,4 +42,10 @@ class VoiceJournalSerializer(serializers.ModelSerializer):
     class Meta:
         model = VoiceJournal
         fields = "__all__"
-        read_only_fields = ["user", "transcript", "summary", "created_at"]
+        read_only_fields = [
+            "user",
+            "transcript",
+            "summary",
+            "playback_audio_url",
+            "created_at",
+        ]

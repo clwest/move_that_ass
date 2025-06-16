@@ -5,11 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .utils.shame_engine import check_and_trigger_shame
-from .utils.voice_helpers import (
-    transcribe_audio,
-    summarize_text,
-    generate_tags_from_text,
-)
+
+from .utils.voice_helpers import transcribe_audio, summarize_text
+from .utils.tts_helpers import text_to_speech
+import uuid
+
 
 from .models import (
     Profile,
@@ -68,7 +68,15 @@ def upload_voice_journal(request):
 
     journal.transcript = transcript
     journal.summary = summary
-    journal.tags = tags
+
+    filename = f"journal_audio_{uuid.uuid4().hex}.mp3"
+    output_path = f"media/voice_playback/{filename}"
+
+    tts_path = text_to_speech(journal.summary, output_path)
+    if tts_path:
+        journal.playback_audio_url = f"/media/voice_playback/{filename}"
+
+
     journal.save()
 
     serializer = VoiceJournalSerializer(journal)

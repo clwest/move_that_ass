@@ -12,6 +12,7 @@ from .views import (
     join_herd,
     leave_herd,
     my_herd,
+    dashboard_feed,
 )
 
 router = DefaultRouter()
@@ -28,4 +29,5 @@ urlpatterns = router.urls + [
     path("join-herd/", join_herd),
     path("leave-herd/", leave_herd),
     path("my-herd/", my_herd),
+    path("dashboard/", dashboard_feed),
 ]

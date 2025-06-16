@@ -4,6 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+from datetime import datetime, time
 
 from .utils.shame_engine import check_and_trigger_shame
 
@@ -24,6 +26,7 @@ from .models import (
     VoiceJournal,
     Herd,
 )
+from content.models import GeneratedMeme
 from .serializers import (
     ProfileSerializer,
     DailyLockoutSerializer,
@@ -156,3 +159,92 @@ def my_herd(request):
     if herd:
         return Response(HerdSerializer(herd).data)
     return Response({"message": "Not in a herd"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def dashboard_feed(request):
+    """Return a unified activity feed for the dashboard."""
+
+    user = request.user
+    mine_only = request.GET.get("mine_only") == "true"
+    herd_only = request.GET.get("herd_only") == "true"
+    type_filter = request.GET.get("type")
+
+    try:
+        limit = int(request.GET.get("limit", 20))
+        offset = int(request.GET.get("offset", 0))
+    except ValueError:
+        limit, offset = 20, 0
+
+    herd = user.herds.first()
+
+    def in_herd(qs):
+        if herd_only:
+            if not herd:
+                return qs.none()
+            return qs.filter(user__in=herd.members.all())
+        return qs
+
+    def apply_filters(qs):
+        qs = qs.order_by("-id")
+        if mine_only:
+            qs = qs.filter(user=user)
+        return in_herd(qs)
+
+    feed_items = []
+
+    if not type_filter or type_filter == "shame":
+        for post in apply_filters(ShamePost.objects.all()):
+            dt = datetime.combine(post.date, time.min)
+            dt = timezone.make_aware(dt, timezone.utc) if timezone.is_naive(dt) else dt
+            item = {
+                "type": "shame",
+                "created_at": dt,
+                "content": {
+                    "text": post.caption,
+                    "image_url": post.image_url,
+                },
+            }
+            if herd and herd.members.filter(id=post.user_id).exists():
+                item["content"]["herd"] = herd.name
+            feed_items.append(item)
+
+    if not type_filter or type_filter == "meme":
+        for meme in apply_filters(GeneratedMeme.objects.all()):
+            dt = meme.created_at
+            item = {
+                "type": "meme",
+                "created_at": dt,
+                "content": {
+                    "caption": meme.caption,
+                    "image_url": meme.image_url,
+                },
+            }
+            if herd and herd.members.filter(id=meme.user_id).exists():
+                item["content"]["herd"] = herd.name
+            feed_items.append(item)
+
+    if not type_filter or type_filter == "voice":
+        for journal in apply_filters(VoiceJournal.objects.all()):
+            dt = journal.created_at
+            item = {
+                "type": "voice",
+                "created_at": dt,
+                "content": {
+                    "audio_url": journal.playback_audio_url,
+                    "tags": journal.tags or [],
+                    "text": journal.summary,
+                },
+            }
+            if herd and herd.members.filter(id=journal.user_id).exists():
+                item["content"]["herd"] = herd.name
+            feed_items.append(item)
+
+    feed_items.sort(key=lambda x: x["created_at"], reverse=True)
+
+    sliced = feed_items[offset : offset + limit]
+    for item in sliced:
+        item["created_at"] = item["created_at"].isoformat()
+
+    return Response(sliced)

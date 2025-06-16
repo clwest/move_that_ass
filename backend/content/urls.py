@@ -4,6 +4,7 @@ from .views import (
     GeneratedImageViewSet,
     SocialPostViewSet,
     generate_promptcam_caption,
+    generate_meme,
 )
 
 router = DefaultRouter()
@@ -12,4 +13,5 @@ router.register(r'social-posts', SocialPostViewSet)
 
 urlpatterns = router.urls + [
     path("generate-caption/", generate_promptcam_caption),
+    path("generate-meme/", generate_meme),
 ]

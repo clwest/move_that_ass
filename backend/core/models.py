@@ -8,6 +8,8 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     streak_count = models.IntegerField(default=0)
     last_active = models.DateTimeField(null=True, blank=True)
+    current_mood = models.CharField(max_length=20, default="neutral")
+    mood_last_updated = models.DateTimeField(null=True, blank=True)
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return self.display_name

@@ -15,6 +15,7 @@ from .utils.voice_helpers import (
     generate_tags_from_text,
 )
 from .utils.tts_helpers import text_to_speech
+from .utils.mood_engine import evaluate_user_mood
 import uuid
 
 
@@ -248,3 +249,14 @@ def dashboard_feed(request):
         item["created_at"] = item["created_at"].isoformat()
 
     return Response(sliced)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def update_mood(request):
+    profile = request.user.profile
+    mood = evaluate_user_mood(request.user)
+    profile.current_mood = mood
+    profile.mood_last_updated = timezone.now()
+    profile.save()
+    return Response({"mood": mood})

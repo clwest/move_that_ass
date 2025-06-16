@@ -7,6 +7,7 @@ from .views import (
     ShamePostViewSet,
     PaddleLogViewSet,
     trigger_shame_view,
+    upload_voice_journal,
 )
 
 router = DefaultRouter()
@@ -18,4 +19,5 @@ router.register(r'paddle-logs', PaddleLogViewSet)
 
 urlpatterns = router.urls + [
     path("trigger-shame/", trigger_shame_view),
+    path("upload-voice/", upload_voice_journal),
 ]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import DailyLockout, PaddleLog, Profile, ShamePost
+from .models import DailyLockout, PaddleLog, Profile, ShamePost, VoiceJournal
 
 
 @admin.register(Profile)
@@ -21,4 +21,9 @@ class ShamePostAdmin(admin.ModelAdmin):
 @admin.register(PaddleLog)
 class PaddleLogAdmin(admin.ModelAdmin):
     list_display = ("user", "date", "duration_minutes", "location")
+
+
+@admin.register(VoiceJournal)
+class VoiceJournalAdmin(admin.ModelAdmin):
+    list_display = ("user", "created_at")
 

@@ -5,13 +5,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .utils.shame_engine import check_and_trigger_shame
+from .utils.voice_helpers import transcribe_audio, summarize_text
 
-from .models import Profile, DailyLockout, ShamePost, PaddleLog
+from .models import (
+    Profile,
+    DailyLockout,
+    ShamePost,
+    PaddleLog,
+    VoiceJournal,
+)
 from .serializers import (
     ProfileSerializer,
     DailyLockoutSerializer,
     ShamePostSerializer,
     PaddleLogSerializer,
+    VoiceJournalSerializer,
     UserSerializer,
 )
 
@@ -39,6 +47,26 @@ class ShamePostViewSet(viewsets.ModelViewSet):
 class PaddleLogViewSet(viewsets.ModelViewSet):
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def upload_voice_journal(request):
+    audio_file = request.FILES.get("audio_file")
+    if not audio_file:
+        return Response({"error": "audio_file is required"}, status=400)
+
+    journal = VoiceJournal.objects.create(user=request.user, audio_file=audio_file)
+
+    transcript = transcribe_audio(journal.audio_file.path)
+    summary = summarize_text(transcript)
+
+    journal.transcript = transcript
+    journal.summary = summary
+    journal.save()
+
+    serializer = VoiceJournalSerializer(journal)
+    return Response(serializer.data)
 
 
 @api_view(["POST"])

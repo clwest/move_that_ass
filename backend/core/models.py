@@ -57,3 +57,18 @@ class PaddleLog(models.Model):
     def __str__(self) -> str:  # pragma: no cover
         return f"PaddleLog {self.user.username} {self.date}"
 
+
+class VoiceJournal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    audio_file = models.FileField(upload_to="voice_journals/")
+    transcript = models.TextField(blank=True)
+    summary = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    tags = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover
+        return f"VoiceJournal {self.user.username} {self.created_at}"
+

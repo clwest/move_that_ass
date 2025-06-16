@@ -7,6 +7,7 @@ from .models import (
     PaddleLog,
     VoiceJournal,
     Herd,
+    Badge,
 )
 
 
@@ -16,8 +17,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email"]
 
 
+class BadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Badge
+        fields = "__all__"
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    badges = BadgeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile

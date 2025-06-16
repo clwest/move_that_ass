@@ -5,7 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .utils.shame_engine import check_and_trigger_shame
-from .utils.voice_helpers import transcribe_audio, summarize_text
+from .utils.voice_helpers import (
+    transcribe_audio,
+    summarize_text,
+    generate_tags_from_text,
+)
 
 from .models import (
     Profile,
@@ -60,9 +64,11 @@ def upload_voice_journal(request):
 
     transcript = transcribe_audio(journal.audio_file.path)
     summary = summarize_text(transcript)
+    tags = generate_tags_from_text(transcript)
 
     journal.transcript = transcript
     journal.summary = summary
+    journal.tags = tags
     journal.save()
 
     serializer = VoiceJournalSerializer(journal)

@@ -40,3 +40,34 @@ def summarize_text(text: str) -> str:
     )
 
     return response.choices[0].message.content.strip()
+
+
+def generate_tags_from_text(text: str):
+    """Generate 2-4 short tags summarizing a journal entry."""
+
+    prompt = (
+        "Analyze the following voice journal transcript and return a list of 2–4 "
+        "lowercase tags that describe the tone or intent. Keep it JSON-safe and "
+        "short.\n\nTranscript:\n" + text
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4-0125-preview",
+        messages=[
+            {
+                "role": "system",
+                "content": "You're a smart assistant that labels journal entries "
+                "with short tags.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.5,
+    )
+
+    raw = response.choices[0].message.content.strip()
+
+    try:
+        tags = eval(raw) if raw.startswith("[") else [raw]
+        return tags
+    except Exception:
+        return ["uncategorized"]

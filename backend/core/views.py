@@ -17,7 +17,9 @@ from .utils.voice_helpers import (
 from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
+
 from .utils.herdmood_engine import evaluate_herd_mood
+
 import uuid
 
 
@@ -275,6 +277,7 @@ def get_mood_avatar_view(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
+
 def herd_mood_view(request):
     """Return the overall mood for the user's herd."""
     herd = request.user.herds.first()
@@ -288,3 +291,4 @@ def herd_mood_view(request):
         "herd_size": herd.members.count(),
         "herd_mood": mood,
     })
+

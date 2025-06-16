@@ -63,6 +63,7 @@ class VoiceJournal(models.Model):
     audio_file = models.FileField(upload_to="voice_journals/")
     transcript = models.TextField(blank=True)
     summary = models.TextField(blank=True)
+    playback_audio_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     tags = models.JSONField(blank=True, null=True)
 

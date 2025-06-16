@@ -16,6 +16,7 @@ from .utils.voice_helpers import (
 )
 from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
+from .utils.mood_avatar import get_mood_avatar
 import uuid
 
 
@@ -260,3 +261,12 @@ def update_mood(request):
     profile.mood_last_updated = timezone.now()
     profile.save()
     return Response({"mood": mood})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_mood_avatar_view(request):
+    """Return the user's current mood and corresponding avatar."""
+    mood = request.user.profile.current_mood
+    avatar = get_mood_avatar(mood)
+    return Response({"mood": mood, "avatar": avatar})

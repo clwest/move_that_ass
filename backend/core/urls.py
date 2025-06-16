@@ -14,6 +14,7 @@ from .views import (
     my_herd,
     dashboard_feed,
     update_mood,
+    get_mood_avatar_view,
 )
 
 router = DefaultRouter()
@@ -32,4 +33,5 @@ urlpatterns = router.urls + [
     path("my-herd/", my_herd),
     path("dashboard/", dashboard_feed),
     path("update-mood/", update_mood),
+    path("mood-avatar/", get_mood_avatar_view),
 ]

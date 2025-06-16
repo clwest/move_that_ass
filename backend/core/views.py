@@ -18,7 +18,7 @@ from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
 
-from .utils.recap_engine import generate_weekly_recap
+from .utils.herdmood_engine import evaluate_herd_mood
 
 import uuid
 
@@ -278,8 +278,17 @@ def get_mood_avatar_view(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 
-def weekly_recap(request):
-    """Return a weekly activity recap for the authenticated user."""
-    recap = generate_weekly_recap(request.user)
-    return Response({"recap": recap})
+def herd_mood_view(request):
+    """Return the overall mood for the user's herd."""
+    herd = request.user.herds.first()
+    if not herd:
+        return Response({"message": "User is not in a herd."})
+
+    mood = evaluate_herd_mood(herd)
+
+    return Response({
+        "herd": herd.name,
+        "herd_size": herd.members.count(),
+        "herd_mood": mood,
+    })
 

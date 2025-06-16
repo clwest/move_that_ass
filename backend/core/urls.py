@@ -16,7 +16,7 @@ from .views import (
     update_mood,
     get_mood_avatar_view,
 
-    weekly_recap,
+    herd_mood_view,
 
 )
 
@@ -38,6 +38,6 @@ urlpatterns = router.urls + [
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),
 
-    path("weekly-recap/", weekly_recap),
+    path("herd-mood/", herd_mood_view),
 
 ]

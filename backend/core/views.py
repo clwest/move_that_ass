@@ -17,6 +17,7 @@ from .utils.voice_helpers import (
 from .utils.tts_helpers import text_to_speech
 from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
+from .utils.digest_engine import generate_daily_digest
 import uuid
 
 
@@ -270,3 +271,11 @@ def get_mood_avatar_view(request):
     mood = request.user.profile.current_mood
     avatar = get_mood_avatar(mood)
     return Response({"mood": mood, "avatar": avatar})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def daily_digest(request):
+    """Return a 24-hour activity summary for the authenticated user."""
+    digest = generate_daily_digest(request.user)
+    return Response({"digest": digest})

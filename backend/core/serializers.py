@@ -6,12 +6,15 @@ from .models import (
     ShamePost,
     PaddleLog,
     VoiceJournal,
+    Herd,
 )
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email"]
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -20,15 +23,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = "__all__"
 
+
 class DailyLockoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyLockout
         fields = "__all__"
 
+
 class ShamePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShamePost
         fields = "__all__"
+
 
 class PaddleLogSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,3 +55,13 @@ class VoiceJournalSerializer(serializers.ModelSerializer):
             "playback_audio_url",
             "created_at",
         ]
+
+
+class HerdSerializer(serializers.ModelSerializer):
+    members = serializers.SlugRelatedField(
+        many=True, read_only=True, slug_field="username"
+    )
+
+    class Meta:
+        model = Herd
+        fields = "__all__"

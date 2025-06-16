@@ -73,3 +73,19 @@ class VoiceJournal(models.Model):
     def __str__(self) -> str:  # pragma: no cover
         return f"VoiceJournal {self.user.username} {self.created_at}"
 
+
+class Herd(models.Model):
+    name = models.CharField(max_length=100)
+    created_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="created_herds"
+    )
+    members = models.ManyToManyField(User, related_name="herds")
+    tone = models.CharField(
+        max_length=20,
+        choices=[("roast", "Roast"), ("encourage", "Encourage"), ("mixed", "Mixed")],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    invite_code = models.CharField(max_length=12, unique=True)
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return self.name

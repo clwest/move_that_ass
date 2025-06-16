@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import DailyLockout, PaddleLog, Profile, ShamePost, VoiceJournal
+from .models import (
+    DailyLockout,
+    PaddleLog,
+    Profile,
+    ShamePost,
+    VoiceJournal,
+    Herd,
+)
 
 
 @admin.register(Profile)
@@ -27,3 +34,7 @@ class PaddleLogAdmin(admin.ModelAdmin):
 class VoiceJournalAdmin(admin.ModelAdmin):
     list_display = ("user", "created_at")
 
+
+@admin.register(Herd)
+class HerdAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_by", "tone", "invite_code")

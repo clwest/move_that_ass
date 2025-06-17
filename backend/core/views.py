@@ -497,6 +497,12 @@ from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
 from .utils.challenge_engine import generate_challenge as ai_generate_challenge
 from .utils.digest_engine import generate_daily_digest
 
+try:  # Celery may be optional in some setups
+    from .tasks import generate_plan_task, generate_meal_plan_task
+except Exception:  # pragma: no cover - missing Celery
+    generate_plan_task = None
+    generate_meal_plan_task = None
+
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
@@ -509,7 +515,15 @@ def generate_workout_plan(request):
     if not isinstance(activity_types, list):
         activity_types = [str(activity_types)] if activity_types else []
 
-    plan = ai_generate_workout_plan(goal=goal, activity_types=activity_types, tone=tone)
+    if generate_plan_task:
+        try:
+            result = generate_plan_task.delay(goal, activity_types, tone)
+            plan = result.get(timeout=15)
+        except Exception:  # pragma: no cover - worker/broker failure
+            plan = ai_generate_workout_plan(goal=goal, activity_types=activity_types, tone=tone)
+    else:
+        plan = ai_generate_workout_plan(goal=goal, activity_types=activity_types, tone=tone)
+
     return Response(plan)
 
 
@@ -521,7 +535,15 @@ def generate_meal_plan_view(request):
     tone = request.data.get("tone", "supportive")
     mood = request.data.get("mood")
 
-    plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
+    if generate_meal_plan_task:
+        try:
+            result = generate_meal_plan_task.delay(goal, tone, mood)
+            plan = result.get(timeout=15)
+        except Exception:  # pragma: no cover - worker/broker failure
+            plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
+    else:
+        plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
+
     return Response(plan)
 
 

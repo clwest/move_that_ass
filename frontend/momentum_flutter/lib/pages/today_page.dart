@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
+import 'herd_feed_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
 
@@ -56,6 +57,16 @@ class _TodayPageState extends State<TodayPage> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.group),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const HerdFeedPage(),
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -91,7 +102,7 @@ class _TodayPageState extends State<TodayPage> {
       child: ListTile(
         leading: Text(
           dashboard.moodAvatar.isNotEmpty ? dashboard.moodAvatar : '😶',
-          style: const TextStyle(fontSize: 32),
+          style: const TextStyle(fontSize: 32, inherit: true),
         ),
         title: Text('Current Mood: ${dashboard.mood}'),
       ),
@@ -203,7 +214,7 @@ class _TodayPageState extends State<TodayPage> {
             const SizedBox(height: 8),
             Text(
               recap,
-              style: const TextStyle(fontStyle: FontStyle.italic),
+              style: const TextStyle(fontStyle: FontStyle.italic, inherit: true),
             ),
           ],
         ),

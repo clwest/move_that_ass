@@ -21,10 +21,10 @@ class MemeSharePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Meme Preview 🫏')),
-      body: Column(
-        children: [
-          Expanded(
-            child: Image.network(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Image.network(
               meme.imageUrl,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
@@ -33,12 +33,11 @@ class MemeSharePage extends StatelessWidget {
                 );
               },
             ),
-          ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Text(
               meme.caption,
-              style: const TextStyle(fontSize: 18, fontStyle: FontStyle.italic),
+              style: const TextStyle(fontSize: 18, fontStyle: FontStyle.italic, inherit: true),
               textAlign: TextAlign.center,
             ),
           ),

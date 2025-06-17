@@ -5,6 +5,7 @@ import 'token_service.dart';
 import '../models/today_dashboard.dart';
 import '../models/badge.dart';
 import '../models/meme.dart';
+import '../models/herd_post.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
@@ -45,6 +46,25 @@ class ApiService {
 
     final List data = json.decode(response.body) as List;
     return data.map((e) => Badge.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  static Future<List<HerdPost>> fetchHerdFeed() async {
+    final token = await TokenService.getToken() ?? '';
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/core/herd-feed/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load herd feed');
+    }
+
+    final List data = json.decode(response.body) as List;
+    return data.map((e) => HerdPost.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   static Future<Meme> generateMeme({String tone = 'funny'}) async {

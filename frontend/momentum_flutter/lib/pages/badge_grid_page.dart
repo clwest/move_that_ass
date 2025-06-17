@@ -73,13 +73,13 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
               opacity: isEarned ? 1.0 : 0.4,
               child: Text(
                 badge.emoji,
-                style: const TextStyle(fontSize: 36),
+                style: const TextStyle(fontSize: 36, inherit: true),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               badge.name,
-              style: TextStyle(color: AppColors.donkeyText),
+              style: TextStyle(color: AppColors.donkeyText, inherit: true),
               textAlign: TextAlign.center,
             ),
           ],

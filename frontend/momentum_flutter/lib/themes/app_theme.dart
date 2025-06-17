@@ -22,6 +22,7 @@ class AppTheme {
           color: AppColors.donkeyText,
           fontWeight: FontWeight.bold,
           fontSize: 20,
+          inherit: true,
         ),
       ),
       textTheme: ThemeData.dark().textTheme.apply(
@@ -32,7 +33,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.donkeyGold,
           foregroundColor: Colors.black,
-          textStyle: TextStyle(fontWeight: FontWeight.bold),
+          textStyle: TextStyle(fontWeight: FontWeight.bold, inherit: true),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -46,7 +47,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: AppColors.donkeyGold, width: 2),
         ),
-        labelStyle: TextStyle(color: AppColors.donkeyGold),
+        labelStyle: TextStyle(color: AppColors.donkeyGold, inherit: true),
       ),
     );
   }

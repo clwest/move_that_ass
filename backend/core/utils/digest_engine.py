@@ -23,27 +23,28 @@ def generate_daily_digest(user):
 
     mood = evaluate_user_mood(user)
 
+    # Determine tone
     if lockout and lockout.is_unlocked:
         tone = "positive"
-    elif shame_count:
-        tone = "ashamed"
+        movement_status = "✅ Completed"
     else:
-        tone = "neutral"
+        movement_status = "❌ Skipped"
+        tone = "ashamed" if shame_count else "neutral"
 
-    lines = [f"\U0001F434 Donkey Daily Digest for {user.username}"]
+    # Build digest lines
+    lines = [f"🐴 Donkey Daily Digest for {user.username}"]
     lines.append(f"Mood: {mood}")
     lines.append(f"Herd: {herd_name} ({herd_size} members)")
-    lines.append(
-        f"Movement: {'\u2714\ufe0f Completed' if lockout and lockout.is_unlocked else '\u274c Skipped'}"
-    )
+    lines.append(f"Movement: {movement_status}")
     lines.append(f"Shames: {shame_count}")
     lines.append(f"Memes Created: {meme_count}")
     lines.append(f"Voice Journals: {journal_count}")
 
+    # Add tone-based commentary
     if tone == "ashamed":
         lines.append("The donkey is not mad. Just disappointed. Again.")
     elif tone == "positive":
-        lines.append("You moved your azz. The donkey is proud. \U0001F9AF\U0001F525")
+        lines.append("You moved your azz. The donkey is proud. 🦯🔥")
     else:
         lines.append("Today was… a day. The donkey remains neutral.")
 

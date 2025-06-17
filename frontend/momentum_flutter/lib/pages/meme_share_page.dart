@@ -3,6 +3,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 
 import '../models/meme.dart';
+import '../services/api_service.dart';
 
 class MemeSharePage extends StatelessWidget {
   final Meme meme;
@@ -48,6 +49,20 @@ class MemeSharePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () => shareMeme(meme),
             child: const Text('📤 Share Meme'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await ApiService.shareToHerd({
+                'type': 'meme',
+                'caption': meme.caption,
+                'image_url': meme.imageUrl,
+              });
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Meme shared with the herd 🫏📣')),
+              );
+            },
+            child: const Text('📣 Share to Herd'),
           ),
           const SizedBox(height: 20),
         ],

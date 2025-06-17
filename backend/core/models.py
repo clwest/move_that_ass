@@ -185,3 +185,21 @@ class DonkeyChallenge(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} - {self.tone}"
+
+
+class HerdPost(models.Model):
+    """Simple post shared with the user's herd."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=20)  # meme or badge
+    caption = models.TextField(blank=True)
+    image_url = models.URLField(blank=True, null=True)
+    emoji = models.CharField(max_length=5, blank=True)
+    badge_name = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.user.username} {self.type} {self.created_at}"

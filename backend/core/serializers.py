@@ -12,6 +12,7 @@ from .models import (
     WorkoutLog,
     MovementGoal,
     DonkeyChallenge,
+    HerdPost,
 )
 
 
@@ -122,3 +123,9 @@ class DonkeyChallengeSerializer(serializers.ModelSerializer):
         model = DonkeyChallenge
         fields = "__all__"
         read_only_fields = ["user", "issued_at"]
+
+
+class HerdPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HerdPost
+        fields = "__all__"

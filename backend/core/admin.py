@@ -12,6 +12,7 @@ from .models import (
     WorkoutLog,
     MovementGoal,
     DonkeyChallenge,
+    HerdPost,
 )
 
 
@@ -98,3 +99,8 @@ class DonkeyChallengeAdmin(admin.ModelAdmin):
         "is_completed",
         "is_failed",
     )
+
+
+@admin.register(HerdPost)
+class HerdPostAdmin(admin.ModelAdmin):
+    list_display = ("user", "type", "created_at")

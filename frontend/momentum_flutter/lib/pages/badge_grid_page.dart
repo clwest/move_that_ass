@@ -45,6 +45,23 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
           ],
         ),
         actions: [
+          if (badge.isEarned)
+            TextButton(
+              onPressed: () async {
+                await ApiService.shareToHerd({
+                  'type': 'badge',
+                  'emoji': badge.emoji,
+                  'badge_name': badge.name,
+                });
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Badge shared with the herd 🫏📣')),
+                  );
+                }
+              },
+              child: const Text('📣 Share to Herd'),
+            ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),

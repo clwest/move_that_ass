@@ -152,4 +152,16 @@ class ApiService {
     await TokenService.saveToken(token);
     return token;
   }
+
+  static Future<void> shareToHerd(Map<String, dynamic> data) async {
+    final token = await TokenService.getToken();
+    await http.post(
+      Uri.parse('$baseUrl/api/core/share-to-herd/'),
+      headers: {
+        'Authorization': 'Token $token',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(data),
+    );
+  }
 }

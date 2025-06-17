@@ -145,3 +145,24 @@ class WorkoutLog(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} {self.activity_type} {self.created_at}"
+
+
+class MovementGoal(models.Model):
+    """User-defined goal for completing a set number of activity sessions."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_type = models.CharField(max_length=50)
+    target_sessions = models.IntegerField()
+    current_count = models.IntegerField(default=0)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    is_completed = models.BooleanField(default=False)
+    is_failed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.user.username} {self.activity_type} {self.target_sessions}" \
+            f" {self.start_date}->{self.end_date}"

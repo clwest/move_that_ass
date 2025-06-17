@@ -10,6 +10,7 @@ from .models import (
     Badge,
     BadgeShoutout,
     WorkoutLog,
+    MovementGoal,
 )
 
 
@@ -66,5 +67,20 @@ class WorkoutLogAdmin(admin.ModelAdmin):
         "activity_type",
         "duration_minutes",
         "intensity",
+        "created_at",
+    )
+
+
+@admin.register(MovementGoal)
+class MovementGoalAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "activity_type",
+        "target_sessions",
+        "current_count",
+        "start_date",
+        "end_date",
+        "is_completed",
+        "is_failed",
         "created_at",
     )

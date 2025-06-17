@@ -10,6 +10,7 @@ from .models import (
     Badge,
     BadgeShoutout,
     WorkoutLog,
+    MovementGoal,
 )
 
 
@@ -91,3 +92,22 @@ class WorkoutLogSerializer(serializers.ModelSerializer):
         model = WorkoutLog
         fields = "__all__"
         read_only_fields = ["user", "created_at"]
+
+
+class MovementGoalSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+    current_count = serializers.IntegerField(read_only=True)
+    is_completed = serializers.BooleanField(read_only=True)
+    is_failed = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model = MovementGoal
+        fields = "__all__"
+        read_only_fields = [
+            "user",
+            "created_at",
+            "current_count",
+            "is_completed",
+            "is_failed",
+        ]

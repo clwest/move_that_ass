@@ -321,6 +321,25 @@ def check_badges(request):
     return Response({"new_badges": serialized})
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_badges(request):
+    """Return all badges with earned state for the current user."""
+    earned_ids = set(request.user.profile.badges.values_list("id", flat=True))
+    badges = Badge.objects.filter(is_active=True)
+    serialized = [
+        {
+            "code": b.code,
+            "name": b.name,
+            "emoji": b.emoji,
+            "description": b.description,
+            "is_earned": b.id in earned_ids,
+        }
+        for b in badges
+    ]
+    return Response(serialized)
+
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def share_badge(request):

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
+import 'badge_grid_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -31,6 +32,18 @@ class _TodayPageState extends State<TodayPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('MoveYourAzz 🫏'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.emoji_events),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const BadgeGridPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,

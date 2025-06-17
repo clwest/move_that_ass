@@ -34,6 +34,7 @@ from .models import (
     Badge,
     BadgeShoutout,
     WorkoutLog,
+    MovementGoal,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -47,6 +48,7 @@ from .serializers import (
     BadgeSerializer,
     BadgeShoutoutSerializer,
     WorkoutLogSerializer,
+    MovementGoalSerializer,
 )
 
 
@@ -348,6 +350,19 @@ def share_badge(request):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+def create_movement_goal(request):
+    """Create a MovementGoal for the authenticated user."""
+
+    serializer = MovementGoalSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=400)
+
+    goal = serializer.save(user=request.user, is_completed=False)
+    return Response(MovementGoalSerializer(goal).data)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def log_workout(request):
     """Create a WorkoutLog entry for the authenticated user."""
 
@@ -356,5 +371,22 @@ def log_workout(request):
         return Response(serializer.errors, status=400)
 
     workout = serializer.save(user=request.user)
+
+    # Update any goals that match this workout
+    matching_goals = MovementGoal.objects.filter(
+        user=request.user,
+        activity_type=workout.activity_type,
+        start_date__lte=workout.created_at.date(),
+        end_date__gte=workout.created_at.date(),
+        is_completed=False,
+        is_failed=False,
+    )
+
+    for goal in matching_goals:
+        goal.current_count += 1
+        if goal.current_count >= goal.target_sessions:
+            goal.is_completed = True
+        goal.save()
+
     return Response(WorkoutLogSerializer(workout).data)
 

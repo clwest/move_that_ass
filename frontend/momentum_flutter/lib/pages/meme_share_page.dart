@@ -4,6 +4,7 @@ import 'package:gallery_saver/gallery_saver.dart';
 
 import '../models/meme.dart';
 import '../services/api_service.dart';
+import '../utils/text_utils.dart';
 
 class MemeSharePage extends StatelessWidget {
   final Meme meme;
@@ -37,7 +38,7 @@ class MemeSharePage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(12),
             child: Text(
-              meme.caption,
+              cleanText(meme.caption),
               style: const TextStyle(fontSize: 18, fontStyle: FontStyle.italic, inherit: true),
               textAlign: TextAlign.center,
             ),

@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from typing import List, Dict
 import os
 
+from . import clean_text
+
 load_dotenv()
 client = OpenAI()
 
@@ -38,6 +40,6 @@ def generate_workout_plan(goal: str, activity_types: List[str] | None = None, to
         temperature=0.8,
     )
 
-    text = response.choices[0].message.content.strip()
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    text = clean_text(response.choices[0].message.content.strip())
+    lines = [clean_text(line.strip()) for line in text.splitlines() if line.strip()]
     return {"plan": lines[:7]}

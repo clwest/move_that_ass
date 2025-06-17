@@ -5,6 +5,8 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+
+from . import clean_text
 load_dotenv()
 
 client = OpenAI()
@@ -20,7 +22,7 @@ def transcribe_audio(file_path: str) -> str:
             model="whisper-1",
             file=audio_file,
         )
-        return response.text
+        return clean_text(response.text)
 
 
 def summarize_text(text: str) -> str:
@@ -42,7 +44,7 @@ def summarize_text(text: str) -> str:
         temperature=0.7,
     )
 
-    return response.choices[0].message.content.strip()
+    return clean_text(response.choices[0].message.content.strip())
 
 
 def generate_tags_from_text(text: str):
@@ -67,7 +69,7 @@ def generate_tags_from_text(text: str):
         temperature=0.5,
     )
 
-    raw = response.choices[0].message.content.strip()
+    raw = clean_text(response.choices[0].message.content.strip())
 
     try:
         tags = eval(raw) if raw.startswith("[") else [raw]

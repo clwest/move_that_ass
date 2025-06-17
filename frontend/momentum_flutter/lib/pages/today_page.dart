@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
+import '../utils/text_utils.dart';
 import 'herd_feed_page.dart';
 import 'profile_page.dart';
 import 'meme_share_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
+import '../themes/app_theme.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -149,14 +151,13 @@ class _TodayPageState extends State<TodayPage> {
         onPressed: () async {
           final meme = await ApiService.generateMeme();
           if (!mounted) return;
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MemeSharePage(meme: meme),
-            ),
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => MemeSharePage(meme: meme)),
           );
         },
-
-        child: const Icon(Icons.photo),
+        child: const Icon(Icons.image),
+        backgroundColor: AppColors.donkeyGold,
       ),
     );
   }
@@ -217,7 +218,7 @@ class _TodayPageState extends State<TodayPage> {
           dashboard.moodAvatar.isNotEmpty ? dashboard.moodAvatar : '😶',
           style: const TextStyle(fontSize: 32, inherit: true),
         ),
-        title: Text('Current Mood: ${dashboard.mood}'),
+        title: Text('Current Mood: ${cleanText(dashboard.mood)}'),
       ),
     );
   }
@@ -233,7 +234,7 @@ class _TodayPageState extends State<TodayPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              challenge.text,
+              cleanText(challenge.text),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -278,7 +279,7 @@ class _TodayPageState extends State<TodayPage> {
             else
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: plan.map((e) => Text(e)).toList(),
+                children: plan.map((e) => Text(cleanText(e))).toList(),
               ),
           ],
         ),
@@ -305,15 +306,16 @@ class _TodayPageState extends State<TodayPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (mealPlan['breakfast'] != null)
-                    Text('🍳 Breakfast: ${mealPlan['breakfast']}'),
+                    Text('🍳 Breakfast: ${cleanText(mealPlan['breakfast'])}'),
                   if (mealPlan['lunch'] != null)
-                    Text('🥪 Lunch: ${mealPlan['lunch']}'),
+                    Text('🥪 Lunch: ${cleanText(mealPlan['lunch'])}'),
                   if (mealPlan['dinner'] != null)
-                    Text('🍜 Dinner: ${mealPlan['dinner']}'),
+                    Text('🍜 Dinner: ${cleanText(mealPlan['dinner'])}'),
                   if (mealPlan['snacks'] != null) ...[
                     const Text('🍏 Snacks:'),
                     ...List<Widget>.from(
-                      (mealPlan['snacks'] as List).map((s) => Text('• $s')),
+                      (mealPlan['snacks'] as List)
+                          .map((s) => Text('• ${cleanText(s)}')),
                     ),
                   ],
                 ],
@@ -337,7 +339,7 @@ class _TodayPageState extends State<TodayPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              recap,
+              cleanText(recap),
               style: const TextStyle(fontStyle: FontStyle.italic, inherit: true),
             ),
           ],

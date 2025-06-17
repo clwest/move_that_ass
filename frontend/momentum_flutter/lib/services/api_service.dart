@@ -158,24 +158,18 @@ class ApiService {
     return DailyGoal.fromJson(data);
   }
 
-  static Future<Meme> generateMeme({String tone = 'funny'}) async {
+  static Future<Meme> generateMeme() async {
     final token = await TokenService.getToken() ?? '';
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/content/generate-meme/'),
       headers: {
+        'Authorization': 'Token $token',
         'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
       },
-      body: json.encode({'tone': tone}),
     );
-
-    if (response.statusCode != 200) {
-      throw Exception('Failed to generate meme');
-    }
-
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return Meme.fromJson(data);
+    final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+    return Meme.fromJson(jsonData);
   }
 
   static Future<Map<String, dynamic>?> fetchDailyGoal() async {

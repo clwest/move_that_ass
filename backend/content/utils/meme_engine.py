@@ -3,6 +3,7 @@ import random
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
+from core.utils import clean_text
 
 load_dotenv()
 
@@ -39,4 +40,4 @@ def generate_meme_caption(tone: str = "funny") -> str:
         ],
         temperature=0.85,
     )
-    return response.choices[0].message.content.strip()
+    return clean_text(response.choices[0].message.content.strip())

@@ -2,6 +2,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 
+from . import clean_text
+
 load_dotenv()
 client = OpenAI()
 
@@ -37,7 +39,7 @@ def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = N
         temperature=0.8,
     )
 
-    text = response.choices[0].message.content.strip()
+    text = clean_text(response.choices[0].message.content.strip())
     try:
         return json.loads(text)
     except Exception:

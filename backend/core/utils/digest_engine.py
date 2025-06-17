@@ -4,6 +4,7 @@ from django.utils import timezone
 from ..models import ShamePost, VoiceJournal, DailyLockout
 from content.models import GeneratedMeme
 from .mood_engine import evaluate_user_mood
+from . import clean_text
 
 
 def generate_daily_digest(user):
@@ -48,4 +49,4 @@ def generate_daily_digest(user):
     else:
         lines.append("Today was... a day. The donkey remains neutral.")
 
-    return "\n".join(lines)
+    return clean_text("\n".join(lines))

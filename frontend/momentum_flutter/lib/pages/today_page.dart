@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
+import '../services/token_service.dart';
+import 'login_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -33,6 +35,17 @@ class _TodayPageState extends State<TodayPage> {
       appBar: AppBar(
         title: const Text('MoveYourAzz 🫏'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await TokenService.clearToken();
+              if (!mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.emoji_events),
             onPressed: () {

@@ -269,3 +269,31 @@ class ProfileAPITest(APITestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.profile.display_name, "New")
 
+
+class HerdPostAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="herder", password="pass")
+        from core.models import Profile, Herd
+
+        Profile.objects.create(user=self.user, display_name="Herder")
+        herd = Herd.objects.create(
+            name="Herd One", created_by=self.user, tone="mixed", invite_code="code"
+        )
+        herd.members.add(self.user)
+
+    def test_share_and_feed(self):
+        self.client.login(username="herder", password="pass")
+
+        payload = {
+            "type": "meme",
+            "caption": "funny",
+            "image_url": "http://x.com/meme.png",
+        }
+        response = self.client.post("/api/core/share-to-herd/", payload, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/api/core/herd-feed/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["type"], "meme")
+

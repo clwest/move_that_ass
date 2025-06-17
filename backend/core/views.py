@@ -40,6 +40,7 @@ from .models import (
     WorkoutLog,
     MovementGoal,
     DonkeyChallenge,
+    HerdPost,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -55,6 +56,7 @@ from .serializers import (
     WorkoutLogSerializer,
     MovementGoalSerializer,
     DonkeyChallengeSerializer,
+    HerdPostSerializer,
 )
 
 
@@ -611,3 +613,54 @@ def profile_view(request):
             "badges": profile.badges.count(),
         }
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def share_to_herd(request):
+    """Create a HerdPost record for the user's herd."""
+
+    post_type = request.data.get("type")
+    if post_type not in {"meme", "badge"}:
+        return Response({"error": "Invalid type"}, status=400)
+
+    HerdPost.objects.create(
+        user=request.user,
+        type=post_type,
+        caption=request.data.get("caption", ""),
+        image_url=request.data.get("image_url"),
+        emoji=request.data.get("emoji", ""),
+        badge_name=request.data.get("badge_name", ""),
+    )
+
+    return Response({"message": "Shared to herd"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def herd_feed(request):
+    """Return latest HerdPost entries for the user's herd."""
+
+    herd = request.user.herds.first()
+    if not herd:
+        return Response([])
+
+    posts = HerdPost.objects.filter(user__in=herd.members.all()).order_by(
+        "-created_at"
+    )[:50]
+
+    serialized = [
+        {
+            "type": p.type,
+            "user": p.user.username,
+            "content": {
+                "caption": p.caption,
+                "image_url": p.image_url,
+                "emoji": p.emoji,
+                "name": p.badge_name,
+            },
+            "created_at": p.created_at.isoformat(),
+        }
+        for p in posts
+    ]
+    return Response(serialized)

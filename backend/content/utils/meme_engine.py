@@ -38,16 +38,23 @@ def generate_meme_caption(tone: str = "funny") -> str:
         f"Write a short, {tone} caption for a donkey meme about someone failing to exercise."
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": "You're a meme expert who writes funny captions.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.85,
-    )
-    return clean_text(response.choices[0].message.content.strip())
+    if client is None:
+        return "keep moving!"
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4-0125-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You're a meme expert who writes funny captions.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.85,
+        )
+        text = response.choices[0].message.content.strip()
+    except Exception:
+        text = "keep moving!"
+
+    return clean_text(text)
 

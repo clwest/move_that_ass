@@ -11,6 +11,7 @@ import 'meme_share_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
 import '../themes/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -39,20 +40,25 @@ class _TodayPageState extends State<TodayPage> {
         });
       }
     });
-    Future.delayed(Duration.zero, () {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Welcome to MoveYourAzz 🫏'),
-          content: const Text('Move that azz and share your progress!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Let\'s go'),
-            ),
-          ],
-        ),
-      );
+    Future.delayed(Duration.zero, () async {
+      final prefs = await SharedPreferences.getInstance();
+      final shown = prefs.getBool('welcome_shown') ?? false;
+      if (!shown && mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Welcome to MoveYourAzz 🫏'),
+            content: const Text('Move that azz and share your progress!'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Let\'s go'),
+              ),
+            ],
+          ),
+        );
+        await prefs.setBool('welcome_shown', true);
+      }
     });
 
   }

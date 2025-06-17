@@ -36,24 +36,28 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = "__all__"
+        read_only_fields = ["user"]
 
 
 class DailyLockoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyLockout
         fields = "__all__"
+        read_only_fields = ["user", "date"]
 
 
 class ShamePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShamePost
         fields = "__all__"
+        read_only_fields = ["user", "date"]
 
 
 class PaddleLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaddleLog
         fields = "__all__"
+        read_only_fields = ["user", "date"]
 
 
 class VoiceJournalSerializer(serializers.ModelSerializer):
@@ -79,12 +83,14 @@ class HerdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Herd
         fields = "__all__"
+        read_only_fields = ["created_by", "created_at", "invite_code"]
 
 
 class BadgeShoutoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = BadgeShoutout
         fields = "__all__"
+        read_only_fields = ["user", "created_at"]
 
 
 class WorkoutLogSerializer(serializers.ModelSerializer):
@@ -130,6 +136,7 @@ class HerdPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = HerdPost
         fields = "__all__"
+        read_only_fields = ["user", "created_at"]
 
 
 class DailyGoalSerializer(serializers.ModelSerializer):

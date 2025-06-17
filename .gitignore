@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.sqlite3
+backend/db.sqlite3
 .env
 
 backend/.venv/

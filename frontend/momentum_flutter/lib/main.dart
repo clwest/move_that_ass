@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'pages/today_page.dart';
 import 'pages/login_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/goal_setup_page.dart';
 
 import 'themes/app_theme.dart';
 import 'services/token_service.dart';
 import 'services/api_service.dart';
+import 'config.dart';
 
 
 
-void main() {
+void main({String? baseUrl}) {
+  if (baseUrl != null) {
+    AppConfig.baseUrl = baseUrl;
+  }
   runApp(const MyApp());
 }
 
@@ -49,7 +54,7 @@ class MyApp extends StatelessWidget {
     if (profile.displayName.isEmpty) return const ProfilePage();
 
     final goal = await ApiService.fetchDailyGoal();
-    if (goal == null) return const TodayPage();
+    if (goal == null) return const GoalSetupPage();
 
     return const TodayPage();
 

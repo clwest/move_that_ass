@@ -334,21 +334,24 @@ def herd_mood_view(request):
     })
 
 
-@api_view(["POST"])
+@api_view(["POST", "GET"])
 @permission_classes([IsAuthenticated])
 def check_badges(request):
-    """Evaluate badge rules for the current user."""
-    new_badges = evaluate_badges(request.user)
+    """Evaluate badge rules for the current user and return badge list."""
+    evaluate_badges(request.user)
+    earned_ids = set(request.user.profile.badges.values_list("id", flat=True))
+    badges = Badge.objects.filter(is_active=True)
     serialized = [
         {
             "code": b.code,
             "name": b.name,
             "emoji": b.emoji,
             "description": b.description,
+            "is_earned": b.id in earned_ids,
         }
-        for b in new_badges
+        for b in badges
     ]
-    return Response({"new_badges": serialized})
+    return Response(serialized)
 
 
 @api_view(["GET"])

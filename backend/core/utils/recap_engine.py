@@ -49,7 +49,7 @@ def generate_weekly_recap(user):
     ]
 
     if tone == "legend":
-        lines.append("This donkey salutes you. You’ve earned a badge in badazzery. \U0001f3c6\U0001f9a4")
+        lines.append("This donkey salutes you. You’ve earned a badge in badazzery. 🏆🫏")
     elif tone == "resilient":
         lines.append("You had your off days, but you kept moving. The donkey sees the grind.")
     elif tone == "struggling":

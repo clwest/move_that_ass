@@ -35,7 +35,7 @@ class AppTheme {
           foregroundColor: Colors.black,
           // Ensure consistent interpolation by matching Flutter defaults
           textStyle:
-              const TextStyle(fontWeight: FontWeight.bold, inherit: false),
+              const TextStyle(fontWeight: FontWeight.bold, inherit: true),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

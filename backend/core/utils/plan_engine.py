@@ -4,7 +4,10 @@ from typing import List, Dict
 import os
 
 load_dotenv()
-client = OpenAI()
+try:
+    client = OpenAI()
+except Exception:
+    client = None
 
 
 def generate_workout_plan(goal: str, activity_types: List[str] | None = None, tone: str = "supportive") -> Dict[str, List[str]]:
@@ -26,18 +29,21 @@ def generate_workout_plan(goal: str, activity_types: List[str] | None = None, to
         "Give each day on one line."
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": "You're a fitness coach creating concise daily workout plans.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.8,
-    )
+    if client is None:
+        text = "Day 1: walk\nDay 2: stretch\nDay 3: rest"
+    else:
+        response = client.chat.completions.create(
+            model="gpt-4-0125-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You're a fitness coach creating concise daily workout plans.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.8,
+        )
 
-    text = response.choices[0].message.content.strip()
+        text = response.choices[0].message.content.strip()
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     return {"plan": lines[:7]}

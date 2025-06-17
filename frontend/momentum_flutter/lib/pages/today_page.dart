@@ -147,13 +147,20 @@ class _TodayPageState extends State<TodayPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final meme = await ApiService.generateMeme();
-          if (!mounted) return;
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MemeSharePage(meme: meme),
-            ),
-          );
+          try {
+            final meme = await ApiService.generateMeme();
+            if (!mounted) return;
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => MemeSharePage(meme: meme),
+              ),
+            );
+          } catch (e) {
+            if (!mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Failed to generate meme')),
+            );
+          }
         },
 
         child: const Icon(Icons.photo),

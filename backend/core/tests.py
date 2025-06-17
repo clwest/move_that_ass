@@ -18,3 +18,30 @@ class MovementGoalAPITest(APITestCase):
         self.assertEqual(response.data["activity_type"], "biking")
         self.assertEqual(response.data["target_sessions"], 3)
 
+
+class WorkoutPlanAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="planner", password="pass")
+
+    def test_generate_plan(self):
+        self.client.login(username="planner", password="pass")
+        payload = {
+            "goal": "weight loss",
+            "activity_types": ["walking"],
+            "tone": "supportive",
+        }
+
+        from unittest.mock import patch
+
+        with patch("core.views.ai_generate_workout_plan") as mock_gen:
+            mock_gen.return_value = {"plan": ["Day 1: test"]}
+            response = self.client.post(
+                "/api/core/generate-workout-plan/",
+                payload,
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("plan", response.data)
+        self.assertEqual(response.data["plan"], ["Day 1: test"])
+

@@ -109,4 +109,4 @@ class HerdPostAdmin(admin.ModelAdmin):
 
 @admin.register(DailyGoal)
 class DailyGoalAdmin(admin.ModelAdmin):
-    list_display = ("user", "goal", "target", "type", "date")
+    list_display = ("user", "goal", "target", "goal_type", "date")

@@ -286,9 +286,10 @@ class ProfileAPITest(APITestCase):
 class HerdPostAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="herder", password="pass")
-        from core.models import Profile, Herd
+        from core.models import Herd
 
-        Profile.objects.create(user=self.user, display_name="Herder")
+        self.user.profile.display_name = "Herder"
+        self.user.profile.save()
         herd = Herd.objects.create(
             name="Herd One", created_by=self.user, tone="mixed", invite_code="code"
         )

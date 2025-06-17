@@ -33,7 +33,9 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.donkeyGold,
           foregroundColor: Colors.black,
-          textStyle: TextStyle(fontWeight: FontWeight.bold, inherit: true),
+          // Ensure consistent interpolation by matching Flutter defaults
+          textStyle:
+              const TextStyle(fontWeight: FontWeight.bold, inherit: false),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

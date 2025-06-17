@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../models/today_dashboard.dart';
+import '../models/daily_goal.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
 import 'herd_feed_page.dart';
 import 'profile_page.dart';
+import 'meme_share_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
 import 'meme_share_page.dart';
@@ -19,7 +21,9 @@ class TodayPage extends StatefulWidget {
 
 class _TodayPageState extends State<TodayPage> {
   late Future<TodayDashboard> _future;
+
   Map<String, dynamic>? _dailyGoal;
+
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetController = TextEditingController(text: '1');
 
@@ -27,6 +31,7 @@ class _TodayPageState extends State<TodayPage> {
   void initState() {
     super.initState();
     _future = ApiService.fetchTodayDashboard();
+
     ApiService.fetchDailyGoal().then((data) {
       if (data != null) {
         setState(() {
@@ -49,12 +54,14 @@ class _TodayPageState extends State<TodayPage> {
         ),
       );
     });
+
   }
 
   Future<void> _refresh() async {
     setState(() {
       _future = ApiService.fetchTodayDashboard();
     });
+    await _loadGoal();
   }
 
   @override
@@ -142,6 +149,7 @@ class _TodayPageState extends State<TodayPage> {
             ),
           );
         },
+
         child: const Icon(Icons.photo),
       ),
     );
@@ -191,6 +199,7 @@ class _TodayPageState extends State<TodayPage> {
               ),
           ],
         ),
+
       ),
     );
   }
@@ -324,6 +333,48 @@ class _TodayPageState extends State<TodayPage> {
             Text(
               recap,
               style: const TextStyle(fontStyle: FontStyle.italic, inherit: true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _saveGoal() async {
+    final goalText = _goalController.text.trim();
+    final target = int.tryParse(_targetController.text) ?? 1;
+    if (goalText.isEmpty) return;
+    await ApiService.setDailyGoal(goalText, target);
+    await _loadGoal();
+  }
+
+  Widget _buildGoalCard() {
+    if (_dailyGoal != null) {
+      return Card(
+        child: ListTile(
+          title: Text("Today's Goal: ${_dailyGoal!.goal}"),
+          subtitle: Text('Target: ${_dailyGoal!.target}'),
+        ),
+      );
+    }
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: _goalController,
+              decoration: const InputDecoration(labelText: 'Activity'),
+            ),
+            TextField(
+              controller: _targetController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Target'),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _saveGoal,
+              child: const Text('Save Goal'),
             ),
           ],
         ),

@@ -7,6 +7,7 @@ import '../models/badge.dart';
 import '../models/meme.dart';
 import '../models/herd_post.dart';
 import '../models/profile.dart';
+import '../models/daily_goal.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
@@ -113,6 +114,48 @@ class ApiService {
 
     final data = json.decode(response.body) as Map<String, dynamic>;
     return UserProfile.fromJson(data);
+  }
+
+  static Future<DailyGoal?> getDailyGoal() async {
+    final token = await TokenService.getToken() ?? '';
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/core/daily-goal/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      return null;
+    }
+
+    final data = json.decode(response.body);
+    if (data is Map<String, dynamic> && data.isNotEmpty) {
+      return DailyGoal.fromJson(data);
+    }
+    return null;
+  }
+
+  static Future<DailyGoal> setDailyGoal(String goal, int target) async {
+    final token = await TokenService.getToken() ?? '';
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/daily-goal/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+      body: json.encode({'goal': goal, 'target': target, 'type': 'daily'}),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to save goal');
+    }
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return DailyGoal.fromJson(data);
   }
 
   static Future<Meme> generateMeme({String tone = 'funny'}) async {

@@ -49,7 +49,7 @@ def generate_tags_from_text(text: str):
     """Generate 2-4 short tags summarizing a journal entry."""
 
     prompt = (
-        "Analyze the following voice journal transcript and return a list of 2–4 "
+        "Analyze the following voice journal transcript and return a list of 2-4 "
         "lowercase tags that describe the tone or intent. Keep it JSON-safe and "
         "short.\n\nTranscript:\n" + text
     )

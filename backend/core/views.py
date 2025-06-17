@@ -420,14 +420,17 @@ def create_movement_goal(request):
 @api_view(["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def daily_goal_view(request):
+
     """Get or set today's simple goal."""
 
     today = timezone.now().date()
+
 
     if request.method == "POST":
         serializer = DailyGoalSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=400)
+
 
         obj, _ = DailyGoal.objects.update_or_create(
             user=request.user,
@@ -451,6 +454,7 @@ def daily_goal_view(request):
             "date": obj.date.isoformat(),
         }
     )
+
 
 
 @api_view(["POST"])

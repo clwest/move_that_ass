@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'pages/today_page.dart';
 import 'pages/login_page.dart';
 import 'pages/profile_page.dart';
+
 import 'themes/app_theme.dart';
 import 'services/token_service.dart';
 import 'services/api_service.dart';
+
 
 
 void main() {
@@ -17,8 +19,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return FutureBuilder<Widget>(
       future: _determineHome(),
+
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const MaterialApp(
@@ -27,6 +31,7 @@ class MyApp extends StatelessWidget {
             ),
           );
         }
+
         return MaterialApp(
           title: 'MoveYourAzz',
           theme: AppTheme.theme,
@@ -47,5 +52,7 @@ class MyApp extends StatelessWidget {
     if (goal == null) return const TodayPage();
 
     return const TodayPage();
+
+
   }
 }

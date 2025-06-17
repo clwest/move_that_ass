@@ -206,11 +206,14 @@ class HerdPost(models.Model):
 
 
 class DailyGoal(models.Model):
+
     """Simple per-day goal entry."""
+
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     goal = models.CharField(max_length=50)
     target = models.IntegerField(default=1)
+
     date = models.DateField()
     goal_type = models.CharField(max_length=20, default="daily")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -221,3 +224,4 @@ class DailyGoal(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} {self.goal} {self.date}"
+

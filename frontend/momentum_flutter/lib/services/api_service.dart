@@ -189,17 +189,17 @@ class ApiService {
     return data;
   }
 
-  static Future<void> setDailyGoal(String goal, int target) async {
-    final token = await TokenService.getToken() ?? '';
-    await http.post(
-      Uri.parse('$baseUrl/api/core/daily-goal/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
-      body: json.encode({'goal': goal, 'target': target, 'goal_type': 'daily'}),
-    );
-  }
+  // static Future<void> setDailyGoal(String goal, int target) async {
+  //   final token = await TokenService.getToken() ?? '';
+  //   await http.post(
+  //     Uri.parse('$baseUrl/api/core/daily-goal/'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       if (token.isNotEmpty) 'Authorization': 'Token $token',
+  //     },
+  //     body: json.encode({'goal': goal, 'target': target, 'goal_type': 'daily'}),
+  //   );
+  // }
 
   static Future<void> register(String username, String password) async {
     final response = await http.post(

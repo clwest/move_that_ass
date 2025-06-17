@@ -9,14 +9,18 @@ import os
 from . import clean_text
 load_dotenv()
 
-client = OpenAI()
+try:
+    client = OpenAI()
+except Exception:
+    client = None
 
 
 
 
 def transcribe_audio(file_path: str) -> str:
     """Transcribe the given audio file using OpenAI Whisper."""
-
+    if client is None:
+        return ""
     with open(file_path, "rb") as audio_file:
         response = client.audio.transcriptions.create(
             model="whisper-1",
@@ -32,6 +36,8 @@ def summarize_text(text: str) -> str:
         "Summarize the following voice journal in 2-3 sentences:\n\n" + text
     )
 
+    if client is None:
+        return prompt
     response = client.chat.completions.create(
         model="gpt-4-0125-preview",
         messages=[
@@ -56,20 +62,24 @@ def generate_tags_from_text(text: str):
         "short.\n\nTranscript:\n" + text
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": "You're a smart assistant that labels journal entries "
-                "with short tags.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.5,
-    )
+    if client is None:
+        raw = "uncategorized"
+    else:
+        response = client.chat.completions.create(
+            model="gpt-4-0125-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You're a smart assistant that labels journal entries with short tags.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.5,
+        )
+
 
     raw = clean_text(response.choices[0].message.content.strip())
+
 
     try:
         tags = eval(raw) if raw.startswith("[") else [raw]

@@ -149,12 +149,14 @@ class _TodayPageState extends State<TodayPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+
           final meme = await ApiService.generateMeme();
           if (!mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => MemeSharePage(meme: meme)),
           );
+
         },
         child: const Icon(Icons.image),
         backgroundColor: AppColors.donkeyGold,

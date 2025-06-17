@@ -5,7 +5,10 @@ import json
 from . import clean_text
 
 load_dotenv()
-client = OpenAI()
+try:
+    client = OpenAI()
+except Exception:
+    client = None
 
 
 def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = None):
@@ -27,6 +30,7 @@ def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = N
         "Return JSON with keys breakfast, lunch, dinner, and snacks (list)."
     )
 
+
     response = client.chat.completions.create(
         model="gpt-4-0125-preview",
         messages=[
@@ -40,6 +44,7 @@ def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = N
     )
 
     text = clean_text(response.choices[0].message.content.strip())
+
     try:
         return json.loads(text)
     except Exception:

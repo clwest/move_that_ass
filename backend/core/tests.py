@@ -70,3 +70,45 @@ class MealPlanAPITest(APITestCase):
         self.assertIn("dinner", response.data)
         self.assertIn("snacks", response.data)
 
+
+class DonkeyChallengeAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="challenger", password="pass")
+        from core.models import Profile
+        Profile.objects.create(user=self.user, display_name="Challenger")
+
+    def test_generate_challenge(self):
+        from django.utils import timezone
+        from core.models import DailyLockout, ShamePost, DonkeyChallenge
+
+        today = timezone.now().date()
+        DailyLockout.objects.create(user=self.user, date=today, is_unlocked=False)
+        ShamePost.objects.create(
+            user=self.user,
+            date=today,
+            image_url="http://x",
+            caption="fail",
+            posted_to=[],
+            was_triggered=True,
+        )
+
+        self.client.login(username="challenger", password="pass")
+
+        from unittest.mock import patch
+
+        with patch("core.views.ai_generate_challenge") as mock_gen:
+            mock_gen.return_value = {"challenge_text": "walk", "days": 3, "tone": "savage"}
+            response = self.client.post(
+                "/api/core/generate-challenge/",
+                {"tone": "savage"},
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("challenge_text", response.data)
+
+        challenge = DonkeyChallenge.objects.filter(user=self.user).first()
+        self.assertIsNotNone(challenge)
+        self.assertEqual(challenge.challenge_text, "walk")
+        self.assertEqual(challenge.tone, "savage")
+

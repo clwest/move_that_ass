@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from .utils.shame_engine import check_and_trigger_shame
 
@@ -35,6 +35,7 @@ from .models import (
     BadgeShoutout,
     WorkoutLog,
     MovementGoal,
+    DonkeyChallenge,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -49,6 +50,7 @@ from .serializers import (
     BadgeShoutoutSerializer,
     WorkoutLogSerializer,
     MovementGoalSerializer,
+    DonkeyChallengeSerializer,
 )
 
 
@@ -393,6 +395,7 @@ def log_workout(request):
 
 from .utils.plan_engine import generate_workout_plan as ai_generate_workout_plan
 from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
+from .utils.challenge_engine import generate_challenge as ai_generate_challenge
 
 
 @api_view(["POST"])
@@ -420,3 +423,53 @@ def generate_meal_plan_view(request):
 
     plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
     return Response(plan)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def generate_donkey_challenge(request):
+    """Generate and store a short donkey challenge for the user."""
+
+    tone = request.data.get("tone") or "mixed"
+    user = request.user
+
+    today = timezone.now().date()
+    last_week = today - timedelta(days=7)
+
+    missed_workouts = DailyLockout.objects.filter(
+        user=user, date__gte=last_week, is_unlocked=False
+    ).count()
+    shame_count = ShamePost.objects.filter(
+        user=user, date__gte=today - timedelta(days=3)
+    ).count()
+
+    herd = user.herds.first()
+    herd_size = herd.members.count() if herd else 0
+    mood = user.profile.current_mood
+
+    data = ai_generate_challenge(
+        mood=mood,
+        missed_workouts=missed_workouts,
+        shame_streak=shame_count,
+        herd_size=herd_size,
+        tone=tone,
+    )
+
+    challenge_text = data.get("challenge_text", "")
+    days = int(data.get("days", 7))
+    expires_at = timezone.now() + timedelta(days=days)
+
+    challenge = DonkeyChallenge.objects.create(
+        user=user,
+        challenge_text=challenge_text,
+        expires_at=expires_at,
+        tone=data.get("tone", tone),
+    )
+
+    return Response(
+        {
+            "challenge_text": challenge.challenge_text,
+            "expires_at": challenge.expires_at.isoformat(),
+            "tone": challenge.tone,
+        }
+    )

@@ -11,6 +11,7 @@ from .models import (
     BadgeShoutout,
     WorkoutLog,
     MovementGoal,
+    DonkeyChallenge,
 )
 
 
@@ -111,3 +112,13 @@ class MovementGoalSerializer(serializers.ModelSerializer):
             "is_completed",
             "is_failed",
         ]
+
+
+class DonkeyChallengeSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    issued_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = DonkeyChallenge
+        fields = "__all__"
+        read_only_fields = ["user", "issued_at"]

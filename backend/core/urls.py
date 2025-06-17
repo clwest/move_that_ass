@@ -22,6 +22,7 @@ from .views import (
     create_movement_goal,
     log_workout,
     generate_workout_plan,
+    generate_meal_plan_view,
 
 )
 
@@ -49,5 +50,6 @@ urlpatterns = router.urls + [
     path("create-goal/", create_movement_goal),
     path("generate-workout-plan/", generate_workout_plan),
     path("log-workout/", log_workout),
+    path("generate-meal-plan/", generate_meal_plan_view),
 
 ]

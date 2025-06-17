@@ -2,6 +2,7 @@ from datetime import timedelta
 from django.utils import timezone
 from core.models import ShamePost, VoiceJournal, DailyLockout
 from content.models import GeneratedMeme
+from . import clean_text
 
 
 def generate_weekly_recap(user):
@@ -57,4 +58,4 @@ def generate_weekly_recap(user):
     else:
         lines.append("It was a week. Next one's yours.")
 
-    return "\n".join(lines)
+    return clean_text("\n".join(lines))

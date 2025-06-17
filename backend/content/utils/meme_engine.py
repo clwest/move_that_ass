@@ -3,6 +3,7 @@ import random
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
+from core.utils import clean_text
 
 load_dotenv()
 
@@ -36,23 +37,17 @@ def generate_meme_caption(tone: str = "funny") -> str:
     prompt = (
         f"Write a short, {tone} caption for a donkey meme about someone failing to exercise."
     )
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4-0125-preview",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You're a meme expert who writes funny captions.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.85,
-        )
-        return response.choices[0].message.content.strip()
-    except Exception:
-        fallback = [
-            "When procrastination kicks harder than a donkey.",
-            "Another day, another missed workout!",
-            "At least the donkey's moving!",
-        ]
-        return random.choice(fallback)
+
+    response = client.chat.completions.create(
+        model="gpt-4-0125-preview",
+        messages=[
+            {
+                "role": "system",
+                "content": "You're a meme expert who writes funny captions.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.85,
+    )
+    return clean_text(response.choices[0].message.content.strip())
+

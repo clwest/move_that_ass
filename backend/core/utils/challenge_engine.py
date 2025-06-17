@@ -2,6 +2,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from typing import Dict
 
+from . import clean_text
+
 load_dotenv()
 try:
     client = OpenAI()
@@ -45,7 +47,9 @@ def generate_challenge(
             temperature=0.8,
         )
 
-        text = response.choices[0].message.content.strip()
+
+    text = clean_text(response.choices[0].message.content.strip())
+
     try:
         import json
 

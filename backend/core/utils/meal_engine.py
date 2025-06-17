@@ -2,6 +2,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 
+from . import clean_text
+
 load_dotenv()
 try:
     client = OpenAI()
@@ -28,27 +30,21 @@ def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = N
         "Return JSON with keys breakfast, lunch, dinner, and snacks (list)."
     )
 
-    if client is None:
-        text = json.dumps({
-            "breakfast": "oatmeal",
-            "lunch": "salad",
-            "dinner": "veggies",
-            "snacks": ["fruit"],
-        })
-    else:
-        response = client.chat.completions.create(
-            model="gpt-4-0125-preview",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a nutrition coach crafting concise meal plans.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.8,
-        )
 
-        text = response.choices[0].message.content.strip()
+    response = client.chat.completions.create(
+        model="gpt-4-0125-preview",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a nutrition coach crafting concise meal plans.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.8,
+    )
+
+    text = clean_text(response.choices[0].message.content.strip())
+
     try:
         return json.loads(text)
     except Exception:

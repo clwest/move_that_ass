@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/profile.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
+import '../utils/text_utils.dart';
 import 'badge_grid_page.dart';
 import 'login_page.dart';
 
@@ -59,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
             }
 
             final profile = snapshot.data!;
-            _nameController.text = profile.displayName;
+            _nameController.text = cleanText(profile.displayName);
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -69,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       profile.moodAvatar.isNotEmpty ? profile.moodAvatar : '😶',
                       style: const TextStyle(fontSize: 32, inherit: true),
                     ),
-                    title: Text('Current Mood: ${profile.mood}'),
+                    title: Text('Current Mood: ${cleanText(profile.mood)}'),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -105,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: ListTile(
                     title: Text(
                       profile.herdName != null
-                          ? 'Member of: ${profile.herdName} (${profile.herdSize} members)'
+                          ? 'Member of: ${cleanText(profile.herdName!)} (${profile.herdSize} members)'
                           : 'Not in a herd',
                     ),
                   ),

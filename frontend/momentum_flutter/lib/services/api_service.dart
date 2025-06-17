@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'token_service.dart';
+import '../config.dart';
 
 import '../models/today_dashboard.dart';
 import '../models/badge.dart';
@@ -10,7 +11,7 @@ import '../models/profile.dart';
 import '../models/daily_goal.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8000';
+  static String get baseUrl => AppConfig.baseUrl;
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
     final token = await TokenService.getToken() ?? '';

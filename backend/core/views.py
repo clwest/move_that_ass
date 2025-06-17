@@ -69,26 +69,31 @@ def generate_invite_code():
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class DailyLockoutViewSet(viewsets.ModelViewSet):
     queryset = DailyLockout.objects.all()
     serializer_class = DailyLockoutSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ShamePostViewSet(viewsets.ModelViewSet):
     queryset = ShamePost.objects.all()
     serializer_class = ShamePostSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class PaddleLogViewSet(viewsets.ModelViewSet):
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])

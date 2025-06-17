@@ -21,12 +21,15 @@ def transcribe_audio(file_path: str) -> str:
     """Transcribe the given audio file using OpenAI Whisper."""
     if client is None:
         return ""
-    with open(file_path, "rb") as audio_file:
-        response = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file,
-        )
-        return clean_text(response.text)
+    try:
+        with open(file_path, "rb") as audio_file:
+            response = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+            )
+            return clean_text(response.text)
+    except Exception:
+        return ""
 
 
 def summarize_text(text: str) -> str:
@@ -38,19 +41,23 @@ def summarize_text(text: str) -> str:
 
     if client is None:
         return prompt
-    response = client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": "You're a helpful assistant who reflects on human thoughts.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.7,
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4-0125-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You're a helpful assistant who reflects on human thoughts.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.7,
+        )
+        text = response.choices[0].message.content.strip()
+    except Exception:
+        text = prompt
 
-    return clean_text(response.choices[0].message.content.strip())
+    return clean_text(text)
 
 
 def generate_tags_from_text(text: str):
@@ -65,24 +72,29 @@ def generate_tags_from_text(text: str):
     if client is None:
         raw = "uncategorized"
     else:
-        response = client.chat.completions.create(
-            model="gpt-4-0125-preview",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You're a smart assistant that labels journal entries with short tags.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.5,
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4-0125-preview",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You're a smart assistant that labels journal entries with short tags.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.5,
+            )
+            raw = response.choices[0].message.content.strip()
+        except Exception:
+            raw = "uncategorized"
 
-
-    raw = clean_text(response.choices[0].message.content.strip())
+    raw = clean_text(raw)
 
 
     try:
-        tags = eval(raw) if raw.startswith("[") else [raw]
+        import json
+
+        tags = json.loads(raw) if raw.startswith("[") else [raw]
         return tags
     except Exception:
         return ["uncategorized"]

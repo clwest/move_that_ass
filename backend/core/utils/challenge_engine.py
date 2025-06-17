@@ -35,20 +35,23 @@ def generate_challenge(
     if client is None:
         text = "Do 20 jumping jacks each day"
     else:
-        response = client.chat.completions.create(
-            model="gpt-4-0125-preview",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a motivational donkey crafting short fitness challenges.",
-                },
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.8,
-        )
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4-0125-preview",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a motivational donkey crafting short fitness challenges.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=0.8,
+            )
+            text = response.choices[0].message.content.strip()
+        except Exception:
+            text = "Do 20 jumping jacks each day"
 
-
-    text = clean_text(response.choices[0].message.content.strip())
+    text = clean_text(text)
 
     try:
         import json

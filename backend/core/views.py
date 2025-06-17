@@ -31,6 +31,8 @@ from .models import (
     PaddleLog,
     VoiceJournal,
     Herd,
+    Badge,
+    BadgeShoutout,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -42,6 +44,7 @@ from .serializers import (
     UserSerializer,
     HerdSerializer,
     BadgeSerializer,
+    BadgeShoutoutSerializer,
 )
 
 
@@ -300,6 +303,43 @@ def herd_mood_view(request):
 def check_badges(request):
     """Evaluate badge rules for the current user."""
     new_badges = evaluate_badges(request.user)
-    serialized = BadgeSerializer(new_badges, many=True).data
+    serialized = [
+        {
+            "code": b.code,
+            "name": b.name,
+            "emoji": b.emoji,
+            "description": b.description,
+        }
+        for b in new_badges
+    ]
     return Response({"new_badges": serialized})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def share_badge(request):
+    """Create a badge shoutout for the user's herd."""
+
+    code = request.data.get("badge_code")
+    message = request.data.get("message", "")
+    if not code:
+        return Response({"error": "badge_code is required"}, status=400)
+
+    badge = get_object_or_404(Badge, code=code)
+    herd = request.user.herds.first()
+
+    shoutout = BadgeShoutout.objects.create(
+        user=request.user, badge=badge, herd=herd, message=message
+    )
+
+    if not herd:
+        return Response({"message": "Badge saved, no herd to notify."})
+
+    return Response(
+        {
+            "message": "Badge shared with herd.",
+            "herd": herd.name,
+            "shoutout": BadgeShoutoutSerializer(shoutout).data,
+        }
+    )
 

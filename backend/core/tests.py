@@ -183,3 +183,29 @@ class DashboardTodayAPITest(APITestCase):
         self.assertIn("challenge", response.data)
         self.assertIn("azz_recap", response.data)
 
+
+class BadgeListAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="badger", password="pass")
+        from core.models import Profile, Badge
+        Profile.objects.create(user=self.user, display_name="Badger")
+        self.badge1 = Badge.objects.create(
+            code="test1", name="Test One", emoji="1", description="d"
+        )
+        self.badge2 = Badge.objects.create(
+            code="test2", name="Test Two", emoji="2", description="d"
+        )
+        self.user.profile.badges.add(self.badge1)
+
+    def test_list_badges(self):
+        self.client.login(username="badger", password="pass")
+        response = self.client.get("/api/core/badges/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        codes = {b["code"] for b in response.data}
+        self.assertIn("test1", codes)
+        self.assertIn("test2", codes)
+        earned_map = {b["code"]: b["is_earned"] for b in response.data}
+        self.assertTrue(earned_map["test1"])  # earned
+        self.assertFalse(earned_map["test2"])  # not earned
+

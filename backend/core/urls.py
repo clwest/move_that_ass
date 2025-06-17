@@ -24,6 +24,7 @@ from .views import (
     generate_workout_plan,
     generate_meal_plan_view,
     generate_donkey_challenge,
+    get_today_dashboard,
 
 )
 
@@ -44,6 +45,7 @@ urlpatterns = router.urls + [
     path("dashboard/", dashboard_feed),
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),
+    path("dashboard-today/", get_today_dashboard),
 
     path("herd-mood/", herd_mood_view),
     path("check-badges/", check_badges),

@@ -396,6 +396,7 @@ def log_workout(request):
 from .utils.plan_engine import generate_workout_plan as ai_generate_workout_plan
 from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
 from .utils.challenge_engine import generate_challenge as ai_generate_challenge
+from .utils.digest_engine import generate_daily_digest
 
 
 @api_view(["POST"])
@@ -471,5 +472,63 @@ def generate_donkey_challenge(request):
             "challenge_text": challenge.challenge_text,
             "expires_at": challenge.expires_at.isoformat(),
             "tone": challenge.tone,
+        }
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_today_dashboard(request):
+    """Return combined data for the user's Today dashboard."""
+
+    user = request.user
+
+    # Mood + avatar
+    mood = user.profile.current_mood
+    avatar = get_mood_avatar(mood)
+
+    # Active donkey challenge
+    challenge_obj = (
+        DonkeyChallenge.objects.filter(
+            user=user,
+            is_completed=False,
+            is_failed=False,
+            expires_at__gt=timezone.now(),
+        )
+        .order_by("-issued_at")
+        .first()
+    )
+    challenge = (
+        {
+            "text": challenge_obj.challenge_text,
+            "expires_at": challenge_obj.expires_at.isoformat(),
+        }
+        if challenge_obj
+        else None
+    )
+
+    # Workout and meal plans
+    try:
+        workout_data = ai_generate_workout_plan(goal="", activity_types=None, tone="supportive")
+        workout_plan = workout_data.get("plan")
+    except Exception:  # pragma: no cover - network errors
+        workout_plan = None
+
+    try:
+        meal_plan = ai_generate_meal_plan(goal="", tone="supportive", mood=mood)
+    except Exception:  # pragma: no cover - network errors
+        meal_plan = None
+
+    # Recap string
+    recap = generate_daily_digest(user)
+
+    return Response(
+        {
+            "mood": mood,
+            "mood_avatar": avatar,
+            "challenge": challenge,
+            "workout_plan": workout_plan,
+            "meal_plan": meal_plan,
+            "azz_recap": recap,
         }
     )

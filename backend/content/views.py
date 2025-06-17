@@ -14,13 +14,19 @@ from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
 
 
 class GeneratedImageViewSet(viewsets.ModelViewSet):
+    """CRUD operations for generated images."""
+
     queryset = GeneratedImage.objects.all()
     serializer_class = GeneratedImageSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
+    """Manage links to memes shared on social platforms."""
+
     queryset = SocialPost.objects.all()
     serializer_class = SocialPostSerializer
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])

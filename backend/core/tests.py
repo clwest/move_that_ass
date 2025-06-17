@@ -1,5 +1,28 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+
+class AuthAPITest(APITestCase):
+    def test_register_and_login(self):
+        # Register new user
+        response = self.client.post(
+            "/api/core/register/",
+            {"username": "newbie", "password": "pass"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 201)
+
+        # Login and get token
+        response = self.client.post(
+            "/api/core/login/",
+            {"username": "newbie", "password": "pass"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("token", response.data)
+        token = response.data["token"]
+        self.assertTrue(Token.objects.filter(key=token).exists())
 
 class MovementGoalAPITest(APITestCase):
     def setUp(self):

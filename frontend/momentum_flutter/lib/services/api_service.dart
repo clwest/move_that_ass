@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/today_dashboard.dart';
 import '../models/badge.dart';
@@ -8,16 +8,16 @@ import '../models/meme.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
+  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token') ?? '';
+    final token = await _storage.read(key: 'auth_token') ?? '';
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/dashboard-today/'),
       headers: {
         'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
       },
     );
 
@@ -30,14 +30,13 @@ class ApiService {
   }
 
   static Future<List<Badge>> fetchBadges() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token') ?? '';
+    final token = await _storage.read(key: 'auth_token') ?? '';
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/badges/'),
       headers: {
         'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
       },
     );
 
@@ -50,14 +49,13 @@ class ApiService {
   }
 
   static Future<Meme> generateMeme({String tone = 'funny'}) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token') ?? '';
+    final token = await _storage.read(key: 'auth_token') ?? '';
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/content/generate-meme/'),
       headers: {
         'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
       },
       body: json.encode({'tone': tone}),
     );
@@ -68,5 +66,31 @@ class ApiService {
 
     final data = json.decode(response.body) as Map<String, dynamic>;
     return Meme.fromJson(data);
+  }
+
+  static Future<void> register(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/register/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'username': username, 'password': password}),
+    );
+    if (response.statusCode != 201) {
+      throw Exception('Failed to register');
+    }
+  }
+
+  static Future<String> login(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/login/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'username': username, 'password': password}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to login');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final token = data['token'] as String;
+    await _storage.write(key: 'auth_token', value: token);
+    return token;
   }
 }

@@ -1,8 +1,11 @@
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import datetime, time, timedelta
@@ -81,6 +84,30 @@ class ShamePostViewSet(viewsets.ModelViewSet):
 class PaddleLogViewSet(viewsets.ModelViewSet):
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register_user(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if not username or not password:
+        return Response({"error": "Username and password required"}, status=400)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Username already exists"}, status=400)
+
+    user = User.objects.create_user(username=username, password=password)
+    Token.objects.create(user=user)
+    return Response({"message": "User created"}, status=status.HTTP_201_CREATED)
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data["token"])
+        return Response({"token": token.key})
 
 
 @api_view(["POST"])

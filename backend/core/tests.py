@@ -45,3 +45,28 @@ class WorkoutPlanAPITest(APITestCase):
         self.assertIn("plan", response.data)
         self.assertEqual(response.data["plan"], ["Day 1: test"])
 
+
+class MealPlanAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="eater", password="pass")
+
+    def test_generate_meal_plan(self):
+        self.client.login(username="eater", password="pass")
+        payload = {"goal": "bulk", "tone": "donkey", "mood": "ashamed"}
+
+        from unittest.mock import patch
+
+        with patch("core.views.ai_generate_meal_plan") as mock_gen:
+            mock_gen.return_value = {"breakfast": "oats", "lunch": "salad", "dinner": "steak", "snacks": ["nuts"]}
+            response = self.client.post(
+                "/api/core/generate-meal-plan/",
+                payload,
+                format="json",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("breakfast", response.data)
+        self.assertIn("lunch", response.data)
+        self.assertIn("dinner", response.data)
+        self.assertIn("snacks", response.data)
+

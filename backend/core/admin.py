@@ -8,6 +8,7 @@ from .models import (
     VoiceJournal,
     Herd,
     Badge,
+    BadgeShoutout,
 )
 
 
@@ -50,3 +51,8 @@ class HerdAdmin(admin.ModelAdmin):
 @admin.register(Badge)
 class BadgeAdmin(admin.ModelAdmin):
     list_display = ("code", "name", "is_active")
+
+
+@admin.register(BadgeShoutout)
+class BadgeShoutoutAdmin(admin.ModelAdmin):
+    list_display = ("user", "badge", "herd", "created_at")

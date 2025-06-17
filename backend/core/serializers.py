@@ -8,6 +8,7 @@ from .models import (
     VoiceJournal,
     Herd,
     Badge,
+    BadgeShoutout,
 )
 
 
@@ -72,4 +73,10 @@ class HerdSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Herd
+        fields = "__all__"
+
+
+class BadgeShoutoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BadgeShoutout
         fields = "__all__"

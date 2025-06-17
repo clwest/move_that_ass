@@ -33,16 +33,14 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.donkeyGold,
           foregroundColor: Colors.black,
-          // Ensure consistent interpolation by matching Flutter defaults
-          textStyle:
-              const TextStyle(fontWeight: FontWeight.bold, inherit: true),
+          textStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.donkeyGold,
           side: BorderSide(color: AppColors.donkeyGold),
-          textStyle: const TextStyle(inherit: true),
+          textStyle: const TextStyle(),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

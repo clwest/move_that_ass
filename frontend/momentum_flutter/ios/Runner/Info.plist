@@ -43,7 +43,13 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+        <key>UIApplicationSupportsIndirectInputEvents</key>
+        <true/>
+        <key>NSLocalNetworkUsageDescription</key>
+        <string>Allow Flutter tools on the local machine to connect for debugging.</string>
+        <key>NSBonjourServices</key>
+        <array>
+                <string>_dartobservatory._tcp</string>
+        </array>
 </dict>
 </plist>

@@ -28,10 +28,17 @@ class _GoalSetupPageState extends State<GoalSetupPage> {
   }
 
   @override
+  void dispose() {
+    _goalController.dispose();
+    _targetController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Set Daily Goal')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _goalFormKey,

@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_secure_storage (6.0.0):
+    - Flutter
   - gallery_saver (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -15,6 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - gallery_saver (from `.symlinks/plugins/gallery_saver/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -24,6 +27,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   gallery_saver:
     :path: ".symlinks/plugins/gallery_saver/ios"
   path_provider_foundation:
@@ -37,6 +42,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   gallery_saver: 9fc173c9f4fcc48af53b2a9ebea1b643255be542
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5

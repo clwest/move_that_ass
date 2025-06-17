@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'token_service.dart';
 
 import '../models/today_dashboard.dart';
 import '../models/badge.dart';
@@ -8,10 +8,9 @@ import '../models/meme.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
-  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
-    final token = await _storage.read(key: 'auth_token') ?? '';
+    final token = await TokenService.getToken() ?? '';
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/dashboard-today/'),
@@ -30,7 +29,7 @@ class ApiService {
   }
 
   static Future<List<Badge>> fetchBadges() async {
-    final token = await _storage.read(key: 'auth_token') ?? '';
+    final token = await TokenService.getToken() ?? '';
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/badges/'),
@@ -49,7 +48,7 @@ class ApiService {
   }
 
   static Future<Meme> generateMeme({String tone = 'funny'}) async {
-    final token = await _storage.read(key: 'auth_token') ?? '';
+    final token = await TokenService.getToken() ?? '';
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/content/generate-meme/'),
@@ -90,7 +89,7 @@ class ApiService {
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
     final token = data['token'] as String;
-    await _storage.write(key: 'auth_token', value: token);
+    await TokenService.saveToken(token);
     return token;
   }
 }

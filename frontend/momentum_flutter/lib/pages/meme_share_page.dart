@@ -67,6 +67,7 @@ class MemeSharePage extends StatelessWidget {
           const SizedBox(height: 20),
         ],
       ),
-    );
+    ),
+  );
   }
 }

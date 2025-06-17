@@ -98,4 +98,4 @@ Codex should:
 
 ---
 
-*This app doesn’t just move pixels. It moves asses.* 🫏🔥
+*This app doesn’t just move pixels. It moves azzes.* 🫏🔥

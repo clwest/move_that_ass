@@ -1,6 +1,6 @@
 ### 📺 YouTube Video (3–5 min)
 
-- Hook: "This app insults me with AI memes if I don’t move my ass."
+ - Hook: "This app insults me with AI memes if I don’t move my azz."
 - Quick demo of shame flow
 - How it works: daily check → meme → Post
 - Why it matters to you (real talk)
@@ -33,9 +33,9 @@ Choose one for weekly release:
 
 You left the car business. You’ve been rebuilding momentum.  
 You hate social media, but you love a good roast.  
-This app is your public reboot — the unpolished, all-heart, AI-assisted redemption arc.  
+This app is your public reboot — the unpolished, all-heart, AI-azzisted redemption arc.
 And it starts now.
 
 ---
 
-🫏 Move that ass, Chris.
+🫏 Move that azz, Chris.

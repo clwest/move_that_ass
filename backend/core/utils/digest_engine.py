@@ -43,7 +43,7 @@ def generate_daily_digest(user):
     if tone == "ashamed":
         lines.append("The donkey is not mad. Just disappointed. Again.")
     elif tone == "positive":
-        lines.append("You moved your ass. The donkey is proud. \U0001F9AF\U0001F525")
+        lines.append("You moved your azz. The donkey is proud. \U0001F9AF\U0001F525")
     else:
         lines.append("Today was… a day. The donkey remains neutral.")
 

@@ -56,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Register')),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
               const SizedBox(height: 12),
               Text(
                 _error!,
-                style: const TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red, inherit: true),
               ),
             ],
             const SizedBox(height: 20),

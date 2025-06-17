@@ -3,7 +3,10 @@ from dotenv import load_dotenv
 import json
 
 load_dotenv()
-client = OpenAI()
+try:
+    client = OpenAI()
+except Exception:
+    client = None
 
 
 def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = None):
@@ -25,19 +28,27 @@ def generate_meal_plan(goal: str, tone: str = "supportive", mood: str | None = N
         "Return JSON with keys breakfast, lunch, dinner, and snacks (list)."
     )
 
-    response = client.chat.completions.create(
-        model="gpt-4-0125-preview",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a nutrition coach crafting concise meal plans.",
-            },
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.8,
-    )
+    if client is None:
+        text = json.dumps({
+            "breakfast": "oatmeal",
+            "lunch": "salad",
+            "dinner": "veggies",
+            "snacks": ["fruit"],
+        })
+    else:
+        response = client.chat.completions.create(
+            model="gpt-4-0125-preview",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a nutrition coach crafting concise meal plans.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.8,
+        )
 
-    text = response.choices[0].message.content.strip()
+        text = response.choices[0].message.content.strip()
     try:
         return json.loads(text)
     except Exception:

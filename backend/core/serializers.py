@@ -9,6 +9,7 @@ from .models import (
     Herd,
     Badge,
     BadgeShoutout,
+    WorkoutLog,
 )
 
 
@@ -80,3 +81,13 @@ class BadgeShoutoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = BadgeShoutout
         fields = "__all__"
+
+
+class WorkoutLogSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = WorkoutLog
+        fields = "__all__"
+        read_only_fields = ["user", "created_at"]

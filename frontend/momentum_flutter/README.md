@@ -14,3 +14,15 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Configuration
+
+The app reads the API base URL from the `API_BASE_URL` environment variable.
+When running locally you can override it with:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://localhost:8000
+```
+
+If you programmatically embed the app you may also supply a `baseUrl` argument
+to `main()` which will take precedence.

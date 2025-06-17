@@ -203,3 +203,21 @@ class HerdPost(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} {self.type} {self.created_at}"
+
+
+class DailyGoal(models.Model):
+    """Simple daily goal entry for quick intent tracking."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    goal = models.CharField(max_length=50)
+    target = models.IntegerField(default=1)
+    type = models.CharField(max_length=20, default="daily")
+    date = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date"]
+        unique_together = ("user", "date", "goal")
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.user.username} {self.goal} {self.target}"

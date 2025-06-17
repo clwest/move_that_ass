@@ -41,6 +41,7 @@ from .models import (
     MovementGoal,
     DonkeyChallenge,
     HerdPost,
+    DailyGoal,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -57,6 +58,7 @@ from .serializers import (
     MovementGoalSerializer,
     DonkeyChallengeSerializer,
     HerdPostSerializer,
+    DailyGoalSerializer,
 )
 
 
@@ -413,6 +415,25 @@ def create_movement_goal(request):
 
     goal = serializer.save(user=request.user, is_completed=False)
     return Response(MovementGoalSerializer(goal).data)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def daily_goal_view(request):
+    """Retrieve or create a simple daily goal."""
+
+    if request.method == "POST":
+        serializer = DailyGoalSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+        goal = serializer.save(user=request.user)
+        return Response(DailyGoalSerializer(goal).data)
+
+    today = timezone.now().date()
+    goal = DailyGoal.objects.filter(user=request.user, date=today).first()
+    if not goal:
+        return Response({})
+    return Response(DailyGoalSerializer(goal).data)
 
 
 @api_view(["POST"])

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../models/today_dashboard.dart';
-import '../models/daily_goal.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
 import 'herd_feed_page.dart';
@@ -10,7 +9,6 @@ import 'profile_page.dart';
 import 'meme_share_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
-import 'meme_share_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -55,6 +53,14 @@ class _TodayPageState extends State<TodayPage> {
       );
     });
 
+  }
+
+  Future<void> _loadGoal() async {
+    final data = await ApiService.fetchDailyGoal();
+    if (!mounted) return;
+    setState(() {
+      _dailyGoal = data;
+    });
   }
 
   Future<void> _refresh() async {
@@ -340,45 +346,4 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
-  Future<void> _saveGoal() async {
-    final goalText = _goalController.text.trim();
-    final target = int.tryParse(_targetController.text) ?? 1;
-    if (goalText.isEmpty) return;
-    await ApiService.setDailyGoal(goalText, target);
-    await _loadGoal();
-  }
-
-  Widget _buildGoalCard() {
-    if (_dailyGoal != null) {
-      return Card(
-        child: ListTile(
-          title: Text("Today's Goal: ${_dailyGoal!.goal}"),
-          subtitle: Text('Target: ${_dailyGoal!.target}'),
-        ),
-      );
-    }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _goalController,
-              decoration: const InputDecoration(labelText: 'Activity'),
-            ),
-            TextField(
-              controller: _targetController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Target'),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _saveGoal,
-              child: const Text('Save Goal'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

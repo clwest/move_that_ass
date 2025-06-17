@@ -97,8 +97,8 @@ class MealPlanAPITest(APITestCase):
 class DonkeyChallengeAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="challenger", password="pass")
-        from core.models import Profile
-        Profile.objects.create(user=self.user, display_name="Challenger")
+        self.user.profile.display_name = "Challenger"
+        self.user.profile.save()
 
     def test_generate_challenge(self):
         from django.utils import timezone
@@ -139,8 +139,8 @@ class DonkeyChallengeAPITest(APITestCase):
 class DashboardTodayAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="dasher", password="pass")
-        from core.models import Profile
-        Profile.objects.create(user=self.user, display_name="Dasher")
+        self.user.profile.display_name = "Dasher"
+        self.user.profile.save()
 
     def test_today_dashboard(self):
         from django.utils import timezone
@@ -210,8 +210,9 @@ class DashboardTodayAPITest(APITestCase):
 class BadgeListAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="badger", password="pass")
-        from core.models import Profile, Badge
-        Profile.objects.create(user=self.user, display_name="Badger")
+        from core.models import Badge
+        self.user.profile.display_name = "Badger"
+        self.user.profile.save()
         self.badge1 = Badge.objects.create(
             code="test1", name="Test One", emoji="1", description="d"
         )
@@ -236,9 +237,10 @@ class BadgeListAPITest(APITestCase):
 class ProfileAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="profilr", password="pass")
-        from core.models import Profile, Badge, Herd
+        from core.models import Badge, Herd
 
-        Profile.objects.create(user=self.user, display_name="Donk")
+        self.user.profile.display_name = "Donk"
+        self.user.profile.save()
         self.badge = Badge.objects.create(code="b", name="B", emoji="d", description="d")
         self.user.profile.badges.add(self.badge)
         herd = Herd.objects.create(

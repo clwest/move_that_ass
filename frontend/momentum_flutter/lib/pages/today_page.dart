@@ -201,9 +201,20 @@ class _TodayPageState extends State<TodayPage> {
             else
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: mealPlan.entries
-                    .map((e) => Text('🍽️ ${e.key}: ${e.value}'))
-                    .toList(),
+                children: [
+                  if (mealPlan['breakfast'] != null)
+                    Text('🍳 Breakfast: ${mealPlan['breakfast']}'),
+                  if (mealPlan['lunch'] != null)
+                    Text('🥪 Lunch: ${mealPlan['lunch']}'),
+                  if (mealPlan['dinner'] != null)
+                    Text('🍜 Dinner: ${mealPlan['dinner']}'),
+                  if (mealPlan['snacks'] != null) ...[
+                    const Text('🍏 Snacks:'),
+                    ...List<Widget>.from(
+                      (mealPlan['snacks'] as List).map((s) => Text('• $s')),
+                    ),
+                  ],
+                ],
               ),
           ],
         ),

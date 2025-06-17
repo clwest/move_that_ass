@@ -32,6 +32,14 @@ class ApiService {
 
   static Future<List<Badge>> fetchBadges() async {
     final token = await TokenService.getToken() ?? '';
+    // ensure badges are evaluated on the server
+    await http.get(
+      Uri.parse('$baseUrl/api/core/check-badges/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+    );
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/badges/'),

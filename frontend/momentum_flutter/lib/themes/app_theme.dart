@@ -38,6 +38,13 @@ class AppTheme {
               const TextStyle(fontWeight: FontWeight.bold, inherit: true),
         ),
       ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.donkeyGold,
+          side: BorderSide(color: AppColors.donkeyGold),
+          textStyle: const TextStyle(inherit: true),
+        ),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.donkeyCard,

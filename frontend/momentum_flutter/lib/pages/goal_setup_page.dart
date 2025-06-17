@@ -11,6 +11,7 @@ class GoalSetupPage extends StatefulWidget {
 }
 
 class _GoalSetupPageState extends State<GoalSetupPage> {
+  final GlobalKey<FormState> _goalFormKey = GlobalKey<FormState>();
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetController = TextEditingController(text: '1');
 
@@ -32,20 +33,23 @@ class _GoalSetupPageState extends State<GoalSetupPage> {
       appBar: AppBar(title: const Text('Set Daily Goal')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _goalController,
-              decoration: const InputDecoration(labelText: 'Activity'),
-            ),
-            TextField(
-              controller: _targetController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Target'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: _save, child: const Text('Save Goal')),
-          ],
+        child: Form(
+          key: _goalFormKey,
+          child: Column(
+            children: [
+              TextField(
+                controller: _goalController,
+                decoration: const InputDecoration(labelText: 'Activity'),
+              ),
+              TextField(
+                controller: _targetController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Target'),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(onPressed: _save, child: const Text('Save Goal')),
+            ],
+          ),
         ),
       ),
     );

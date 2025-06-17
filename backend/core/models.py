@@ -19,6 +19,7 @@ class Badge(models.Model):
 
 
 class Profile(models.Model):
+    """User profile linked to the Django auth user."""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     display_name = models.CharField(max_length=64)
     bio = models.TextField(blank=True)
@@ -35,6 +36,7 @@ class Profile(models.Model):
 
 
 class DailyLockout(models.Model):
+    """Tracks whether the user completed required activity for the day."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     is_unlocked = models.BooleanField(default=False)
@@ -50,6 +52,7 @@ class DailyLockout(models.Model):
 
 
 class ShamePost(models.Model):
+    """Donkey meme posted when a user misses a requirement."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     image_url = models.URLField()
@@ -65,6 +68,7 @@ class ShamePost(models.Model):
 
 
 class PaddleLog(models.Model):
+    """Log of paddle sessions with optional mood and photo."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     location = models.CharField(max_length=128, blank=True)
@@ -80,6 +84,7 @@ class PaddleLog(models.Model):
 
 
 class VoiceJournal(models.Model):
+    """Uploaded audio journal with transcript and summary."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     audio_file = models.FileField(upload_to="voice_journals/")
     transcript = models.TextField(blank=True)
@@ -96,6 +101,7 @@ class VoiceJournal(models.Model):
 
 
 class Herd(models.Model):
+    """Group of users that share memes and badge shoutouts."""
     name = models.CharField(max_length=100)
     created_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="created_herds"
@@ -129,6 +135,7 @@ class BadgeShoutout(models.Model):
 
 
 class WorkoutLog(models.Model):
+    """Record of a user's workout session details."""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     activity_type = models.CharField(max_length=50)
     duration_minutes = models.IntegerField()

@@ -6,7 +6,8 @@ from .serializers import MovementChallengeSerializer, MovementSessionSerializer
 
 
 class MovementChallengeViewSet(viewsets.ModelViewSet):
-    """API for creating and updating movement challenges."""
+
+    """CRUD API for workout challenges."""
 
     queryset = MovementChallenge.objects.all()
     serializer_class = MovementChallengeSerializer
@@ -14,7 +15,8 @@ class MovementChallengeViewSet(viewsets.ModelViewSet):
 
 
 class MovementSessionViewSet(viewsets.ModelViewSet):
-    """Track a user's individual movement sessions."""
+
+    """Manage individual movement session logs."""
 
     queryset = MovementSession.objects.all()
     serializer_class = MovementSessionSerializer

@@ -19,7 +19,8 @@ except Exception:  # pragma: no cover - fallback when Celery missing
 
 
 class GeneratedImageViewSet(viewsets.ModelViewSet):
-    """CRUD operations for generated images."""
+
+    """ViewSet for storing generated images."""
 
     queryset = GeneratedImage.objects.all()
     serializer_class = GeneratedImageSerializer
@@ -27,7 +28,8 @@ class GeneratedImageViewSet(viewsets.ModelViewSet):
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
-    """Manage links to memes shared on social platforms."""
+
+    """CRUD API for social posts created by the app."""
 
     queryset = SocialPost.objects.all()
     serializer_class = SocialPostSerializer

@@ -67,30 +67,35 @@ def generate_invite_code():
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """CRUD operations for Django auth users."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
+    """Manage Profile objects for users."""
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
 
 class DailyLockoutViewSet(viewsets.ModelViewSet):
+    """API for DailyLockout records."""
     queryset = DailyLockout.objects.all()
     serializer_class = DailyLockoutSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ShamePostViewSet(viewsets.ModelViewSet):
+    """ViewSet for shame memes posted about a user."""
     queryset = ShamePost.objects.all()
     serializer_class = ShamePostSerializer
     permission_classes = [IsAuthenticated]
 
 
 class PaddleLogViewSet(viewsets.ModelViewSet):
+    """CRUD endpoints for paddle session logs."""
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
     permission_classes = [IsAuthenticated]
@@ -114,6 +119,7 @@ def register_user(request):
 
 
 class CustomAuthToken(ObtainAuthToken):
+    """Return an auth token for a given user."""
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data["token"])

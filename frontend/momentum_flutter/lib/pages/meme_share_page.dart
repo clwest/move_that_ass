@@ -11,8 +11,21 @@ class MemeSharePage extends StatelessWidget {
 
   const MemeSharePage({required this.meme, Key? key}) : super(key: key);
 
-  Future<void> saveMemeToDevice(Meme meme) async {
-    await GallerySaver.saveImage(meme.imageUrl);
+  Future<void> saveMemeToDevice(BuildContext context, Meme meme) async {
+    try {
+      final bool? result = await GallerySaver.saveImage(meme.imageUrl);
+      if (!context.mounted) return;
+      final message =
+          result == true ? 'Meme saved to gallery! 🫏' : 'Failed to save meme.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error saving meme to gallery.')),
+      );
+    }
   }
 
   void shareMeme(Meme meme) {
@@ -44,7 +57,7 @@ class MemeSharePage extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () => saveMemeToDevice(meme),
+            onPressed: () => saveMemeToDevice(context, meme),
             child: const Text('💾 Save to Device'),
           ),
           ElevatedButton(

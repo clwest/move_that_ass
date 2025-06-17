@@ -13,9 +13,8 @@ import 'config.dart';
 
 
 void main({String? baseUrl}) {
-  if (baseUrl != null) {
-    AppConfig.baseUrl = baseUrl;
-  }
+  // Initialize global configuration.
+  AppConfig(baseUrl: baseUrl);
   runApp(const MyApp());
 }
 

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'pages/today_page.dart';
 import 'pages/login_page.dart';
+import 'pages/profile_page.dart';
 import 'themes/app_theme.dart';
 import 'services/token_service.dart';
+import 'services/api_service.dart';
 
 
 void main() {
@@ -15,23 +17,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-      future: TokenService.isAuthenticated(),
+    return FutureBuilder<Widget>(
+      future: _determineHome(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData) {
           return const MaterialApp(
             home: Scaffold(
               body: Center(child: CircularProgressIndicator()),
             ),
           );
         }
-        final loggedIn = snapshot.data == true;
         return MaterialApp(
           title: 'MoveYourAzz',
           theme: AppTheme.theme,
-          home: loggedIn ? const TodayPage() : const LoginPage(),
+          home: snapshot.data!,
         );
       },
     );
+  }
+
+  Future<Widget> _determineHome() async {
+    final loggedIn = await TokenService.isAuthenticated();
+    if (!loggedIn) return const LoginPage();
+
+    final profile = await ApiService.fetchProfile();
+    if (profile.displayName.isEmpty) return const ProfilePage();
+
+    final goal = await ApiService.fetchDailyGoal();
+    if (goal == null) return const TodayPage();
+
+    return const TodayPage();
   }
 }

@@ -46,6 +46,6 @@ def generate_daily_digest(user):
     elif tone == "positive":
         lines.append("You moved your azz. The donkey is proud. 🦯🔥")
     else:
-        lines.append("Today was… a day. The donkey remains neutral.")
+        lines.append("Today was... a day. The donkey remains neutral.")
 
     return "\n".join(lines)

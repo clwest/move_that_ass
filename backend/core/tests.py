@@ -42,6 +42,19 @@ class MovementGoalAPITest(APITestCase):
         self.assertEqual(response.data["target_sessions"], 3)
 
 
+class DailyGoalAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="goalie", password="pass")
+
+    def test_set_daily_goal(self):
+        self.client.login(username="goalie", password="pass")
+        payload = {"goal": "journal", "target": 1, "goal_type": "daily"}
+        response = self.client.post("/api/core/daily-goal/", payload, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["goal"], "journal")
+        self.assertEqual(response.data["target"], 1)
+
+
 class WorkoutPlanAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="planner", password="pass")

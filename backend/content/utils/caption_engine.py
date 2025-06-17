@@ -9,5 +9,5 @@ def generate_caption(description: str, tone: str = "funny") -> str:
     elif tone == "savage":
         return f"{description}? This is why the donkey weeps."
     elif tone == "encouraging":
-        return f"You showed up. That’s more than most. ({description})"
+        return f"You showed up. That's more than most. ({description})"
     return f"{description}, unfiltered."

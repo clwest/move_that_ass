@@ -13,6 +13,7 @@ from .models import (
     MovementGoal,
     DonkeyChallenge,
     HerdPost,
+    DailyGoal,
 )
 
 
@@ -129,3 +130,13 @@ class HerdPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = HerdPost
         fields = "__all__"
+
+
+class DailyGoalSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_at = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = DailyGoal
+        fields = "__all__"
+        read_only_fields = ["user", "created_at"]

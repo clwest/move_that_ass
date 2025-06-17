@@ -216,7 +216,10 @@ class ApiService {
   static Future<String> login(String username, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/core/login/'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
       body: json.encode({'username': username, 'password': password}),
     );
     if (response.statusCode != 200) {

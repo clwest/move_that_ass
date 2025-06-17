@@ -5,6 +5,7 @@ import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
 import 'herd_feed_page.dart';
+import 'profile_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
 
@@ -63,6 +64,16 @@ class _TodayPageState extends State<TodayPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const HerdFeedPage(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ProfilePage(),
                 ),
               );
             },

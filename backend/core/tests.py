@@ -232,3 +232,38 @@ class BadgeListAPITest(APITestCase):
         self.assertTrue(earned_map["test1"])  # earned
         self.assertFalse(earned_map["test2"])  # not earned
 
+
+class ProfileAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="profilr", password="pass")
+        from core.models import Profile, Badge, Herd
+
+        Profile.objects.create(user=self.user, display_name="Donk")
+        self.badge = Badge.objects.create(code="b", name="B", emoji="d", description="d")
+        self.user.profile.badges.add(self.badge)
+        herd = Herd.objects.create(
+            name="Donk Dynasty",
+            created_by=self.user,
+            tone="mixed",
+            invite_code="abc123",
+        )
+        herd.members.add(self.user)
+
+    def test_get_profile(self):
+        self.client.login(username="profilr", password="pass")
+        response = self.client.get("/api/core/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["username"], "profilr")
+        self.assertEqual(response.data["display_name"], "Donk")
+        self.assertEqual(response.data["herd_name"], "Donk Dynasty")
+        self.assertEqual(response.data["herd_size"], 1)
+        self.assertEqual(response.data["badges"], 1)
+        self.assertIn("mood_avatar", response.data)
+
+    def test_update_display_name(self):
+        self.client.login(username="profilr", password="pass")
+        response = self.client.put("/api/core/profile/", {"display_name": "New"}, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.profile.display_name, "New")
+

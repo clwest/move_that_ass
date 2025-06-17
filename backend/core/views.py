@@ -22,6 +22,7 @@ from .utils.mood_engine import evaluate_user_mood
 from .utils.mood_avatar import get_mood_avatar
 from .utils.badge_engine import evaluate_badges
 
+
 from .utils.herdmood_engine import evaluate_herd_mood
 
 import uuid
@@ -576,5 +577,37 @@ def get_today_dashboard(request):
             "workout_plan": workout_plan,
             "meal_plan": meal_plan,
             "azz_recap": recap,
+        }
+    )
+
+
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def profile_view(request):
+    """Return or update the authenticated user's profile."""
+
+    profile = request.user.profile
+    if request.method == "PUT":
+        display_name = request.data.get("display_name")
+        if display_name:
+            profile.display_name = display_name
+            profile.save()
+
+    herd = request.user.herds.first()
+    herd_name = herd.name if herd else None
+    herd_size = herd.members.count() if herd else 0
+
+    mood = profile.current_mood
+    avatar = get_mood_avatar(mood)
+
+    return Response(
+        {
+            "username": request.user.username,
+            "display_name": profile.display_name,
+            "mood": mood,
+            "mood_avatar": avatar,
+            "herd_name": herd_name,
+            "herd_size": herd_size,
+            "badges": profile.badges.count(),
         }
     )

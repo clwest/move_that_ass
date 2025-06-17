@@ -13,6 +13,7 @@ from .models import (
     MovementGoal,
     DonkeyChallenge,
     HerdPost,
+    DailyGoal,
 )
 
 
@@ -104,3 +105,8 @@ class DonkeyChallengeAdmin(admin.ModelAdmin):
 @admin.register(HerdPost)
 class HerdPostAdmin(admin.ModelAdmin):
     list_display = ("user", "type", "created_at")
+
+
+@admin.register(DailyGoal)
+class DailyGoalAdmin(admin.ModelAdmin):
+    list_display = ("user", "goal", "target", "type", "date")

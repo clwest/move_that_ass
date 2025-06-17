@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
 import 'badge_grid_page.dart';
+import 'meme_share_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -39,6 +40,18 @@ class _TodayPageState extends State<TodayPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const BadgeGridPage(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.image),
+            onPressed: () async {
+              final meme = await ApiService.generateMeme();
+              if (!mounted) return;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MemeSharePage(meme: meme),
                 ),
               );
             },

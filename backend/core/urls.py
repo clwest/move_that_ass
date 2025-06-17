@@ -26,7 +26,8 @@ from .views import (
     generate_meal_plan_view,
     generate_donkey_challenge,
     get_today_dashboard,
-
+    register_user,
+    CustomAuthToken,
 )
 
 router = DefaultRouter()
@@ -37,6 +38,8 @@ router.register(r"shame-posts", ShamePostViewSet)
 router.register(r"paddle-logs", PaddleLogViewSet)
 
 urlpatterns = router.urls + [
+    path("register/", register_user),
+    path("login/", CustomAuthToken.as_view()),
     path("trigger-shame/", trigger_shame_view),
     path("upload-voice/", upload_voice_journal),
     path("create-herd/", create_herd),

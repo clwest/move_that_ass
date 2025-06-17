@@ -1,101 +1,146 @@
 # AGENTS.md — Project Codex Blueprint
 
-## 🚀 Project Name: MoveThatAss
+## 🚀 Project Name: MoveYourAzz
 
-A full-stack wellness app that uses AI, humor, and social shaming to help creators and coders get out of their chair and into the world.
+A full-stack mobile wellness app that uses AI, memes, and group accountability to help coders and creatives get out of their chair and into the world.
 
 This app combines:
-- Movement goals (tracked via sessions, paddle logs, GPS)
-- Creative prompts (generate AI art daily)
-- Habit incentives and punishments
-- Meme-worthy donkey content when goals are missed
+- Daily movement tracking
+- AI-generated plans and motivation
+- Meme-based punishment and badge-based rewards
+- Group-based herds and public “donkey shame” accountability
 
 ---
 
 ## 💻 Stack
 
-| Layer | Tech |
-|-------|------|
-| Backend | Django 5 + DRF |
-| Frontend | Flutter 3 |
-| Database | Postgres |
-| AI | OpenAI or Replicate (for images) |
-| Integrations | Twitter/X, Bluesky, Instagram (auto-posting) |
-| Optional | Celery, Redis, Firebase, Google Fit/HealthKit |
+| Layer       | Tech                                 |
+|-------------|--------------------------------------|
+| Backend     | Django 5 + DRF                       |
+| Frontend    | Flutter 3                            |
+| Database    | Postgres                             |
+| AI          | OpenAI (GPT + Whisper), ElevenLabs   |
+| Media Gen   | Replicate (images), GIPHY (GIFs)     |
+| Tasks       | Celery + Redis (not yet wired)       |
+| Storage     | Local for dev, optional S3 prod      |
+| Integrations| Twitter/X, Bluesky, Instagram        |
 
 ---
 
 ## 📦 Django App Modules
 
-| App | Purpose |
-|-----|---------|
-| `core` | Users, profiles, streaks, paddleboarding, movement lockouts |
-| `prompts` | AI prompt generation + user submissions |
-| `movement` | Movement challenges and sessions |
-| `content` | Generated images and social post logs |
-| `shame` | Donkey meme generation and public roast automation |
+| App         | Purpose |
+|-------------|---------|
+| `core`      | Profiles, streaks, daily lockouts, goals, herds |
+| `prompts`   | AI prompts, meme caption generation |
+| `movement`  | Workout sessions, logs, mood states |
+| `content`   | Meme & image generation, caption APIs |
+| `shame`     | Donkey meme builder + herd-feed sharing |
 
 ---
 
 ## 🔐 Core Mechanics
 
-### Lockout System
-- User must complete X minutes of movement per day
-- If not completed: creative tools are locked, and shame post is triggered
+### 🔒 Lockout System
+- Each day the user must log physical activity (via paddle, workout, or streak)
+- Failure to meet requirement → donkey meme is posted to shame them
 
-### Shame Engine
-- AI generates “shameful donkey” image + caption
-- Auto-posts to Twitter, Bluesky, Instagram
-- Users can review shame history in-app
+### 🫏 Shame Engine
+- Uses OpenAI + GIPHY to generate a meme
+- Captioned with roast tone
+- Posts to Herd feed and optionally social media
+- Triggers badge system, mood updates
 
-### Paddleboarding Bonus
-- Logs paddle sessions with location, mood, optional photo
-- Unlocks reward screens and badge incentives
-- Special “Paddle Vibes” content released post-session
+### 🛶 Paddle Sessions
+- Tracks paddle logs, including GPS + mood
+- Optionally uploads photos
+- Unlocks rewards and special “Paddle Vibes” content
+
+### 🧠 Voice Journals
+- Users can upload voice logs (transcribed via Whisper)
+- Summarized and tagged with mood
+- Optional playback via ElevenLabs TTS
+
+### 🎯 Goals + Recaps
+- Users can set a short daily goal (e.g. journal once)
+- Recap page summarizes mood, activity, and AI commentary
+- Weekly recap planned for v1.1
 
 ---
 
-## 🧱 Models in Core App
+## 🧱 Notable Models
 
-- `Profile`: user info, streaks, daily stats
-- `DailyLockout`: tracks required movement + unlock status
-- `ShamePost`: stores donkey memes + public post logs
-- `PaddleLog`: records paddle sessions
-- `Prompt`, `PromptResponse`: creative flows
-- `GeneratedImage`, `SocialPost`: AI outputs + shares
+- `Profile`: user info, streaks, mood, display name
+- `DailyLockout`: tracks per-day unlock status
+- `MovementSession`: duration, type, success
+- `ShamePost`: meme shared due to missed goal
+- `PaddleLog`: GPS + paddle session stats
+- `GeneratedImage`, `SocialPost`, `VoiceJournal`
+- `Badge`, `BadgeShoutout`: unlocked awards
+- `Herd`, `HerdPost`: group feed and invites
+- `DailyGoal`, `WorkoutLog`: simple movement goals
+- `DonkeyChallenge`: AI-generated tasks
 
 ---
 
 ## 📱 App Screens (Flutter)
 
-1. **Dashboard**: today’s prompt + lockout status
-2. **Move Tracker**: walk or paddle log
-3. **Image Gen**: creative tool (locked until unlocked)
-4. **Social Share**: post preview + auto-post
-5. **Shame Feed**: view past donkey posts (and cry)
+1. `TodayPage`: Mood, recap, plan, meme gen, goal
+2. `MemeSharePage`: Meme preview, save, share to herd
+3. `BadgeGridPage`: Earned badges + filter
+4. `HerdFeedPage`: Shared memes, shoutouts
+5. `ProfilePage`: Display name, mood, logout
+6. `Login/Register`: Auth + token handling
+7. `VoiceJournalPage` (TBD): Upload audio, playback
 
 ---
 
-## 🎯 Mission
+## 🧪 Missing or Incomplete
 
-Chris is building this app to:
-- Lose 15+ lbs
-- Gain confidence
-- Paddle more often (especially around someone 👀)
-- Build a shareable brand without doomscrolling
-- Launch something complete — fast
+- Celery not wired → all AI runs blocking in production
+- `.env` file required but not present — sensitive keys exposed
+- ViewSets missing permission classes in `core/views.py`
+- GoalSetupPage exists but is never shown
+- VoiceJournal not wired into UI
+- Meme saving crashes on iOS if permissions not granted
 
 ---
 
-## ✅ Codex Guidelines
+## 📝 Codex Guidelines
 
 Codex should:
-- Scaffold all models with migrations + serializers + admin config
-- Wire up REST APIs per app (`api/core/`, `api/prompts/`, etc.)
-- Avoid hardcoding credentials or API tokens
-- Prioritize health → humor → creativity → share flow
-- Build toward MVP readiness for TestFlight / Play Store
+- Scaffold all models with migrations, serializers, and admin
+- Default DRF ViewSets to `IsAuthenticated`
+- Avoid `eval()` or raw parsing of AI strings
+- Sanitize GPT output to remove encoding artifacts
+- Use `.env` variables for all API keys and secrets
+- Always wrap OpenAI calls with fallback protection
+- Patch `generate_meme`, `generate_plan`, `generate_meal` into Celery once ready
+- When adding Flutter screens:
+  - Register in `main.dart`
+  - Handle token + network errors
+  - Use `cleanText()` before display
 
 ---
 
-*This app doesn’t just move pixels. It moves azzes.* 🫏🔥
+## 📘 Development Notes
+
+- `.venv/` and `db.sqlite3` must never be committed
+- `AZZ_MODE` env var may be used to toggle between safe/roast modes
+- Feature flag support (badges, voice journal, herds) is encouraged
+
+---
+
+## 🧠 Mission (Why this exists)
+
+Chris built MoveYourAzz to:
+- Get healthier
+- Rebuild confidence
+- Connect with people through humor and honesty
+- Launch something real without doomscrolling
+- Prove AI isn’t just for chat — it can *move azzes*
+
+---
+
+*This isn’t just a meme app. It’s an accountability engine with attitude.*  
+🫏🔥

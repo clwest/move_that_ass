@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/badge.dart';
+import '../models/badge.dart' as app_models;
 import '../services/api_service.dart';
 import '../themes/app_theme.dart';
 
@@ -12,7 +12,7 @@ class BadgeGridPage extends StatefulWidget {
 }
 
 class _BadgeGridPageState extends State<BadgeGridPage> {
-  late Future<List<Badge>> _future;
+  late Future<List<app_models.Badge>> _future;
   bool _earnedOnly = false;
 
   @override
@@ -27,7 +27,7 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
     });
   }
 
-  void _showBadgeDetails(Badge badge) {
+  void _showBadgeDetails(app_models.Badge badge) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -54,7 +54,7 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
     );
   }
 
-  Widget _buildBadge(Badge badge) {
+  Widget _buildBadge(app_models.Badge badge) {
     final isEarned = badge.isEarned;
     return GestureDetector(
       onTap: () => _showBadgeDetails(badge),
@@ -93,7 +93,7 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
     final crossAxisCount = MediaQuery.of(context).size.width > 600 ? 3 : 2;
     return Scaffold(
       appBar: AppBar(
-        title: FutureBuilder<List<Badge>>(
+        title: FutureBuilder<List<app_models.Badge>>(
           future: _future,
           builder: (context, snapshot) {
             final count = snapshot.hasData
@@ -127,7 +127,7 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refresh,
-              child: FutureBuilder<List<Badge>>(
+              child: FutureBuilder<List<app_models.Badge>>(
                 future: _future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {

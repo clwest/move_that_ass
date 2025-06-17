@@ -6,6 +6,7 @@ import '../models/today_dashboard.dart';
 import '../models/badge.dart';
 import '../models/meme.dart';
 import '../models/herd_post.dart';
+import '../models/profile.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000';
@@ -65,6 +66,45 @@ class ApiService {
 
     final List data = json.decode(response.body) as List;
     return data.map((e) => HerdPost.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  static Future<UserProfile> fetchProfile() async {
+    final token = await TokenService.getToken() ?? '';
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/core/profile/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load profile');
+    }
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return UserProfile.fromJson(data);
+  }
+
+  static Future<UserProfile> updateDisplayName(String name) async {
+    final token = await TokenService.getToken() ?? '';
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/api/core/profile/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+      body: json.encode({'display_name': name}),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update profile');
+    }
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return UserProfile.fromJson(data);
   }
 
   static Future<Meme> generateMeme({String tone = 'funny'}) async {

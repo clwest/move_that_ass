@@ -26,6 +26,7 @@ from .views import (
     generate_meal_plan_view,
     generate_donkey_challenge,
     get_today_dashboard,
+    profile_view,
     register_user,
     CustomAuthToken,
 )
@@ -50,6 +51,7 @@ urlpatterns = router.urls + [
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),
     path("dashboard-today/", get_today_dashboard),
+    path("profile/", profile_view),
 
     path("herd-mood/", herd_mood_view),
     path("check-badges/", check_badges),

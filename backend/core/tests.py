@@ -112,3 +112,74 @@ class DonkeyChallengeAPITest(APITestCase):
         self.assertEqual(challenge.challenge_text, "walk")
         self.assertEqual(challenge.tone, "savage")
 
+
+class DashboardTodayAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="dasher", password="pass")
+        from core.models import Profile
+        Profile.objects.create(user=self.user, display_name="Dasher")
+
+    def test_today_dashboard(self):
+        from django.utils import timezone
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from core.models import (
+            DailyLockout,
+            ShamePost,
+            VoiceJournal,
+            WorkoutLog,
+            DonkeyChallenge,
+        )
+
+        today = timezone.now().date()
+        DailyLockout.objects.create(user=self.user, date=today, is_unlocked=True)
+        ShamePost.objects.create(
+            user=self.user,
+            date=today,
+            image_url="http://x",
+            caption="fail",
+            posted_to=[],
+            was_triggered=True,
+        )
+        WorkoutLog.objects.create(
+            user=self.user,
+            activity_type="walk",
+            duration_minutes=30,
+        )
+        VoiceJournal.objects.create(
+            user=self.user,
+            audio_file=SimpleUploadedFile("test.mp3", b"abc"),
+        )
+        DonkeyChallenge.objects.create(
+            user=self.user,
+            challenge_text="Walk daily",
+            expires_at=timezone.now() + timezone.timedelta(days=1),
+        )
+
+        self.client.login(username="dasher", password="pass")
+
+        from unittest.mock import patch
+
+        with patch("core.views.generate_daily_digest") as digest_mock, patch(
+            "core.views.ai_generate_workout_plan"
+        ) as plan_mock, patch("core.views.ai_generate_meal_plan") as meal_mock:
+            digest_mock.return_value = "recap"
+            plan_mock.return_value = {"plan": ["Day 1: move"]}
+            meal_mock.return_value = {
+                "breakfast": "eggs",
+                "lunch": "salad",
+                "dinner": "fish",
+                "snacks": ["nuts"],
+            }
+
+            response = self.client.get("/api/core/dashboard-today/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("mood", response.data)
+        self.assertIn("mood_avatar", response.data)
+        self.assertIn("workout_plan", response.data)
+        self.assertEqual(response.data["workout_plan"], ["Day 1: move"])
+        self.assertIn("meal_plan", response.data)
+        self.assertEqual(response.data["meal_plan"]["breakfast"], "eggs")
+        self.assertIn("challenge", response.data)
+        self.assertIn("azz_recap", response.data)
+

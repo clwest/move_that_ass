@@ -126,3 +126,22 @@ class BadgeShoutout(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} - {self.badge.code}"
+
+
+class WorkoutLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_type = models.CharField(max_length=50)
+    duration_minutes = models.IntegerField()
+    intensity = models.CharField(max_length=20, default="moderate")
+    mood = models.CharField(max_length=50, blank=True)
+    notes = models.TextField(blank=True)
+    location_name = models.CharField(max_length=100, blank=True)
+    gps_lat = models.FloatField(null=True, blank=True)
+    gps_lon = models.FloatField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.user.username} {self.activity_type} {self.created_at}"

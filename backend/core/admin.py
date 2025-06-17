@@ -9,6 +9,7 @@ from .models import (
     Herd,
     Badge,
     BadgeShoutout,
+    WorkoutLog,
 )
 
 
@@ -56,3 +57,14 @@ class BadgeAdmin(admin.ModelAdmin):
 @admin.register(BadgeShoutout)
 class BadgeShoutoutAdmin(admin.ModelAdmin):
     list_display = ("user", "badge", "herd", "created_at")
+
+
+@admin.register(WorkoutLog)
+class WorkoutLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "activity_type",
+        "duration_minutes",
+        "intensity",
+        "created_at",
+    )

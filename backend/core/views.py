@@ -33,6 +33,7 @@ from .models import (
     Herd,
     Badge,
     BadgeShoutout,
+    WorkoutLog,
 )
 from content.models import GeneratedMeme
 from .serializers import (
@@ -45,6 +46,7 @@ from .serializers import (
     HerdSerializer,
     BadgeSerializer,
     BadgeShoutoutSerializer,
+    WorkoutLogSerializer,
 )
 
 
@@ -342,4 +344,17 @@ def share_badge(request):
             "shoutout": BadgeShoutoutSerializer(shoutout).data,
         }
     )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def log_workout(request):
+    """Create a WorkoutLog entry for the authenticated user."""
+
+    serializer = WorkoutLogSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=400)
+
+    workout = serializer.save(user=request.user)
+    return Response(WorkoutLogSerializer(workout).data)
 

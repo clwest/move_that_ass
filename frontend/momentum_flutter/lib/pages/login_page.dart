@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
 import 'register_page.dart';
-import 'today_page.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const TodayPage()),
+        MaterialPageRoute(builder: (_) => const MyApp()),
       );
     } catch (e) {
       setState(() => _error = 'Login failed');

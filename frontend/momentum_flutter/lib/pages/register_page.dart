@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
 import 'login_page.dart';
-import 'today_page.dart';
+import '../main.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -34,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const TodayPage()),
+        MaterialPageRoute(builder: (_) => const MyApp()),
       );
     } catch (e) {
       setState(() => _error = 'Registration failed');

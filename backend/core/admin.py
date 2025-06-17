@@ -11,6 +11,7 @@ from .models import (
     BadgeShoutout,
     WorkoutLog,
     MovementGoal,
+    DonkeyChallenge,
 )
 
 
@@ -83,4 +84,17 @@ class MovementGoalAdmin(admin.ModelAdmin):
         "is_completed",
         "is_failed",
         "created_at",
+    )
+
+
+@admin.register(DonkeyChallenge)
+class DonkeyChallengeAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "challenge_text",
+        "issued_at",
+        "expires_at",
+        "tone",
+        "is_completed",
+        "is_failed",
     )

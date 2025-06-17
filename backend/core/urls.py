@@ -23,6 +23,7 @@ from .views import (
     log_workout,
     generate_workout_plan,
     generate_meal_plan_view,
+    generate_donkey_challenge,
 
 )
 
@@ -51,5 +52,6 @@ urlpatterns = router.urls + [
     path("generate-workout-plan/", generate_workout_plan),
     path("log-workout/", log_workout),
     path("generate-meal-plan/", generate_meal_plan_view),
+    path("generate-challenge/", generate_donkey_challenge),
 
 ]

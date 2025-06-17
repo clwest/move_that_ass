@@ -166,3 +166,22 @@ class MovementGoal(models.Model):
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return f"{self.user.username} {self.activity_type} {self.target_sessions}" \
             f" {self.start_date}->{self.end_date}"
+
+
+class DonkeyChallenge(models.Model):
+    """Short challenge issued to motivate the user after failures."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    challenge_text = models.TextField()
+    issued_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_completed = models.BooleanField(default=False)
+    is_failed = models.BooleanField(default=False)
+    tone = models.CharField(max_length=20, default="mixed")
+    auto_generated = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-issued_at"]
+
+    def __str__(self) -> str:  # pragma: no cover - simple representation
+        return f"{self.user.username} - {self.tone}"

@@ -14,11 +14,13 @@ from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
 
 
 class GeneratedImageViewSet(viewsets.ModelViewSet):
+    """ViewSet for storing generated images."""
     queryset = GeneratedImage.objects.all()
     serializer_class = GeneratedImageSerializer
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
+    """CRUD API for social posts created by the app."""
     queryset = SocialPost.objects.all()
     serializer_class = SocialPostSerializer
 

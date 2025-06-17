@@ -135,7 +135,12 @@ class HerdPostSerializer(serializers.ModelSerializer):
 class DailyGoalSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
+    created_at = serializers.DateTimeField(read_only=True)
+
+
     class Meta:
         model = DailyGoal
         fields = "__all__"
-        read_only_fields = ["user", "created_at", "date"]
+
+        read_only_fields = ["user", "created_at"]
+

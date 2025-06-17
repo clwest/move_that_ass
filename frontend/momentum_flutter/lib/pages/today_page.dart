@@ -10,6 +10,7 @@ import 'profile_page.dart';
 import 'meme_share_page.dart';
 import '../services/token_service.dart';
 import 'login_page.dart';
+import 'meme_share_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -20,7 +21,9 @@ class TodayPage extends StatefulWidget {
 
 class _TodayPageState extends State<TodayPage> {
   late Future<TodayDashboard> _future;
-  DailyGoal? _dailyGoal;
+
+  Map<String, dynamic>? _dailyGoal;
+
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetController = TextEditingController(text: '1');
 
@@ -28,21 +31,30 @@ class _TodayPageState extends State<TodayPage> {
   void initState() {
     super.initState();
     _future = ApiService.fetchTodayDashboard();
-    _loadGoal();
-  }
 
-  Future<void> _loadGoal() async {
-    final goal = await ApiService.getDailyGoal();
-    setState(() {
-      _dailyGoal = goal;
+    ApiService.fetchDailyGoal().then((data) {
+      if (data != null) {
+        setState(() {
+          _dailyGoal = data;
+        });
+      }
     });
-  }
+    Future.delayed(Duration.zero, () {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Welcome to MoveYourAzz 🫏'),
+          content: const Text('Move that azz and share your progress!'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Let\'s go'),
+            ),
+          ],
+        ),
+      );
+    });
 
-  @override
-  void dispose() {
-    _goalController.dispose();
-    _targetController.dispose();
-    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -137,7 +149,57 @@ class _TodayPageState extends State<TodayPage> {
             ),
           );
         },
-        child: const Icon(Icons.image),
+
+        child: const Icon(Icons.photo),
+      ),
+    );
+  }
+
+  Future<void> _saveGoal() async {
+    final goal = _goalController.text.trim();
+    final target = int.tryParse(_targetController.text) ?? 1;
+    if (goal.isEmpty) return;
+    await ApiService.setDailyGoal(goal, target);
+    if (mounted) {
+      setState(() {
+        _dailyGoal = {'goal': goal, 'target': target};
+      });
+    }
+  }
+
+  Widget _buildGoalCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Set Your Goal'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _goalController,
+              decoration: const InputDecoration(labelText: 'Activity'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _targetController,
+              decoration: const InputDecoration(labelText: 'Target'),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: _saveGoal,
+              child: const Text('Save Goal'),
+            ),
+            if (_dailyGoal != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                    'Today\'s goal: ${_dailyGoal!['goal']} x${_dailyGoal!['target']}'),
+              ),
+          ],
+        ),
+
       ),
     );
   }

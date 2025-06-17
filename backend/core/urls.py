@@ -21,6 +21,7 @@ from .views import (
     share_badge,
     create_movement_goal,
     log_workout,
+    generate_workout_plan,
 
 )
 
@@ -46,6 +47,7 @@ urlpatterns = router.urls + [
     path("check-badges/", check_badges),
     path("share-badge/", share_badge),
     path("create-goal/", create_movement_goal),
+    path("generate-workout-plan/", generate_workout_plan),
     path("log-workout/", log_workout),
 
 ]

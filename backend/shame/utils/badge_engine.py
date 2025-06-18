@@ -2,7 +2,8 @@ from datetime import timedelta
 from django.utils import timezone
 from django.db.models import Count
 
-from core.models import DailyLockout, VoiceJournal, ShamePost, Herd, Badge
+from shame.models import DailyLockout, ShamePost, Herd, Badge
+from voice_journals.models import VoiceJournal
 from content.models import GeneratedMeme
 
 

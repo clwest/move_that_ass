@@ -1,7 +1,8 @@
 from datetime import timedelta
 from django.utils import timezone
 
-from ..models import ShamePost, VoiceJournal, DailyLockout
+from shame.models import ShamePost, DailyLockout
+from voice_journals.models import VoiceJournal
 from content.models import GeneratedMeme
 from .mood_engine import evaluate_user_mood
 from . import clean_text
@@ -15,7 +16,9 @@ def generate_daily_digest(user):
 
     shame_count = ShamePost.objects.filter(user=user, date__gte=since.date()).count()
     meme_count = GeneratedMeme.objects.filter(user=user, created_at__gte=since).count()
-    journal_count = VoiceJournal.objects.filter(user=user, created_at__gte=since).count()
+    journal_count = VoiceJournal.objects.filter(
+        user=user, created_at__gte=since
+    ).count()
     lockout = DailyLockout.objects.filter(user=user, date=since.date()).first()
 
     herd = user.herds.first()

@@ -23,6 +23,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/core/", include("core.urls")),
+    path("api/shame/", include("shame.urls")),
+    path("api/voice/", include("voice_journals.urls")),
     path("api/prompts/", include("prompts.urls")),
     path("api/content/", include("content.urls")),
     path("api/movement/", include("movement.urls")),

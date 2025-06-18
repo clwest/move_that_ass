@@ -28,7 +28,7 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
 
   Future<void> _startRecording() async {
     if (await _record.hasPermission()) {
-      await _record.start();
+      await _record.start(const RecordConfig());
       setState(() => _isRecording = true);
     }
   }

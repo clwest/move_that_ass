@@ -50,8 +50,8 @@ class MyApp extends StatelessWidget {
   }
 
   Future<Widget> _determineHome() async {
-    final loggedIn = await TokenService.isAuthenticated();
-    if (!loggedIn) return const LoginPage();
+    final token = await TokenService.getToken();
+    if (token == null || token.isEmpty) return const LoginPage();
 
     final profile = await ApiService.fetchProfile();
     if (profile.displayName.isEmpty) return const ProfilePage();

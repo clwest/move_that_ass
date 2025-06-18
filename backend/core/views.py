@@ -128,6 +128,14 @@ class CustomAuthToken(ObtainAuthToken):
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
+def logout_user(request):
+    """Delete the auth token for the current user."""
+    request.user.auth_token.delete()
+    return Response(status=204)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def upload_voice_journal(request):
     audio_file = request.FILES.get("audio_file")
     if not audio_file:

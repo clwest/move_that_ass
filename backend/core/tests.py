@@ -24,6 +24,18 @@ class AuthAPITest(APITestCase):
         token = response.data["token"]
         self.assertTrue(Token.objects.filter(key=token).exists())
 
+
+class LogoutAPITest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="gone", password="pass")
+        self.token = Token.objects.create(user=self.user)
+
+    def test_logout(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+        response = self.client.post("/api/core/logout/")
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Token.objects.filter(user=self.user).exists())
+
 class MovementGoalAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="tester", password="pass")

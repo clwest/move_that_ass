@@ -48,16 +48,21 @@ class _BadgeGridPageState extends State<BadgeGridPage> {
           if (badge.isEarned)
             TextButton(
               onPressed: () async {
-                await ApiService.shareToHerd({
-                  'type': 'badge',
-                  'emoji': badge.emoji,
-                  'badge_name': badge.name,
-                });
-                if (context.mounted) {
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Badge shared with the herd 🫏📣')),
-                  );
+                try {
+                  final message = await ApiService.shareBadge(badge.code);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(message)),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to share badge')),
+                    );
+                  }
                 }
               },
               child: const Text('📣 Share to Herd'),

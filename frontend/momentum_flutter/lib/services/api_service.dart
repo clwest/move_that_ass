@@ -213,6 +213,23 @@ class ApiService {
     return token;
   }
 
+  static Future<String> shareBadge(String badgeCode, {String message = ''}) async {
+    final token = await TokenService.getToken() ?? '';
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/share-badge/'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (token.isNotEmpty) 'Authorization': 'Token $token',
+      },
+      body: json.encode({'badge_code': badgeCode, 'message': message}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to share badge');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return data['message'] as String? ?? 'Badge shared.';
+  }
+
   static Future<void> shareToHerd(Map<String, dynamic> data) async {
     final token = await TokenService.getToken();
     await http.post(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'token_service.dart';
 import '../config.dart';
@@ -241,5 +242,24 @@ class ApiService {
       },
       body: json.encode(data),
     );
+  }
+
+  static Future<Map<String, dynamic>> uploadVoiceJournal(File file) async {
+    final token = await TokenService.getToken() ?? '';
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/api/core/upload-voice/'),
+    );
+    if (token.isNotEmpty) request.headers['Authorization'] = 'Token $token';
+    request.files.add(await http.MultipartFile.fromPath('audio_file', file.path));
+
+    final response = await request.send();
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to upload voice journal');
+    }
+
+    final body = await response.stream.bytesToString();
+    return json.decode(body) as Map<String, dynamic>;
   }
 }

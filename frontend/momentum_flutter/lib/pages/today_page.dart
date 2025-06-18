@@ -12,6 +12,7 @@ import '../services/token_service.dart';
 import 'login_page.dart';
 import '../themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'voice_journal_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -111,6 +112,16 @@ class _TodayPageState extends State<TodayPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const HerdFeedPage(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.mic),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const VoiceJournalPage(),
                 ),
               );
             },

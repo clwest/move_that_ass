@@ -4,6 +4,7 @@ import 'pages/today_page.dart';
 import 'pages/login_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/goal_setup_page.dart';
+import 'pages/voice_journal_page.dart';
 
 import 'themes/app_theme.dart';
 import 'services/token_service.dart';
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
           title: 'MoveYourAzz',
           theme: AppTheme.theme,
           home: snapshot.data!,
+          routes: {
+            VoiceJournalPage.routeName: (_) => const VoiceJournalPage(),
+          },
         );
       },
     );

@@ -11,7 +11,7 @@ class PromptViewSet(viewsets.ModelViewSet):
 
     queryset = Prompt.objects.all()
     serializer_class = PromptSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class PromptResponseViewSet(viewsets.ModelViewSet):
@@ -20,4 +20,4 @@ class PromptResponseViewSet(viewsets.ModelViewSet):
 
     queryset = PromptResponse.objects.all()
     serializer_class = PromptResponseSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]

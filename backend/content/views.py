@@ -25,7 +25,7 @@ class GeneratedImageViewSet(viewsets.ModelViewSet):
 
     queryset = GeneratedImage.objects.all()
     serializer_class = GeneratedImageSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
@@ -34,11 +34,11 @@ class SocialPostViewSet(viewsets.ModelViewSet):
 
     queryset = SocialPost.objects.all()
     serializer_class = SocialPostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_caption_view(request):
     """Generate a caption for a description."""
     description = request.data.get("description", "")
@@ -49,7 +49,7 @@ def generate_caption_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_meme(request):
     """Generate a donkey meme and store it."""
 

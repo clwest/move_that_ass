@@ -1,5 +1,6 @@
 # MoveYourAzz Development
 
+
 This repo contains the Django backend and Flutter frontend projects.
 
 ## Getting Started
@@ -25,10 +26,13 @@ make run-backend
 
 Background jobs are handled by Celery with Redis. Start a worker once your env is active:
 
+
 ```bash
 cd backend
 source .venv/bin/activate
 celery -A server worker -l info
 ```
 
+
 Make sure Redis is running and `REDIS_URL` in your `.env` points at the broker.
+

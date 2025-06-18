@@ -33,6 +33,7 @@ from .views import (
     herd_feed,
     register_user,
     CustomAuthToken,
+    logout_user,
 )
 
 router = DefaultRouter()
@@ -45,6 +46,7 @@ router.register(r"paddle-logs", PaddleLogViewSet)
 urlpatterns = router.urls + [
     path("register/", register_user),
     path("login/", CustomAuthToken.as_view()),
+    path("logout/", logout_user),
     path("trigger-shame/", trigger_shame_view),
     path("upload-voice/", upload_voice_journal),
     path("create-herd/", create_herd),

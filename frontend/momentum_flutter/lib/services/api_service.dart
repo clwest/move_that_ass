@@ -260,4 +260,15 @@ class ApiService {
     final body = await response.stream.bytesToString();
     return json.decode(body) as Map<String, dynamic>;
   }
+
+  static Future<void> logout() async {
+    final token = await TokenService.getToken();
+    await http.post(
+      Uri.parse('$baseUrl/api/core/logout/'),
+      headers: {
+        'Authorization': 'Token $token',
+        'Content-Type': 'application/json',
+      },
+    );
+  }
 }

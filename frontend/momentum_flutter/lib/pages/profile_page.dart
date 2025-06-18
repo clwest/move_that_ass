@@ -130,6 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
+                    await ApiService.logout();
                     await TokenService.clearToken();
                     if (!mounted) return;
                     Navigator.pushReplacement(

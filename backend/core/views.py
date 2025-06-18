@@ -70,35 +70,35 @@ class UserViewSet(viewsets.ModelViewSet):
     """CRUD operations for Django auth users."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
     """Manage Profile objects for users."""
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class DailyLockoutViewSet(viewsets.ModelViewSet):
     """API for DailyLockout records."""
     queryset = DailyLockout.objects.all()
     serializer_class = DailyLockoutSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class ShamePostViewSet(viewsets.ModelViewSet):
     """ViewSet for shame memes posted about a user."""
     queryset = ShamePost.objects.all()
     serializer_class = ShamePostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class PaddleLogViewSet(viewsets.ModelViewSet):
     """CRUD endpoints for paddle session logs."""
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])
@@ -120,6 +120,7 @@ def register_user(request):
 
 class CustomAuthToken(ObtainAuthToken):
     """Return an auth token for a given user."""
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data["token"])
@@ -127,7 +128,7 @@ class CustomAuthToken(ObtainAuthToken):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def logout_user(request):
     """Delete the auth token for the current user."""
     request.user.auth_token.delete()
@@ -135,7 +136,7 @@ def logout_user(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def upload_voice_journal(request):
     audio_file = request.FILES.get("audio_file")
     if not audio_file:
@@ -164,7 +165,7 @@ def upload_voice_journal(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def trigger_shame_view(request):
     post = check_and_trigger_shame(request.user)
     if not post:
@@ -181,7 +182,7 @@ def trigger_shame_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def create_herd(request):
     name = request.data.get("name")
     tone = request.data.get("tone", "mixed")
@@ -199,7 +200,7 @@ def create_herd(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def join_herd(request):
     code = request.data.get("invite_code")
     herd = get_object_or_404(Herd, invite_code=code)
@@ -212,7 +213,7 @@ def join_herd(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def leave_herd(request):
     for herd in request.user.herds.all():
         herd.members.remove(request.user)
@@ -220,7 +221,7 @@ def leave_herd(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def my_herd(request):
     herd = request.user.herds.first()
     if herd:
@@ -229,7 +230,7 @@ def my_herd(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard_feed(request):
     """Return a unified activity feed for the dashboard."""
 
@@ -318,7 +319,7 @@ def dashboard_feed(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def update_mood(request):
     profile = request.user.profile
     mood = evaluate_user_mood(request.user)
@@ -329,7 +330,7 @@ def update_mood(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_mood_avatar_view(request):
     """Return the user's current mood and corresponding avatar."""
     mood = request.user.profile.current_mood
@@ -338,7 +339,7 @@ def get_mood_avatar_view(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 
 def herd_mood_view(request):
     """Return the overall mood for the user's herd."""
@@ -356,7 +357,7 @@ def herd_mood_view(request):
 
 
 @api_view(["POST", "GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def check_badges(request):
     """Evaluate badge rules for the current user and return badge list."""
     evaluate_badges(request.user)
@@ -376,7 +377,7 @@ def check_badges(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def list_badges(request):
     """Return all badges with earned state for the current user."""
     earned_ids = set(request.user.profile.badges.values_list("id", flat=True))
@@ -395,7 +396,7 @@ def list_badges(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def share_badge(request):
     """Create a badge shoutout for the user's herd."""
 
@@ -424,7 +425,7 @@ def share_badge(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def create_movement_goal(request):
     """Create a MovementGoal for the authenticated user."""
 
@@ -437,7 +438,7 @@ def create_movement_goal(request):
 
 
 @api_view(["GET", "POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def daily_goal_view(request):
 
     """Get or set today's simple goal."""
@@ -477,7 +478,7 @@ def daily_goal_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def log_workout(request):
     """Create a WorkoutLog entry for the authenticated user."""
 
@@ -519,7 +520,7 @@ except Exception:  # pragma: no cover - missing Celery
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_workout_plan(request):
     """Return a 7-day workout plan generated by OpenAI."""
     goal = request.data.get("goal", "")
@@ -542,7 +543,7 @@ def generate_workout_plan(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_meal_plan_view(request):
     """Return a meal plan generated by OpenAI."""
     goal = request.data.get("goal", "")
@@ -562,7 +563,7 @@ def generate_meal_plan_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_donkey_challenge(request):
     """Generate and store a short donkey challenge for the user."""
 
@@ -612,7 +613,7 @@ def generate_donkey_challenge(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def get_today_dashboard(request):
     """Return combined data for the user's Today dashboard."""
 
@@ -670,7 +671,7 @@ def get_today_dashboard(request):
 
 
 @api_view(["GET", "PUT"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def profile_view(request):
     """Return or update the authenticated user's profile."""
 
@@ -702,7 +703,7 @@ def profile_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def share_to_herd(request):
     """Create a HerdPost record for the user's herd."""
 
@@ -723,7 +724,7 @@ def share_to_herd(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def herd_feed(request):
     """Return latest HerdPost entries for the user's herd."""
 

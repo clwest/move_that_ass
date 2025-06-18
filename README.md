@@ -1,20 +1,17 @@
 # MoveYourAzz Development
+This repo contains the backend (Django) and frontend (Flutter) projects.
 
-
-This repository contains the Django backend and Flutter frontend for MoveYourAzz.
-
-## Setup
+## Getting Started
 
 1. Copy `.env.sample` to `.env` in the project root.
 2. Fill in the API keys for services like OpenAI, ElevenLabs and GIPHY.
+   Set `ELEVENLABS_VOICE_ID` to override the default ElevenLabs voice if desired.
 3. Install backend dependencies with `make install-backend`.
 4. Run migrations and start the server with `make migrate` and `make run-backend`.
 
+## Celery Worker
 
-## Setup
-
-
-The backend uses Celery with Redis for background tasks. Start a worker once your virtual environment is active:
+The backend uses Celery with Redis for background tasks. Start a worker after your virtual environment is active:
 
 
 ```bash

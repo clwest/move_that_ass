@@ -533,13 +533,13 @@ def generate_workout_plan(request):
     if generate_plan_task:
         try:
             result = generate_plan_task.delay(goal, activity_types, tone)
-            plan = result.get(timeout=15)
+            return Response({"task_id": result.id}, status=202)
         except Exception:  # pragma: no cover - worker/broker failure
             plan = ai_generate_workout_plan(goal=goal, activity_types=activity_types, tone=tone)
+            return Response(plan)
     else:
         plan = ai_generate_workout_plan(goal=goal, activity_types=activity_types, tone=tone)
-
-    return Response(plan)
+        return Response(plan)
 
 
 @api_view(["POST"])
@@ -553,13 +553,13 @@ def generate_meal_plan_view(request):
     if generate_meal_plan_task:
         try:
             result = generate_meal_plan_task.delay(goal, tone, mood)
-            plan = result.get(timeout=15)
+            return Response({"task_id": result.id}, status=202)
         except Exception:  # pragma: no cover - worker/broker failure
             plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
+            return Response(plan)
     else:
         plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
-
-    return Response(plan)
+        return Response(plan)
 
 
 @api_view(["POST"])

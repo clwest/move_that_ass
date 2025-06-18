@@ -15,7 +15,9 @@ import os
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(os.path.join(BASE_DIR, ".env"))
+# Load environment variables from the project root
+ROOT_DIR = BASE_DIR.parent
+load_dotenv(ROOT_DIR / ".env")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 

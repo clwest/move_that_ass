@@ -11,3 +11,4 @@ backend/.venv/
 # Flutter project generated files
 .flutter-plugins
 .flutter-plugins-dependencies
+.venv/

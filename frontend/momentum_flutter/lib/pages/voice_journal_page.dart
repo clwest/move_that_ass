@@ -51,6 +51,10 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
         _audioUrl = result['playback_audio_url'] as String?;
         _tags = result['tags'] as List<dynamic>?;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Journal uploaded!')),
+      );
+      Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)

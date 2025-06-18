@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../models/today_dashboard.dart';
 import '../services/api_service.dart';
+import '../models/daily_goal.dart';
 import 'badge_grid_page.dart';
 import '../utils/text_utils.dart';
 import 'herd_feed_page.dart';
@@ -24,7 +25,7 @@ class TodayPage extends StatefulWidget {
 class _TodayPageState extends State<TodayPage> {
   late Future<TodayDashboard> _future;
 
-  Map<String, dynamic>? _dailyGoal;
+  DailyGoal? _dailyGoal;
 
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetController = TextEditingController(text: '1');
@@ -188,7 +189,7 @@ class _TodayPageState extends State<TodayPage> {
     await ApiService.setDailyGoal(goal, target);
     if (mounted) {
       setState(() {
-        _dailyGoal = {'goal': goal, 'target': target};
+        _dailyGoal = DailyGoal(goal: goal, target: target, type: 'daily');
       });
     }
   }
@@ -221,7 +222,7 @@ class _TodayPageState extends State<TodayPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                    'Today\'s goal: ${_dailyGoal!['goal']} x${_dailyGoal!['target']}'),
+                    'Today\'s goal: ${_dailyGoal!.goal} x${_dailyGoal!.target}'),
               ),
           ],
         ),

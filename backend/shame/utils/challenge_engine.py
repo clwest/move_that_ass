@@ -2,7 +2,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from typing import Dict
 
-from . import clean_text
+from core.utils import clean_text
 
 load_dotenv()
 try:

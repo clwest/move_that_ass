@@ -1,6 +1,7 @@
 from datetime import timedelta
 from django.utils import timezone
-from core.models import ShamePost, VoiceJournal, DailyLockout
+from shame.models import ShamePost, DailyLockout
+from voice_journals.models import VoiceJournal
 from content.models import GeneratedMeme
 from . import clean_text
 
@@ -50,11 +51,17 @@ def generate_weekly_recap(user):
     ]
 
     if tone == "legend":
-        lines.append("This donkey salutes you. You've earned a badge in badazzery. 🏆🫏")
+        lines.append(
+            "This donkey salutes you. You've earned a badge in badazzery. 🏆🫏"
+        )
     elif tone == "resilient":
-        lines.append("You had your off days, but you kept moving. The donkey sees the grind.")
+        lines.append(
+            "You had your off days, but you kept moving. The donkey sees the grind."
+        )
     elif tone == "struggling":
-        lines.append("The donkey sighs. We're not mad - just dramatically disappointed.")
+        lines.append(
+            "The donkey sighs. We're not mad - just dramatically disappointed."
+        )
     else:
         lines.append("It was a week. Next one's yours.")
 

@@ -1,7 +1,8 @@
 from datetime import timedelta
 from django.utils import timezone
 
-from core.models import DailyLockout, ShamePost, Profile, Herd
+from shame.models import DailyLockout, ShamePost, Herd
+from core.models import Profile
 
 
 POSITIVE_MOODS = {"hype", "playful", "thoughtful"}

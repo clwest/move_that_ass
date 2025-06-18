@@ -6,15 +6,14 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import os
 
-from . import clean_text
+from core.utils import clean_text
+
 load_dotenv()
 
 try:
     client = OpenAI()
 except Exception:
     client = None
-
-
 
 
 def transcribe_audio(file_path: str) -> str:
@@ -35,9 +34,7 @@ def transcribe_audio(file_path: str) -> str:
 def summarize_text(text: str) -> str:
     """Summarize a piece of text using GPT-4."""
 
-    prompt = (
-        "Summarize the following voice journal in 2-3 sentences:\n\n" + text
-    )
+    prompt = "Summarize the following voice journal in 2-3 sentences:\n\n" + text
 
     if client is None:
         return prompt
@@ -89,7 +86,6 @@ def generate_tags_from_text(text: str):
             raw = "uncategorized"
 
     raw = clean_text(raw)
-
 
     try:
         import json

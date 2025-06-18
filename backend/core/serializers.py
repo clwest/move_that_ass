@@ -2,17 +2,9 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import (
     Profile,
-    DailyLockout,
-    ShamePost,
     PaddleLog,
-    VoiceJournal,
-    Herd,
-    Badge,
-    BadgeShoutout,
     WorkoutLog,
     MovementGoal,
-    DonkeyChallenge,
-    HerdPost,
     DailyGoal,
 )
 
@@ -23,34 +15,19 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email"]
 
 
-class BadgeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Badge
-        fields = "__all__"
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    badges = BadgeSerializer(many=True, read_only=True)
+    badges = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = "__all__"
         read_only_fields = ["user"]
 
+    def get_badges(self, obj):
+        from shame.serializers import BadgeSerializer
 
-class DailyLockoutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DailyLockout
-        fields = "__all__"
-        read_only_fields = ["user", "date"]
-
-
-class ShamePostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ShamePost
-        fields = "__all__"
-        read_only_fields = ["user", "date"]
+        return BadgeSerializer(obj.badges.all(), many=True).data
 
 
 class PaddleLogSerializer(serializers.ModelSerializer):
@@ -58,39 +35,6 @@ class PaddleLogSerializer(serializers.ModelSerializer):
         model = PaddleLog
         fields = "__all__"
         read_only_fields = ["user", "date"]
-
-
-class VoiceJournalSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    class Meta:
-        model = VoiceJournal
-        fields = "__all__"
-        read_only_fields = [
-            "user",
-            "transcript",
-            "summary",
-            "playback_audio_url",
-            "created_at",
-        ]
-
-
-class HerdSerializer(serializers.ModelSerializer):
-    members = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field="username"
-    )
-
-    class Meta:
-        model = Herd
-        fields = "__all__"
-        read_only_fields = ["created_by", "created_at", "invite_code"]
-
-
-class BadgeShoutoutSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BadgeShoutout
-        fields = "__all__"
-        read_only_fields = ["user", "created_at"]
 
 
 class WorkoutLogSerializer(serializers.ModelSerializer):
@@ -122,32 +66,13 @@ class MovementGoalSerializer(serializers.ModelSerializer):
         ]
 
 
-class DonkeyChallengeSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
-    issued_at = serializers.DateTimeField(read_only=True)
-
-    class Meta:
-        model = DonkeyChallenge
-        fields = "__all__"
-        read_only_fields = ["user", "issued_at"]
-
-
-class HerdPostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = HerdPost
-        fields = "__all__"
-        read_only_fields = ["user", "created_at"]
-
-
 class DailyGoalSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     created_at = serializers.DateTimeField(read_only=True)
-
 
     class Meta:
         model = DailyGoal
         fields = "__all__"
 
         read_only_fields = ["user", "created_at", "date"]
-

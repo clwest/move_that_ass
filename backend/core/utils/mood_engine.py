@@ -1,7 +1,8 @@
 from datetime import timedelta
 from django.utils import timezone
 
-from core.models import ShamePost, VoiceJournal
+from shame.models import ShamePost
+from voice_journals.models import VoiceJournal
 from content.models import GeneratedMeme
 
 
@@ -10,7 +11,9 @@ def evaluate_user_mood(user):
     one_week_ago = now - timedelta(days=7)
 
     shames = ShamePost.objects.filter(user=user, date__gte=one_week_ago).count()
-    memes = GeneratedMeme.objects.filter(user=user, created_at__gte=one_week_ago).count()
+    memes = GeneratedMeme.objects.filter(
+        user=user, created_at__gte=one_week_ago
+    ).count()
     journals = VoiceJournal.objects.filter(user=user, created_at__gte=one_week_ago)
 
     tag_counts = {}

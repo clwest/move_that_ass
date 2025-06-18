@@ -307,7 +307,7 @@ def log_workout(request):
 
 from .utils.plan_engine import generate_workout_plan as ai_generate_workout_plan
 from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
-from .utils.challenge_engine import generate_challenge as ai_generate_challenge
+
 from .utils.digest_engine import generate_daily_digest
 
 try:  # Celery may be optional in some setups

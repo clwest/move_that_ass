@@ -12,8 +12,7 @@ from .views import (
     log_workout,
     generate_workout_plan,
     generate_meal_plan_view,
-    get_today_dashboard,
-    profile_view,
+
     daily_goal_view,
     register_user,
     CustomAuthToken,
@@ -23,8 +22,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"profiles", ProfileViewSet)
-router.register(r"lockouts", DailyLockoutViewSet)
-router.register(r"shame-posts", ShamePostViewSet)
+
 router.register(r"paddle-logs", PaddleLogViewSet)
 
 urlpatterns = router.urls + [
@@ -34,8 +32,7 @@ urlpatterns = router.urls + [
     path("dashboard/", dashboard_feed),
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),
-    path("dashboard-today/", get_today_dashboard),
-    path("profile/", profile_view),
+
     path("daily-goal/", daily_goal_view),
     path("create-goal/", create_movement_goal),
     path("generate-workout-plan/", generate_workout_plan),

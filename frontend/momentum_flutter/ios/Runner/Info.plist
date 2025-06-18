@@ -51,5 +51,7 @@
         <array>
                 <string>_dartobservatory._tcp</string>
         </array>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Allow MoveYourAzz to save memes to your photo library.</string>
 </dict>
 </plist>

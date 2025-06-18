@@ -9,7 +9,6 @@ from .serializers import (
     SocialPostSerializer,
     GeneratedMemeSerializer,
 )
-from .utils.caption_engine import generate_caption
 from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
 
 try:  # Celery tasks may not be available in dev
@@ -35,14 +34,6 @@ class SocialPostViewSet(viewsets.ModelViewSet):
     serializer_class = SocialPostSerializer
     permission_classes = [IsAuthenticated]
 
-
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])
-def generate_promptcam_caption(request):
-    description = request.data.get("description", "")
-    tone = request.data.get("tone", "funny")
-    caption = generate_caption(description, tone)
-    return Response({"caption": caption})
 
 
 @api_view(["POST"])

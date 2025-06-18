@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 import '../services/api_service.dart';
@@ -28,7 +29,10 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
 
   Future<void> _startRecording() async {
     if (await _record.hasPermission()) {
-      await _record.start(const RecordConfig());
+      final dir = await getTemporaryDirectory();
+      final filePath =
+          '${dir.path}/journal_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      await _record.start(const RecordConfig(), path: filePath);
       setState(() => _isRecording = true);
     }
   }

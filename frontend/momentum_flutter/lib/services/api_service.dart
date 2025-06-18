@@ -86,7 +86,7 @@ class ApiService {
       Uri.parse('$baseUrl/api/core/profile/'),
       headers: {
         'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
+        'Authorization': 'Token $token',
       },
     );
 

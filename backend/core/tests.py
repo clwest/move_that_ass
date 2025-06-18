@@ -81,7 +81,9 @@ class WorkoutPlanAPITest(APITestCase):
 
         from unittest.mock import patch
 
-        with patch("core.views.ai_generate_workout_plan") as mock_gen:
+        with patch("core.views.generate_plan_task", None), patch(
+            "core.views.ai_generate_workout_plan"
+        ) as mock_gen:
             mock_gen.return_value = {"plan": ["Day 1: test"]}
             response = self.client.post(
                 "/api/core/generate-workout-plan/",
@@ -104,8 +106,15 @@ class MealPlanAPITest(APITestCase):
 
         from unittest.mock import patch
 
-        with patch("core.views.ai_generate_meal_plan") as mock_gen:
-            mock_gen.return_value = {"breakfast": "oats", "lunch": "salad", "dinner": "steak", "snacks": ["nuts"]}
+        with patch("core.views.generate_meal_plan_task", None), patch(
+            "core.views.ai_generate_meal_plan"
+        ) as mock_gen:
+            mock_gen.return_value = {
+                "breakfast": "oats",
+                "lunch": "salad",
+                "dinner": "steak",
+                "snacks": ["nuts"],
+            }
             response = self.client.post(
                 "/api/core/generate-meal-plan/",
                 payload,

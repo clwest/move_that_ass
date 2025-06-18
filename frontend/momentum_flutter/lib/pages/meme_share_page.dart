@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../models/meme.dart';
 import '../services/api_service.dart';
@@ -12,6 +13,17 @@ class MemeSharePage extends StatelessWidget {
   const MemeSharePage({required this.meme, Key? key}) : super(key: key);
 
   Future<void> saveMemeToDevice(BuildContext context, Meme meme) async {
+    final status = await Permission.photos.request();
+    if (!status.isGranted) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enable photo permissions to save memes.'),
+        ),
+      );
+      return;
+    }
+
     try {
       final bool? result = await GallerySaver.saveImage(meme.imageUrl);
       if (!context.mounted) return;

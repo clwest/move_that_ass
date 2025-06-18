@@ -25,7 +25,7 @@ class GeneratedImageViewSet(viewsets.ModelViewSet):
 
     queryset = GeneratedImage.objects.all()
     serializer_class = GeneratedImageSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
@@ -34,11 +34,11 @@ class SocialPostViewSet(viewsets.ModelViewSet):
 
     queryset = SocialPost.objects.all()
     serializer_class = SocialPostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_caption_view(request):
     """Generate a caption for a description."""
     description = request.data.get("description", "")
@@ -49,7 +49,7 @@ def generate_caption_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_meme(request):
     """Generate a donkey meme and store it."""
 
@@ -58,19 +58,19 @@ def generate_meme(request):
     if generate_meme_task:
         try:
             result = generate_meme_task.delay(tone)
-            data = result.get(timeout=15)
-            image_url = data.get("image_url")
-            caption = data.get("caption")
+            return Response({"task_id": result.id}, status=202)
         except Exception:  # pragma: no cover - worker or broker failure
             image_url = fetch_donkey_gif()
             caption = generate_meme_caption(tone)
+            meme = GeneratedMeme.objects.create(
+                user=request.user, image_url=image_url, caption=caption, tone=tone
+            )
+            return Response(GeneratedMemeSerializer(meme).data)
     else:
         image_url = fetch_donkey_gif()
         caption = generate_meme_caption(tone)
-
-    meme = GeneratedMeme.objects.create(
-        user=request.user, image_url=image_url, caption=caption, tone=tone
-    )
-
-    return Response(GeneratedMemeSerializer(meme).data)
+        meme = GeneratedMeme.objects.create(
+            user=request.user, image_url=image_url, caption=caption, tone=tone
+        )
+        return Response(GeneratedMemeSerializer(meme).data)
 

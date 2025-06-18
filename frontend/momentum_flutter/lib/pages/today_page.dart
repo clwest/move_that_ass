@@ -14,6 +14,7 @@ import 'login_page.dart';
 import '../themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'voice_journal_page.dart';
+import 'challenge_result_page.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -119,12 +120,15 @@ class _TodayPageState extends State<TodayPage> {
           ),
           IconButton(
             icon: const Icon(Icons.mic),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const VoiceJournalPage(),
-                ),
-              );
+            onPressed: () async {
+              final result = await Navigator.of(context)
+                  .pushNamed(VoiceJournalPage.routeName);
+              if (result == true && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Journal uploaded!')),
+                );
+                await _refresh();
+              }
             },
           ),
           IconButton(
@@ -263,18 +267,20 @@ class _TodayPageState extends State<TodayPage> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Mark Complete'),
-                ),
-                const SizedBox(width: 8),
-                OutlinedButton(
-                  onPressed: () {},
-                  child: const Text('Share to Herd'),
-                ),
-              ],
+            ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.of(context).pushNamed(
+                  ChallengeResultPage.routeName,
+                  arguments: challenge.text,
+                );
+                if (result == true && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Challenge completed!')),
+                  );
+                  await _refresh();
+                }
+              },
+              child: const Text('Log Result'),
             ),
           ],
         ),

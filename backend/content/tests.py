@@ -23,9 +23,9 @@ class ContentAPITest(APITestCase):
         self.assertEqual(resp.data["caption"], "so funny")
 
     def test_generate_meme(self):
-        with patch("content.views.fetch_donkey_gif") as gif_mock, patch(
-            "content.views.generate_meme_caption"
-        ) as caption_mock:
+        with patch("content.views.generate_meme_task", None), patch(
+            "content.views.fetch_donkey_gif"
+        ) as gif_mock, patch("content.views.generate_meme_caption") as caption_mock:
             gif_mock.return_value = "http://gif"
             caption_mock.return_value = "roast"
             resp = self.client.post("/api/content/generate-meme/", {}, format="json")

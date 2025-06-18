@@ -2,7 +2,7 @@ import requests
 import os
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-VOICE_ID = "EXAVITQu4vr4xnSDxMaL"  # Replace with preferred stock voice
+VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "EXAVITQu4vr4xnSDxMaL")
 
 
 def text_to_speech(text, output_path="output.mp3"):

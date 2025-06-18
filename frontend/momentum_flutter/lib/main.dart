@@ -5,6 +5,7 @@ import 'pages/login_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/goal_setup_page.dart';
 import 'pages/voice_journal_page.dart';
+import 'pages/challenge_result_page.dart';
 
 import 'themes/app_theme.dart';
 import 'services/token_service.dart';
@@ -43,6 +44,10 @@ class MyApp extends StatelessWidget {
           home: snapshot.data!,
           routes: {
             VoiceJournalPage.routeName: (_) => const VoiceJournalPage(),
+            ChallengeResultPage.routeName: (context) {
+              final args = ModalRoute.of(context)!.settings.arguments as String;
+              return ChallengeResultPage(challengeText: args);
+            },
           },
         );
       },

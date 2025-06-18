@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import Prompt, PromptResponse
 from .serializers import PromptSerializer, PromptResponseSerializer
@@ -11,7 +11,7 @@ class PromptViewSet(viewsets.ModelViewSet):
 
     queryset = Prompt.objects.all()
     serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 class PromptResponseViewSet(viewsets.ModelViewSet):
@@ -20,4 +20,4 @@ class PromptResponseViewSet(viewsets.ModelViewSet):
 
     queryset = PromptResponse.objects.all()
     serializer_class = PromptResponseSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]

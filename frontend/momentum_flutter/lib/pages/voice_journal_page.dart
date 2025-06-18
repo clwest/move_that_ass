@@ -17,7 +17,7 @@ class VoiceJournalPage extends StatefulWidget {
 }
 
 class _VoiceJournalPageState extends State<VoiceJournalPage> {
-  final Record _record = Record();
+  final AudioRecorder _record = AudioRecorder();
   final AudioPlayer _player = AudioPlayer();
 
   bool _isRecording = false;

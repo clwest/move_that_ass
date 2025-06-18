@@ -24,7 +24,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/core/", include("core.urls")),
     path("api/prompts/", include("prompts.urls")),
-    path("api/movement/", include("movement.urls")),
     path("api/content/", include("content.urls")),
 ]
 

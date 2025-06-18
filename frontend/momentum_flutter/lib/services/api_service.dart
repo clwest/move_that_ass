@@ -83,10 +83,10 @@ class ApiService {
     final token = await TokenService.getToken() ?? '';
 
     final response = await http.get(
-      Uri.parse('$baseUrl/api/core/profile/'),
+      Uri.parse('$baseUrl/api/core/profiles/'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Token $token',
+        'Authorization': 'Bearer $token',
       },
     );
 

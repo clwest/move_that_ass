@@ -117,27 +117,6 @@ class ApiService {
     return UserProfile.fromJson(data);
   }
 
-  static Future<DailyGoal?> getDailyGoal() async {
-    final token = await TokenService.getToken() ?? '';
-
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/core/daily-goal/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
-    );
-
-    if (response.statusCode != 200) {
-      return null;
-    }
-
-    final data = json.decode(response.body);
-    if (data is Map<String, dynamic> && data.isNotEmpty) {
-      return DailyGoal.fromJson(data);
-    }
-    return null;
-  }
 
   static Future<DailyGoal> setDailyGoal(String goal, int target) async {
     final token = await TokenService.getToken() ?? '';
@@ -173,7 +152,7 @@ class ApiService {
     return Meme.fromJson(jsonData);
   }
 
-  static Future<Map<String, dynamic>?> fetchDailyGoal() async {
+  static Future<DailyGoal?> fetchDailyGoal() async {
     final token = await TokenService.getToken() ?? '';
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/daily-goal/'),
@@ -185,9 +164,11 @@ class ApiService {
     if (response.statusCode != 200) {
       return null;
     }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (data['goal'] == null) return null;
-    return data;
+    final data = json.decode(response.body);
+    if (data is Map<String, dynamic> && data['goal'] != null) {
+      return DailyGoal.fromJson(data);
+    }
+    return null;
   }
 
   // static Future<void> setDailyGoal(String goal, int target) async {

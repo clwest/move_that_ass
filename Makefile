@@ -29,7 +29,7 @@ lint-backend:
 
 # == Frontend Commands ==
 run-frontend:
-    cd $(FRONTEND_DIR) && \
+	cd $(FRONTEND_DIR) && \
 	flutter run --disable-vm-service-publication
 
 test-frontend:

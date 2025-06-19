@@ -27,7 +27,7 @@ lint-backend:
 
 # == Frontend Commands ==
 run-frontend:
-	cd $(FRONTEND_DIR) && flutter run
+	cd $(FRONTEND_DIR) && flutter run 
 
 test-frontend:
 	cd $(FRONTEND_DIR) && flutter test

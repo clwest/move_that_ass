@@ -1,2 +1,6 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
+FLUTTER_BUILD_MODE=debug
+DART_OBFUSCATION=false
+
+DART_VM_SERVICE_URLS=""

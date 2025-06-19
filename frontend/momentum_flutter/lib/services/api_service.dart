@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'token_service.dart';
+import 'auth_service.dart';
 import '../config.dart';
 
 import '../models/today_dashboard.dart';
@@ -15,14 +15,12 @@ class ApiService {
   static String get baseUrl => AppConfig.baseUrl;
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/dashboard-today/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
     );
 
     if (response.statusCode != 200) {
@@ -34,22 +32,17 @@ class ApiService {
   }
 
   static Future<List<Badge>> fetchBadges() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
     // ensure badges are evaluated on the server
     await http.get(
       Uri.parse('$baseUrl/api/core/check-badges/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
     );
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/badges/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
     );
 
     if (response.statusCode != 200) {
@@ -61,14 +54,12 @@ class ApiService {
   }
 
   static Future<List<HerdPost>> fetchHerdFeed() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/herd-feed/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
     );
 
     if (response.statusCode != 200) {
@@ -80,14 +71,12 @@ class ApiService {
   }
 
   static Future<UserProfile> fetchProfile() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/profiles/'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: headers,
     );
 
     if (response.statusCode != 200) {
@@ -99,14 +88,12 @@ class ApiService {
   }
 
   static Future<UserProfile> updateDisplayName(String name) async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.put(
       Uri.parse('$baseUrl/api/core/profile/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
       body: json.encode({'display_name': name}),
     );
 
@@ -120,14 +107,12 @@ class ApiService {
 
 
   static Future<DailyGoal> setDailyGoal(String goal, int target) async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/core/daily-goal/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
       body: json.encode({'goal': goal, 'target': target, 'type': 'daily'}),
     );
 
@@ -140,27 +125,23 @@ class ApiService {
   }
 
   static Future<Meme> generateMeme() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/content/generate-meme/'),
-      headers: {
-        'Authorization': 'Token $token',
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
     );
     final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
     return Meme.fromJson(jsonData);
   }
 
   static Future<DailyGoal?> fetchDailyGoal() async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
     final response = await http.get(
       Uri.parse('$baseUrl/api/core/daily-goal/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
     );
     if (response.statusCode != 200) {
       return null;
@@ -184,43 +165,14 @@ class ApiService {
   //   );
   // }
 
-  static Future<void> register(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/core/register/'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'username': username, 'password': password}),
-    );
-    if (response.statusCode != 201) {
-      throw Exception('Failed to register');
-    }
-  }
-
-  static Future<String> login(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/api/core/login/'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: json.encode({'username': username, 'password': password}),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to login');
-    }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    final token = data['token'] as String;
-    await TokenService.saveToken(token);
-    return token;
-  }
+  // Registration and login moved to AuthService
 
   static Future<String> shareBadge(String badgeCode, {String message = ''}) async {
-    final token = await TokenService.getToken() ?? '';
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
     final response = await http.post(
       Uri.parse('$baseUrl/api/core/share-badge/'),
-      headers: {
-        'Content-Type': 'application/json',
-        if (token.isNotEmpty) 'Authorization': 'Token $token',
-      },
+      headers: headers,
       body: json.encode({'badge_code': badgeCode, 'message': message}),
     );
     if (response.statusCode != 200) {
@@ -231,25 +183,22 @@ class ApiService {
   }
 
   static Future<void> shareToHerd(Map<String, dynamic> data) async {
-    final token = await TokenService.getToken();
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
     await http.post(
       Uri.parse('$baseUrl/api/core/share-to-herd/'),
-      headers: {
-        'Authorization': 'Token $token',
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
       body: json.encode(data),
     );
   }
 
   static Future<Map<String, dynamic>> uploadVoiceJournal(File file) async {
-    final token = await TokenService.getToken() ?? '';
-
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/api/core/upload-voice/'),
     );
-    if (token.isNotEmpty) request.headers['Authorization'] = 'Token $token';
+    final auth = await AuthService.authHeaders();
+    request.headers.addAll(auth);
     request.files.add(await http.MultipartFile.fromPath('audio_file', file.path));
 
     final response = await request.send();
@@ -262,13 +211,6 @@ class ApiService {
   }
 
   static Future<void> logout() async {
-    final token = await TokenService.getToken();
-    await http.post(
-      Uri.parse('$baseUrl/api/core/logout/'),
-      headers: {
-        'Authorization': 'Token $token',
-        'Content-Type': 'application/json',
-      },
-    );
+    await AuthService.logout();
   }
 }

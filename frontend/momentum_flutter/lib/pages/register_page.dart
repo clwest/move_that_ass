@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_service.dart';
+import '../services/auth_service.dart';
 import 'login_page.dart';
 import '../main.dart';
 
@@ -12,8 +12,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _password1Controller = TextEditingController();
+  final _password2Controller = TextEditingController();
   String? _error;
   bool _loading = false;
 
@@ -23,13 +24,14 @@ class _RegisterPageState extends State<RegisterPage> {
       _loading = true;
     });
     try {
-      await ApiService.register(
-        _usernameController.text.trim(),
-        _passwordController.text,
+      await AuthService.register(
+        _emailController.text.trim(),
+        _password1Controller.text,
+        _password2Controller.text,
       );
-      await ApiService.login(
-        _usernameController.text.trim(),
-        _passwordController.text,
+      await AuthService.login(
+        _emailController.text.trim(),
+        _password1Controller.text,
       );
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -47,8 +49,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
+    _emailController.dispose();
+    _password1Controller.dispose();
+    _password2Controller.dispose();
     super.dispose();
   }
 
@@ -62,13 +65,19 @@ class _RegisterPageState extends State<RegisterPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             const SizedBox(height: 12),
             TextField(
-              controller: _passwordController,
+              controller: _password1Controller,
               decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _password2Controller,
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
               obscureText: true,
             ),
             if (_error != null) ...[
@@ -83,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
               onPressed: _loading ? null : _register,
               child: _loading
                   ? const CircularProgressIndicator()
-                  : const Text('Register'),
+                  : Text('Register', style: Theme.of(context).textTheme.labelLarge),
             ),
             TextButton(
               onPressed: () {

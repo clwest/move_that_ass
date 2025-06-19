@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -81,6 +81,16 @@ class PaddleLogViewSet(viewsets.ModelViewSet):
     queryset = PaddleLog.objects.all()
     serializer_class = PaddleLogSerializer
     permission_classes = [IsAuthenticated]
+
+
+class CurrentProfileView(generics.RetrieveUpdateAPIView):
+    """Retrieve or update the authenticated user's profile."""
+
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile
 
 
 @api_view(["POST"])

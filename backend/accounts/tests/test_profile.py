@@ -1,5 +1,4 @@
 import pytest
-from django.urls import reverse
 from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 
@@ -13,6 +12,6 @@ def test_profile_view():
     from rest_framework_simplejwt.tokens import RefreshToken
     refresh = RefreshToken.for_user(user)
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
-    res = client.get(reverse('accounts-profile'))
+    res = client.get("/api/core/profile/")
     assert res.status_code == 200
     assert res.data['email'] == user.email

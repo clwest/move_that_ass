@@ -14,4 +14,4 @@ def test_profile_view():
     client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
     res = client.get("/api/core/profile/")
     assert res.status_code == 200
-    assert res.data['email'] == user.email
+    assert res.data['user']['email'] == user.email

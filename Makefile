@@ -11,7 +11,9 @@ ACTIVATE = source .venv/bin/activate || true
 
 # == Backend Commands ==
 run-backend:
-	cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py runserver
+        cd $(BACKEND_DIR) && $(ACTIVATE) && \
+        python manage.py collectstatic --noinput && \
+        python manage.py runserver
 
 migrate:
 	cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py migrate
@@ -27,7 +29,7 @@ lint-backend:
 
 # == Frontend Commands ==
 run-frontend:
-	cd $(FRONTEND_DIR) && flutter run 
+        cd $(FRONTEND_DIR) && flutter run --disable-vm-service-publication
 
 test-frontend:
 	cd $(FRONTEND_DIR) && flutter test

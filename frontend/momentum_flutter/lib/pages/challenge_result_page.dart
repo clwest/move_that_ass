@@ -71,7 +71,8 @@ class _ChallengeResultPageState extends State<ChallengeResultPage> {
                   : () {
                       Navigator.pop(context, true);
                     },
-              child: const Text('Mark Complete'),
+              child: Text('Mark Complete',
+                  style: Theme.of(context).textTheme.labelLarge),
             ),
             const SizedBox(height: 8),
             OutlinedButton(

@@ -102,7 +102,8 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
                   final url = '${ApiService.baseUrl}$_audioUrl';
                   await _player.play(UrlSource(url));
                 },
-                child: const Text('Play Summary'),
+                child: Text('Play Summary',
+                    style: Theme.of(context).textTheme.labelLarge),
               ),
             if (_uploading) ...[
               const SizedBox(height: 20),

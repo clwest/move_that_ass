@@ -54,7 +54,11 @@ class _GoalSetupPageState extends State<GoalSetupPage> {
                 decoration: const InputDecoration(labelText: 'Target'),
               ),
               const SizedBox(height: 16),
-              ElevatedButton(onPressed: _save, child: const Text('Save Goal')),
+              ElevatedButton(
+                onPressed: _save,
+                child:
+                    Text('Save Goal', style: Theme.of(context).textTheme.labelLarge),
+              ),
             ],
           ),
         ),

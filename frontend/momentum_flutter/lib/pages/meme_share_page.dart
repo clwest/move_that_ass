@@ -70,11 +70,13 @@ class MemeSharePage extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => saveMemeToDevice(context, meme),
-            child: const Text('💾 Save to Device'),
+            child: Text('💾 Save to Device',
+                style: Theme.of(context).textTheme.labelLarge),
           ),
           ElevatedButton(
             onPressed: () => shareMeme(meme),
-            child: const Text('📤 Share Meme'),
+            child:
+                Text('📤 Share Meme', style: Theme.of(context).textTheme.labelLarge),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -88,7 +90,8 @@ class MemeSharePage extends StatelessWidget {
                 const SnackBar(content: Text('Meme shared with the herd 🫏📣')),
               );
             },
-            child: const Text('📣 Share to Herd'),
+            child: Text('📣 Share to Herd',
+                style: Theme.of(context).textTheme.labelLarge),
           ),
           const SizedBox(height: 20),
         ],

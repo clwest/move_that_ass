@@ -8,7 +8,7 @@ import 'pages/voice_journal_page.dart';
 import 'pages/challenge_result_page.dart';
 
 import 'themes/app_theme.dart';
-import 'services/token_service.dart';
+import 'services/auth_service.dart';
 import 'services/api_service.dart';
 import 'config.dart';
 
@@ -55,8 +55,8 @@ class MyApp extends StatelessWidget {
   }
 
   Future<Widget> _determineHome() async {
-    final token = await TokenService.getToken();
-    if (token == null || token.isEmpty) return const LoginPage();
+    final authed = await AuthService.isAuthenticated();
+    if (!authed) return const LoginPage();
 
     final profile = await ApiService.fetchProfile();
     if (profile.displayName.isEmpty) return const ProfilePage();

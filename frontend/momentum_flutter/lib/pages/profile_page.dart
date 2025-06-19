@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/profile.dart';
 import '../services/api_service.dart';
-import '../services/token_service.dart';
+import '../services/auth_service.dart';
 import '../utils/text_utils.dart';
 import 'badge_grid_page.dart';
 import 'login_page.dart';
@@ -123,22 +123,23 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         );
                       },
-                      child: const Text('View Badges'),
+                      child: Text('View Badges',
+                          style: Theme.of(context).textTheme.labelLarge),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    await ApiService.logout();
-                    await TokenService.clearToken();
+                    await AuthService.logout();
                     if (!mounted) return;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginPage()),
                     );
                   },
-                  child: const Text('Logout'),
+                  child:
+                      Text('Logout', style: Theme.of(context).textTheme.labelLarge),
                 ),
               ],
             );

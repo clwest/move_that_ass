@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_service.dart';
-import '../services/token_service.dart';
+import '../services/auth_service.dart';
 import 'register_page.dart';
 import '../main.dart';
 
@@ -14,7 +13,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   String? _error;
   bool _loading = false;
@@ -25,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
       _loading = true;
     });
     try {
-      await ApiService.login(
-        _usernameController.text.trim(),
+      await AuthService.login(
+        _emailController.text.trim(),
         _passwordController.text,
       );
       if (!mounted) return;
@@ -45,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -62,8 +61,8 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
             TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
             const SizedBox(height: 12),
             TextField(
@@ -83,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: _loading ? null : _login,
               child: _loading
                   ? const CircularProgressIndicator()
-                  : const Text('Login'),
+                  : Text('Login', style: Theme.of(context).textTheme.labelLarge),
             ),
             TextButton(
               onPressed: () {

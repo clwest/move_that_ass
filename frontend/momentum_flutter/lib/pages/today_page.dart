@@ -9,7 +9,7 @@ import '../utils/text_utils.dart';
 import 'herd_feed_page.dart';
 import 'profile_page.dart';
 import 'meme_share_page.dart';
-import '../services/token_service.dart';
+import '../services/auth_service.dart';
 import 'login_page.dart';
 import '../themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,7 +90,7 @@ class _TodayPageState extends State<TodayPage> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await TokenService.clearToken();
+              await AuthService.logout();
               if (!mounted) return;
               Navigator.pushReplacement(
                 context,
@@ -220,7 +220,8 @@ class _TodayPageState extends State<TodayPage> {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _saveGoal,
-              child: const Text('Save Goal'),
+              child:
+                  Text('Save Goal', style: Theme.of(context).textTheme.labelLarge),
             ),
             if (_dailyGoal != null)
               Padding(
@@ -280,7 +281,8 @@ class _TodayPageState extends State<TodayPage> {
                   await _refresh();
                 }
               },
-              child: const Text('Log Result'),
+              child: Text('Log Result',
+                  style: Theme.of(context).textTheme.labelLarge),
             ),
           ],
         ),

@@ -1,5 +1,7 @@
 from rest_framework.test import APITestCase
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 from rest_framework.authtoken.models import Token
 
 
@@ -27,7 +29,7 @@ class AuthAPITest(APITestCase):
 
 class LogoutAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="gone", password="pass")
+        self.user = User.objects.create_user(email="gone", password="pass")
         self.token = Token.objects.create(user=self.user)
 
     def test_logout(self):
@@ -38,10 +40,10 @@ class LogoutAPITest(APITestCase):
 
 class MovementGoalAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="tester", password="pass")
+        self.user = User.objects.create_user(email="tester", password="pass")
 
     def test_create_goal(self):
-        self.client.login(username="tester", password="pass")
+        self.client.login(email="tester", password="pass")
         payload = {
             "activity_type": "biking",
             "target_sessions": 3,
@@ -56,10 +58,10 @@ class MovementGoalAPITest(APITestCase):
 
 class DailyGoalAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="goalie", password="pass")
+        self.user = User.objects.create_user(email="goalie", password="pass")
 
     def test_set_daily_goal(self):
-        self.client.login(username="goalie", password="pass")
+        self.client.login(email="goalie", password="pass")
         payload = {"goal": "journal", "target": 1, "goal_type": "daily"}
         response = self.client.post("/api/core/daily-goal/", payload, format="json")
         self.assertEqual(response.status_code, 200)
@@ -69,10 +71,10 @@ class DailyGoalAPITest(APITestCase):
 
 class WorkoutPlanAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="planner", password="pass")
+        self.user = User.objects.create_user(email="planner", password="pass")
 
     def test_generate_plan(self):
-        self.client.login(username="planner", password="pass")
+        self.client.login(email="planner", password="pass")
         payload = {
             "goal": "weight loss",
             "activity_types": ["walking"],
@@ -98,10 +100,10 @@ class WorkoutPlanAPITest(APITestCase):
 
 class MealPlanAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="eater", password="pass")
+        self.user = User.objects.create_user(email="eater", password="pass")
 
     def test_generate_meal_plan(self):
-        self.client.login(username="eater", password="pass")
+        self.client.login(email="eater", password="pass")
         payload = {"goal": "bulk", "tone": "donkey", "mood": "ashamed"}
 
         from unittest.mock import patch
@@ -130,7 +132,7 @@ class MealPlanAPITest(APITestCase):
 
 class DonkeyChallengeAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="challenger", password="pass")
+        self.user = User.objects.create_user(email="challenger", password="pass")
         self.user.profile.display_name = "Challenger"
         self.user.profile.save()
 
@@ -149,7 +151,7 @@ class DonkeyChallengeAPITest(APITestCase):
             was_triggered=True,
         )
 
-        self.client.login(username="challenger", password="pass")
+        self.client.login(email="challenger", password="pass")
 
         from unittest.mock import patch
 
@@ -172,7 +174,7 @@ class DonkeyChallengeAPITest(APITestCase):
 
 class DashboardTodayAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="dasher", password="pass")
+        self.user = User.objects.create_user(email="dasher", password="pass")
         self.user.profile.display_name = "Dasher"
         self.user.profile.save()
 
@@ -212,7 +214,7 @@ class DashboardTodayAPITest(APITestCase):
             expires_at=timezone.now() + timezone.timedelta(days=1),
         )
 
-        self.client.login(username="dasher", password="pass")
+        self.client.login(email="dasher", password="pass")
 
         from unittest.mock import patch
 
@@ -243,7 +245,7 @@ class DashboardTodayAPITest(APITestCase):
 
 class BadgeListAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="badger", password="pass")
+        self.user = User.objects.create_user(email="badger", password="pass")
         from core.models import Badge
         self.user.profile.display_name = "Badger"
         self.user.profile.save()
@@ -256,7 +258,7 @@ class BadgeListAPITest(APITestCase):
         self.user.profile.badges.add(self.badge1)
 
     def test_list_badges(self):
-        self.client.login(username="badger", password="pass")
+        self.client.login(email="badger", password="pass")
         response = self.client.get("/api/core/badges/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
@@ -270,7 +272,7 @@ class BadgeListAPITest(APITestCase):
 
 class ProfileAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="profilr", password="pass")
+        self.user = User.objects.create_user(email="profilr", password="pass")
         from core.models import Badge, Herd
 
         self.user.profile.display_name = "Donk"
@@ -286,7 +288,7 @@ class ProfileAPITest(APITestCase):
         herd.members.add(self.user)
 
     def test_get_profile(self):
-        self.client.login(username="profilr", password="pass")
+        self.client.login(email="profilr", password="pass")
         response = self.client.get("/api/core/profile/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["username"], "profilr")
@@ -297,7 +299,7 @@ class ProfileAPITest(APITestCase):
         self.assertIn("mood_avatar", response.data)
 
     def test_update_display_name(self):
-        self.client.login(username="profilr", password="pass")
+        self.client.login(email="profilr", password="pass")
         response = self.client.put("/api/core/profile/", {"display_name": "New"}, format="json")
         self.assertEqual(response.status_code, 200)
         self.user.refresh_from_db()
@@ -306,7 +308,7 @@ class ProfileAPITest(APITestCase):
 
 class HerdPostAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="herder", password="pass")
+        self.user = User.objects.create_user(email="herder", password="pass")
         from core.models import Herd
 
         self.user.profile.display_name = "Herder"
@@ -317,7 +319,7 @@ class HerdPostAPITest(APITestCase):
         herd.members.add(self.user)
 
     def test_share_and_feed(self):
-        self.client.login(username="herder", password="pass")
+        self.client.login(email="herder", password="pass")
 
         payload = {
             "type": "meme",

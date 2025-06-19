@@ -35,7 +35,7 @@ def generate_weekly_recap(user):
         tone = "neutral"
 
     lines = [
-        f"🫏 Weekly Recap for {user.username}",
+        f"🫏 Weekly Recap for {user.email}",
         f"You moved your azz {unlocked_days}/{total_days} days this week.",
         f"Shame Posts: {shames}",
         f"Memes Created: {memes}",

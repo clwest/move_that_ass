@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class MovementChallenge(models.Model):
@@ -29,5 +31,5 @@ class MovementSession(models.Model):
         ordering = ["-start_time"]
 
     def __str__(self) -> str:  # pragma: no cover
-        return f"{self.user.username} {self.start_time}"
+        return f"{self.user.email} {self.start_time}"
 

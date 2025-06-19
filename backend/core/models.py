@@ -1,11 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Profile(models.Model):
     """User profile linked to the Django auth user."""
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
     display_name = models.CharField(max_length=64)
     bio = models.TextField(blank=True)
     streak_count = models.IntegerField(default=0)
@@ -32,7 +34,7 @@ class PaddleLog(models.Model):
         ordering = ["-date"]
 
     def __str__(self) -> str:  # pragma: no cover
-        return f"PaddleLog {self.user.username} {self.date}"
+        return f"PaddleLog {self.user.email} {self.date}"
 
 
 class WorkoutLog(models.Model):
@@ -53,7 +55,7 @@ class WorkoutLog(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
-        return f"{self.user.username} {self.activity_type} {self.created_at}"
+        return f"{self.user.email} {self.activity_type} {self.created_at}"
 
 
 class MovementGoal(models.Model):
@@ -74,7 +76,7 @@ class MovementGoal(models.Model):
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
         return (
-            f"{self.user.username} {self.activity_type} {self.target_sessions}"
+            f"{self.user.email} {self.activity_type} {self.target_sessions}"
             f" {self.start_date}->{self.end_date}"
         )
 
@@ -95,4 +97,4 @@ class DailyGoal(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:  # pragma: no cover - simple representation
-        return f"{self.user.username} {self.goal} {self.date}"
+        return f"{self.user.email} {self.goal} {self.date}"

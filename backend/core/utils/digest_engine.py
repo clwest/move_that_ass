@@ -36,7 +36,7 @@ def generate_daily_digest(user):
         tone = "ashamed" if shame_count else "neutral"
 
     # Build digest lines
-    lines = [f"🐴 Donkey Daily Digest for {user.username}"]
+    lines = [f"🐴 Donkey Daily Digest for {user.email}"]
     lines.append(f"Mood: {mood}")
     lines.append(f"Herd: {herd_name} ({herd_size} members)")
     lines.append(f"Movement: {movement_status}")

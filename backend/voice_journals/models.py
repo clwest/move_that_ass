@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class VoiceJournal(models.Model):
@@ -17,4 +19,4 @@ class VoiceJournal(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:  # pragma: no cover
-        return f"VoiceJournal {self.user.username} {self.created_at}"
+        return f"VoiceJournal {self.user.email} {self.created_at}"

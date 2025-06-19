@@ -12,11 +12,7 @@ from .views import (
     log_workout,
     generate_workout_plan,
     generate_meal_plan_view,
-
-    daily_goal_view,
-    register_user,
-    CustomAuthToken,
-    logout_user,
+    CurrentProfileView,
 )
 
 router = DefaultRouter()
@@ -26,9 +22,7 @@ router.register(r"profiles", ProfileViewSet)
 router.register(r"paddle-logs", PaddleLogViewSet)
 
 urlpatterns = router.urls + [
-    path("register/", register_user),
-    path("login/", CustomAuthToken.as_view()),
-    path("logout/", logout_user),
+    path("profile/", CurrentProfileView.as_view()),
     path("dashboard/", dashboard_feed),
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),

@@ -40,7 +40,7 @@ CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 # Application definition
 
 INSTALLED_APPS = [
-    "accounts",  # custom user model must come before auth
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "core",
+    "accounts",
     "shame",
     "voice_journals",
     "prompts",

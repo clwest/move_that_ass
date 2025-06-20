@@ -8,6 +8,15 @@ source .venv/bin/activate
 celery -A server worker -l info --concurrency=4
 ```
 
+The worker uses the `REDIS_URL` environment variable for its broker.
+After it starts you can verify the connection with:
+
+```bash
+celery -A server inspect ping
+```
+
+You should see a `pong` response which confirms the worker is talking to Redis.
+
 API clients should POST to the kick-off endpoints which return a `task_id` and `202` status:
 
 - `POST /api/content/meme/`

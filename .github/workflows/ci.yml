@@ -19,6 +19,10 @@ jobs:
           python -m venv venv
           . venv/bin/activate
           pip install -r backend/requirements.txt
+      - name: Start Celery worker
+        run: |
+          . venv/bin/activate
+          make run-worker &
       - name: Run tests
         run: |
           . venv/bin/activate

@@ -6,11 +6,15 @@ from rest_framework.test import APITestCase
 import unittest
 
 
-@unittest.skip("legacy tests")
 class MovementAPITest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(email="mover@example.com", password="pass")
-        self.client.login(email="mover@example.com", password="pass")
+        self.user = User.objects.create_user(
+            username="mover", email="mover@example.com", password="pass", is_verified=True
+        )
+        from rest_framework_simplejwt.tokens import RefreshToken
+
+        refresh = RefreshToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
 
     def test_create_challenge_and_session(self):
         chal_resp = self.client.post(

@@ -16,13 +16,19 @@ class Badge {
   });
 
   factory Badge.fromJson(Map<String, dynamic> json) {
+    final code = json['code'] as String? ?? '';
+    final name = json['name'] as String? ?? '';
+    final emoji = json['emoji'] as String? ?? '';
+    final description = json['description'] as String? ?? '';
+    final isEarned = json['is_earned'] as bool? ?? false;
+    final earnedAt = json['earned_at'] as String?;
     return Badge(
-      code: json['code'] as String,
-      name: json['name'] as String,
-      emoji: json['emoji'] as String? ?? '',
-      description: json['description'] as String? ?? '',
-      isEarned: json['is_earned'] as bool? ?? false,
-      earnedAt: json['earned_at'] as String?,
+      code: code,
+      name: name,
+      emoji: emoji,
+      description: description,
+      isEarned: isEarned,
+      earnedAt: earnedAt,
     );
   }
 }

@@ -14,28 +14,12 @@ class HerdFeedPage extends StatefulWidget {
 }
 
 class _HerdFeedPageState extends State<HerdFeedPage> {
-  final PagingController<int, FeedItem> _pageController =
-      PagingController(firstPageKey: 1);
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController.addPageRequestListener(_fetch);
-  }
-
-  Future<void> _fetch(int page) async {
-    try {
-      final items = await ApiService.fetchHerdFeedPage(page);
-      final isLast = items.length < 10;
-      if (isLast) {
-        _pageController.appendLastPage(items);
-      } else {
-        _pageController.appendPage(items, page + 1);
-      }
-    } catch (e) {
-      _pageController.error = e;
-    }
-  }
+  late final PagingController<int, FeedItem> _pageController =
+      PagingController<int, FeedItem>(
+    getNextPageKey: (state) =>
+        state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    fetchPage: (pageKey) => ApiService.fetchHerdFeedPage(pageKey),
+  );
 
   Future<void> _toggleLike(FeedItem item) async {
     final res = await ApiService.toggleLike(item.id);
@@ -57,11 +41,15 @@ class _HerdFeedPageState extends State<HerdFeedPage> {
       appBar: AppBar(title: const Text('Herd Feed 🫏')),
       body: RefreshIndicator(
         onRefresh: () => Future.sync(() => _pageController.refresh()),
-        child: PagedListView<int, FeedItem>(
-          pagingController: _pageController,
-          padding: const EdgeInsets.all(16),
-          builderDelegate: PagedChildBuilderDelegate<FeedItem>(
-            itemBuilder: (context, item, index) => _buildCard(item),
+        child: PagingListener<int, FeedItem>(
+          controller: _pageController,
+          builder: (context, state, fetchNextPage) => PagedListView<int, FeedItem>(
+            state: state,
+            fetchNextPage: fetchNextPage,
+            padding: const EdgeInsets.all(16),
+            builderDelegate: PagedChildBuilderDelegate<FeedItem>(
+              itemBuilder: (context, item, index) => _buildCard(item),
+            ),
           ),
         ),
       ),

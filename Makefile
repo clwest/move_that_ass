@@ -13,7 +13,9 @@ run:
 	$(MANAGE) runserver
 
 run-backend:
+
 	@echo "Collecting static files if needed..."
+
 	$(MANAGE) collectstatic --noinput
 	@echo "Starting Django development server..."
 	$(MANAGE) runserver
@@ -40,7 +42,12 @@ test-backend:
 	cd $(BACKEND_DIR) && $(ACTIVATE) && pytest -q
 
 test-frontend:
-	cd $(FRONTEND_DIR) && if [ -n "$$FLUTTER_ROOT" ]; then flutter test; else echo "Skipping flutter tests – SDK not available"; fi
+	cd $(FRONTEND_DIR) && \
+	if [ -n "$$FLUTTER_ROOT" ]; then \
+	flutter test --machine --platform=vm; \
+	else \
+	echo "Skipping flutter tests – SDK not available"; \
+fi
 
 lint-backend:
 	@echo "Linting backend..."

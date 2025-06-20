@@ -23,5 +23,10 @@ def transcribe_voice(request):
         return Response({"error": "audio_file is required"}, status=400)
 
     journal = VoiceJournal.objects.create(user=request.user, audio_file=audio_file)
+    if process_voice_journal_task is None:
+        return Response(
+            {"detail": "Celery worker unavailable"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
     task = process_voice_journal_task.delay(journal.id)
     return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)

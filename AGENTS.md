@@ -128,6 +128,10 @@ Codex should:
 - `.venv/` and `db.sqlite3` must never be committed
 - `AZZ_MODE` env var may be used to toggle between safe/roast modes
 - Feature flag support (badges, voice journal, herds) is encouraged
+- Do **not** reintroduce deprecated allauth settings like
+  `ACCOUNT_AUTHENTICATION_METHOD`, `ACCOUNT_EMAIL_REQUIRED`, or
+  `ACCOUNT_USERNAME_REQUIRED`. The project uses `ACCOUNT_SIGNUP_FIELDS`
+  and `ACCOUNT_LOGIN_METHODS` instead.
 
 ---
 

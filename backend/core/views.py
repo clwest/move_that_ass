@@ -11,8 +11,9 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from server import celery_app
 
 from content.models import GeneratedMeme
 from shame.models import DailyLockout, DonkeyChallenge, Herd, ShamePost
@@ -343,3 +344,14 @@ class TaskStatusView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response({"state": result.status, "data": result.result})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def celery_ping(request):
+    """Check if the Celery worker is responsive."""
+    try:
+        celery_app.control.ping(timeout=1)
+    except Exception:
+        return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+    return Response({"status": "ok"})

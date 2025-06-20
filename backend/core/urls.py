@@ -2,10 +2,10 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (CurrentProfileView, PaddleLogViewSet, ProfileViewSet,
-                    TaskStatusView, UserViewSet, create_movement_goal,
-                    daily_goal_view, dashboard_feed, generate_meal_plan_view,
-                    generate_workout_plan, get_mood_avatar_view, log_workout,
-                    update_mood)
+                    TaskStatusView, UserViewSet, celery_ping,
+                    create_movement_goal, daily_goal_view, dashboard_feed,
+                    generate_meal_plan_view, generate_workout_plan,
+                    get_mood_avatar_view, log_workout, update_mood)
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -24,4 +24,5 @@ urlpatterns = router.urls + [
     path("log-workout/", log_workout),
     path("meal-plan/", generate_meal_plan_view),
     path("tasks/<uuid:task_id>/", TaskStatusView.as_view()),
+    path("celery-ping/", celery_ping),
 ]

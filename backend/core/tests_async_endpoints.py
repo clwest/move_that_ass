@@ -79,3 +79,10 @@ class AsyncEndpointsTest(APITestCase):
         tid = res.data["task_id"]
         self.assertEqual(tid, "44444444-4444-4444-4444-444444444444")
         self._check_status(tid, {"voice": "done"})
+
+    def test_celery_ping(self):
+        with patch("core.views.celery_app.control.ping") as mock_ping:
+            mock_ping.return_value = ["pong"]
+            res = self.client.get("/api/core/celery-ping/")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data["status"], "ok")

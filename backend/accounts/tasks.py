@@ -20,7 +20,4 @@ def send_verification_email(user_id: int):
         body=f"Click to verify: {url}",
         to=[user.email],
     )
-    if getattr(settings, "CELERY_DISABLED", "0") == "1":
-        msg.send(fail_silently=True)
-    else:
-        msg.send()
+    msg.send()

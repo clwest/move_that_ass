@@ -28,7 +28,7 @@ shell:
 
 
 run-worker:
-    cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info --concurrency=4
+    cd backend && ../venv/bin/python -m celery -A server worker -l info --concurrency=4
 
 
 lint:

@@ -199,7 +199,7 @@ class DashboardTodayAPITest(APITestCase):
                 "snacks": ["nuts"],
             }
 
-            response = self.client.get("/api/core/dashboard-today/")
+            response = self.client.get("/api/core/dashboard/")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("mood", response.data)

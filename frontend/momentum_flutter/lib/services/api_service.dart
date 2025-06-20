@@ -238,7 +238,7 @@ class ApiService {
       headers: headers,
       body: json.encode({'badge_code': badgeCode, 'message': message}),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to share badge');
     }
     final data = json.decode(response.body) as Map<String, dynamic>;

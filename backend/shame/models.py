@@ -117,6 +117,7 @@ class HerdPost(models.Model):
     image_url = models.URLField(blank=True, null=True)
     emoji = models.CharField(max_length=5, blank=True)
     badge_name = models.CharField(max_length=100, blank=True)
+    likes = models.ManyToManyField(User, related_name="liked_herd_posts", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

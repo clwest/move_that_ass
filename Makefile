@@ -5,7 +5,7 @@ PYTHON := python3
 MANAGE := $(PYTHON) backend/manage.py
 
 # Targets
-.PHONY: run migrate makemigrations superuser shell test lint clean reset
+.PHONY: run migrate makemigrations superuser shell test lint clean reset flutter_run
 
 run:
 	@echo "Starting Django development server..."
@@ -43,3 +43,7 @@ reset:
 	@echo "Resetting database (use with caution)..."
 	rm -f db.sqlite3
 	$(MANAGE) migrate
+
+flutter_run:
+	@echo "Starting Flutter app..."
+	cd frontend && flutter run

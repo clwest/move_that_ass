@@ -30,6 +30,14 @@ class MyApp extends StatelessWidget {
       future: _determineHome(),
 
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return MaterialApp(
+            title: 'MoveYourAzz',
+            theme: AppTheme.theme,
+            home: const LoginPage(),
+          );
+        }
+
         if (!snapshot.hasData) {
           return const MaterialApp(
             home: Scaffold(

@@ -41,7 +41,10 @@ def generate_challenge(
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a motivational donkey crafting short fitness challenges.",
+                        "content": (
+                            "You are a motivational donkey crafting short "
+                            "fitness challenges."
+                        ),
                     },
                     {"role": "user", "content": prompt},
                 ],

@@ -1,13 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from allauth.account.adapter import get_adapter
-from allauth.account.utils import setup_user_email
-from allauth.utils import get_username_max_length
-from allauth.socialaccount.models import EmailAddress
-from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError as DjangoValidationError
-from dj_rest_auth.serializers import LoginSerializer as BaseLoginSerializer
-from allauth.account import app_settings as allauth_account_settings
+
+from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
+from allauth.utils import generate_unique_username
 
 
 User = get_user_model()
@@ -21,18 +16,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 
-class RegisterWithUsernameSerializer(serializers.Serializer):
-    """Custom Register serializer avoiding deprecated allauth settings."""
+class CustomRegisterSerializer(BaseRegisterSerializer):
+    """Generate a username automatically from the email."""
 
-    username = serializers.CharField(
-        max_length=get_username_max_length(), required=True
-    )
-    email = serializers.EmailField(required=True)
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
-
-    def validate_username(self, username):
-        return get_adapter().clean_username(username)
 
     def validate_email(self, email):
         email = get_adapter().clean_email(email)

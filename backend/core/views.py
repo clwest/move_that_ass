@@ -3,20 +3,11 @@ from rest_framework import generics, viewsets
 
 User = get_user_model()
 import uuid
-from datetime import datetime, time, timedelta, timezone as dt_timezone
 
-from django.db.models import (
-    Case,
-    CharField,
-    DateTimeField,
-    F,
-    JSONField,
-    Q,
-    Value,
-)
-from django.db.models.functions import Cast, Coalesce
+from datetime import datetime, time
 
-from django.shortcuts import get_object_or_404
+
+
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -27,17 +18,10 @@ from rest_framework.response import Response
 from server import celery_app
 
 from content.models import GeneratedMeme
-from shame.models import DailyLockout, DonkeyChallenge, Herd, ShamePost
-from shame.serializers import (BadgeSerializer, BadgeShoutoutSerializer,
-                               DailyLockoutSerializer,
-                               DonkeyChallengeSerializer, HerdPostSerializer,
-                               HerdSerializer, ShamePostSerializer)
-from shame.utils.herdmood_engine import evaluate_herd_mood
-from shame.utils.shame_engine import check_and_trigger_shame
+from shame.models import ShamePost
 from voice_journals.models import VoiceJournal
-from voice_journals.serializers import VoiceJournalSerializer
 
-from .models import DailyGoal, MovementGoal, PaddleLog, Profile, WorkoutLog
+from .models import DailyGoal, MovementGoal, PaddleLog, Profile
 from .serializers import (DailyGoalSerializer, MovementGoalSerializer,
                           PaddleLogSerializer, ProfileSerializer,
                           UserSerializer, WorkoutLogSerializer)
@@ -339,10 +323,6 @@ def log_workout(request):
     return Response(WorkoutLogSerializer(workout).data)
 
 
-from .utils.digest_engine import generate_daily_digest
-from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
-from .utils.plan_engine import \
-    generate_workout_plan as ai_generate_workout_plan
 
 try:  # Celery may be optional in some setups
     from .tasks import generate_meal_plan_task, generate_plan_task

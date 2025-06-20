@@ -51,7 +51,9 @@ fi
 
 lint-backend:
 	@echo "Linting backend..."
-	flake8 backend/ || true
+
+	flake8 --select=F backend/
+
 
 clean:
 	@echo "Cleaning .pyc and __pycache__..."

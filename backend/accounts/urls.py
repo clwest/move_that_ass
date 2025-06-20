@@ -14,6 +14,14 @@ urlpatterns = [
     re_path(r"resend-email/?$", ResendEmailVerificationView.as_view(), name="rest_resend_email"),
 
     # Keep compatibility with allauth templates
-    re_path(r"^account-confirm-email/(?P<key>[-:\w]+)/$", TemplateView.as_view(), name="account_confirm_email"),
-    re_path(r"account-email-verification-sent/?$", TemplateView.as_view(), name="account_email_verification_sent"),
+    re_path(
+        r"^account-confirm-email/(?P<key>[-:\w]+)/$",
+        TemplateView.as_view(),
+        name="account_confirm_email",
+    ),
+    re_path(
+        r"account-email-verification-sent/?$",
+        TemplateView.as_view(),
+        name="account_email_verification_sent",
+    ),
 ]

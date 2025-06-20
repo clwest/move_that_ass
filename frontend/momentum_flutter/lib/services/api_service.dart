@@ -282,8 +282,16 @@ class ApiService {
   static Future<String> _uploadImage(String url, XFile file) async {
     final req = http.MultipartRequest('POST', Uri.parse(baseUrl + url));
     req.files.add(await http.MultipartFile.fromPath('file', file.path));
+    final auth = await AuthService.authHeaders();
+    req.headers.addAll(auth);
     final streamed = await req.send();
     final res = await http.Response.fromStream(streamed);
+    if (res.statusCode == 401) {
+      throw UnauthorizedException();
+    }
+    if (res.statusCode != 202 && res.statusCode != 200 && res.statusCode != 201) {
+      throw Exception('Failed to upload image');
+    }
     return jsonDecode(res.body)['task_id'] as String;
   }
 
@@ -317,3 +325,5 @@ class ApiService {
     await AuthService.logout();
   }
 }
+
+class UnauthorizedException implements Exception {}

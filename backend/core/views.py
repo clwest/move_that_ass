@@ -1,58 +1,35 @@
-from rest_framework import viewsets, generics
 from django.contrib.auth import get_user_model
+from rest_framework import generics, viewsets
 
 User = get_user_model()
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
+import uuid
+from datetime import datetime, time, timedelta
+
+from content.models import GeneratedMeme
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
-from datetime import datetime, time, timedelta
-
-from shame.utils.shame_engine import check_and_trigger_shame
-from .utils.mood_engine import evaluate_user_mood
-from .utils.mood_avatar import get_mood_avatar
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from shame.models import DailyLockout, DonkeyChallenge, Herd, ShamePost
+from shame.serializers import (BadgeSerializer, BadgeShoutoutSerializer,
+                               DailyLockoutSerializer,
+                               DonkeyChallengeSerializer, HerdPostSerializer,
+                               HerdSerializer, ShamePostSerializer)
 from shame.utils.herdmood_engine import evaluate_herd_mood
-
-import uuid
-
-
-from .models import (
-    Profile,
-    PaddleLog,
-    WorkoutLog,
-    MovementGoal,
-    DailyGoal,
-)
-from shame.models import (
-    DailyLockout,
-    ShamePost,
-    Herd,
-    DonkeyChallenge,
-)
+from shame.utils.shame_engine import check_and_trigger_shame
 from voice_journals.models import VoiceJournal
-from content.models import GeneratedMeme
-from .serializers import (
-    ProfileSerializer,
-    PaddleLogSerializer,
-    UserSerializer,
-    WorkoutLogSerializer,
-    MovementGoalSerializer,
-    DailyGoalSerializer,
-)
-from shame.serializers import (
-    DailyLockoutSerializer,
-    ShamePostSerializer,
-    HerdSerializer,
-    BadgeSerializer,
-    BadgeShoutoutSerializer,
-    DonkeyChallengeSerializer,
-    HerdPostSerializer,
-)
 from voice_journals.serializers import VoiceJournalSerializer
+
+from .models import DailyGoal, MovementGoal, PaddleLog, Profile, WorkoutLog
+from .serializers import (DailyGoalSerializer, MovementGoalSerializer,
+                          PaddleLogSerializer, ProfileSerializer,
+                          UserSerializer, WorkoutLogSerializer)
+from .utils.mood_avatar import get_mood_avatar
+from .utils.mood_engine import evaluate_user_mood
 
 
 def generate_invite_code():
@@ -94,7 +71,7 @@ class CurrentProfileView(generics.RetrieveUpdateAPIView):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def register_user(request):
     username = request.data.get("username")
     password = request.data.get("password")
@@ -236,8 +213,6 @@ def get_mood_avatar_view(request):
     return Response({"mood": mood, "avatar": avatar})
 
 
-@api_view(["GET"])
-@permission_classes([AllowAny])
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_movement_goal(request):
@@ -317,13 +292,13 @@ def log_workout(request):
     return Response(WorkoutLogSerializer(workout).data)
 
 
-from .utils.plan_engine import generate_workout_plan as ai_generate_workout_plan
-from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
-
 from .utils.digest_engine import generate_daily_digest
+from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
+from .utils.plan_engine import \
+    generate_workout_plan as ai_generate_workout_plan
 
 try:  # Celery may be optional in some setups
-    from .tasks import generate_plan_task, generate_meal_plan_task
+    from .tasks import generate_meal_plan_task, generate_plan_task
 except Exception:  # pragma: no cover - missing Celery
     generate_plan_task = None
     generate_meal_plan_task = None

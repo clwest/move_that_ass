@@ -21,6 +21,12 @@ make migrate
 make run-backend
 ```
 
+4. Install git hooks:
+
+```bash
+pre-commit install
+```
+
 ## Running Celery
 
 Background jobs are handled by Celery with Redis. Start a worker once your env is active:

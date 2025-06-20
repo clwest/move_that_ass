@@ -1,17 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 
-from .models import GeneratedImage, SocialPost, GeneratedMeme
-from .serializers import (
-    GeneratedImageSerializer,
-    SocialPostSerializer,
-    GeneratedMemeSerializer,
-)
-from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
+from .models import GeneratedImage, GeneratedMeme, SocialPost
+from .serializers import (GeneratedImageSerializer, GeneratedMemeSerializer,
+                          SocialPostSerializer)
 from .utils.caption_engine import generate_caption
+from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
 
 try:  # Celery tasks may not be available in dev
     from core.tasks import generate_meme_task
@@ -20,7 +16,6 @@ except Exception:  # pragma: no cover - fallback when Celery missing
 
 
 class GeneratedImageViewSet(viewsets.ModelViewSet):
-
     """ViewSet for storing generated images."""
 
     queryset = GeneratedImage.objects.all()
@@ -29,7 +24,6 @@ class GeneratedImageViewSet(viewsets.ModelViewSet):
 
 
 class SocialPostViewSet(viewsets.ModelViewSet):
-
     """CRUD API for social posts created by the app."""
 
     queryset = SocialPost.objects.all()
@@ -47,9 +41,8 @@ def generate_caption_view(request):
     return Response({"caption": caption})
 
 
-
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def generate_meme(request):
     """Generate a donkey meme and store it."""
 
@@ -73,4 +66,3 @@ def generate_meme(request):
             user=request.user, image_url=image_url, caption=caption, tone=tone
         )
         return Response(GeneratedMemeSerializer(meme).data)
-

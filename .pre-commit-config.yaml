@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: forbid-env-files
+        name: forbid-env-files
+        entry: bash -c 'for f in "$@"; do if [[ "$f" == *.env* ]]; then echo "Env files should not be committed: $f"; exit 1; fi; done'
+        language: system
+        types: [text]

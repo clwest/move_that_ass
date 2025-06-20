@@ -152,6 +152,7 @@ REST_FRAMEWORK = {
         "anon": "20/min",
         "user": "100/min",
         "dj_rest_auth": "3/min",
+        "celery_ping": "10/min",
     },
 }
 
@@ -161,7 +162,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = env("ALLOWED_ORIGINS", "").split(",")
 
 
 # Configure django-allauth for username/email login without warnings.
@@ -189,3 +190,12 @@ REST_AUTH_SERIALIZERS = {
     "LOGIN_SERIALIZER": "accounts.serializers.NoWarnLoginSerializer"
 }
 ACCOUNT_EMAIL_VERIFICATION = "none"
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 63072000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_REFERRER_POLICY = "same-origin"

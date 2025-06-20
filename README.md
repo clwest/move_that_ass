@@ -1,7 +1,9 @@
 # MoveYourAzz Development
 
-![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)
-
+| Status | Badge |
+|-------|-------|
+| CI | ![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg) |
+| Docker build | ![Docker build](https://github.com/OWNER/REPO/actions/workflows/docker-build.yml/badge.svg) |
 
 This repo contains the Django backend and Flutter frontend projects.
 

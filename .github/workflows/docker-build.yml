@@ -1,0 +1,21 @@
+name: Docker build
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images
+        run: docker compose -f docker-compose.prod.yml build --no-cache
+      - name: Smoke test redirect
+        run: |
+          docker compose -f docker-compose.prod.yml up -d
+          sleep 10
+          code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost)
+          docker compose -f docker-compose.prod.yml down
+          test "$code" = "301"

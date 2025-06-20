@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "prompts",
     "movement",
     "content",
+    "vision",
     "django_celery_results",
 ]
 

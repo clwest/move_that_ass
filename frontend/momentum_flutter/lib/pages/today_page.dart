@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import '../models/today_dashboard.dart';
@@ -15,6 +16,9 @@ import '../themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'voice_journal_page.dart';
 import 'challenge_result_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key});
@@ -28,6 +32,7 @@ class _TodayPageState extends State<TodayPage> {
 
   TodayDashboard? _dashboard;
   DailyGoal? _dailyGoal;
+  final ImagePicker _picker = ImagePicker();
 
   final TextEditingController _goalController = TextEditingController();
   final TextEditingController _targetController = TextEditingController(text: '1');
@@ -74,6 +79,83 @@ class _TodayPageState extends State<TodayPage> {
     setState(() {
       _future = _loadAll();
     });
+  }
+
+  Future<void> _showImageOptions() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                final status = await Permission.camera.request();
+                if (!status.isGranted) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Camera permission needed')),
+                  );
+                  return;
+                }
+                final file = await _picker.pickImage(source: ImageSource.camera);
+                if (file != null) {
+                  await _handleImage(file);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                final status = await Permission.photos.request();
+                if (!status.isGranted) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Camera permission needed')),
+                  );
+                  return;
+                }
+                final file = await _picker.pickImage(source: ImageSource.gallery);
+                if (file != null) {
+                  await _handleImage(file);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleImage(XFile file) async {
+    final id = await ApiService.uploadImage('/api/vision/identify/', file);
+    final result = await TaskPoller.poll(id);
+    if (!mounted) return;
+    final data = jsonDecode(result['data'] as String) as Map<String, dynamic>;
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('🏷  Name: ${data['label']}'),
+              Text('☠️ Dangerous: ${data['is_dangerous'] ? 'Yes' : 'No'}'),
+              InkWell(
+                onTap: () => launchUrl(Uri.parse(data['wiki_url'] as String)),
+                child: const Text('🔗 Wikipedia', style: TextStyle(color: Colors.blue)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -163,19 +245,30 @@ class _TodayPageState extends State<TodayPage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-
-          final meme = await ApiService.generateMeme();
-          if (!mounted) return;
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => MemeSharePage(meme: meme)),
-          );
-
-        },
-        child: const Icon(Icons.image),
-        backgroundColor: AppColors.donkeyGold,
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'vision',
+            backgroundColor: Colors.purple,
+            onPressed: _showImageOptions,
+            child: const Icon(Icons.camera_alt),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'meme',
+            onPressed: () async {
+              final meme = await ApiService.generateMeme();
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => MemeSharePage(meme: meme)),
+              );
+            },
+            child: const Icon(Icons.image),
+            backgroundColor: AppColors.donkeyGold,
+          ),
+        ],
       ),
     );
   }

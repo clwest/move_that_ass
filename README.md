@@ -7,11 +7,13 @@ This repo contains the Django backend and Flutter frontend projects.
 
 1. Copy `backend/.env.sample` to `backend/.env` and fill in the required API
    keys.
-2. Install backend dependencies and set up a virtual environment (or run
-   `make install-backend` which performs these steps):
+2. Install backend dependencies and set up a Python virtual environment
+   (or run `make install-backend` which performs these steps):
 
 ```bash
-make install-backend
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 3. Apply migrations and launch the server:
@@ -40,4 +42,3 @@ celery -A server worker -l info
 
 
 Make sure Redis is running and `REDIS_URL` in your `.env` points at the broker.
-

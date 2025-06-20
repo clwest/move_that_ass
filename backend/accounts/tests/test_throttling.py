@@ -35,6 +35,7 @@ class AuthThrottleTest(APITestCase):
             res = self.client.post(
                 "/api/auth/registration/",
                 {
+                    "username": f"user{i}",
                     "email": f"rl{i}@example.com",
                     "password1": "StrongPass123",
                     "password2": "StrongPass123",
@@ -45,6 +46,7 @@ class AuthThrottleTest(APITestCase):
         res = self.client.post(
             "/api/auth/registration/",
             {
+                "username": "user4",
                 "email": "rl4@example.com",
                 "password1": "StrongPass123",
                 "password2": "StrongPass123",

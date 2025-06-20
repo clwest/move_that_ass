@@ -41,6 +41,8 @@ class VisionIdentifyTest(APITestCase):
         self.assertEqual(json.loads(res.data["data"]), payload)
 
     def test_rate_limit(self):
+        from django.core.cache import cache
+        cache.clear()
         with patch("vision.views.identify_image_task.delay") as mock_delay:
             mock_delay.return_value.id = "1"
             for _ in range(5):

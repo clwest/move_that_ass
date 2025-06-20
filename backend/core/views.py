@@ -5,6 +5,17 @@ User = get_user_model()
 import uuid
 from datetime import datetime, time, timedelta
 
+from django.db.models import (
+    Case,
+    CharField,
+    DateTimeField,
+    F,
+    JSONField,
+    Q,
+    Value,
+)
+from django.db.models.functions import Cast, Coalesce
+
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
@@ -124,75 +135,107 @@ def dashboard_feed(request):
 
     herd = user.herds.first()
 
-    def in_herd(qs):
+    def apply_filters(qs):
+        if mine_only:
+            qs = qs.filter(user=user)
         if herd_only:
             if not herd:
                 return qs.none()
-            return qs.filter(user__in=herd.members.all())
-        return qs
+            qs = qs.filter(user__in=herd.members.all())
+        return qs.order_by()
 
-    def apply_filters(qs):
-        qs = qs.order_by("-id")
-        if mine_only:
-            qs = qs.filter(user=user)
-        return in_herd(qs)
+    shame_qs = ShamePost.objects.select_related("user")
+    meme_qs = GeneratedMeme.objects.select_related("user")
+    voice_qs = VoiceJournal.objects.select_related("user")
 
-    feed_items = []
+    if type_filter:
+        if type_filter == "shame":
+            meme_qs = voice_qs.none()
+        elif type_filter == "meme":
+            shame_qs = voice_qs.none()
+        elif type_filter == "voice":
+            shame_qs = meme_qs.none()
 
-    if not type_filter or type_filter == "shame":
-        for post in apply_filters(ShamePost.objects.all()):
-            dt = datetime.combine(post.date, time.min)
-            dt = timezone.make_aware(dt, timezone.utc) if timezone.is_naive(dt) else dt
-            item = {
-                "type": "shame",
-                "created_at": dt,
-                "content": {
-                    "text": post.caption,
-                    "image_url": post.image_url,
-                },
+    shame_qs = apply_filters(shame_qs).annotate(
+        created_at_dt=Cast(F("date"), DateTimeField()),
+        feed_type=Value("shame", output_field=CharField()),
+        text=F("caption"),
+        image=F("image_url"),
+        audio=Value(None, output_field=CharField()),
+        tags_value=Value(None, output_field=JSONField()),
+    ).values(
+        "feed_type",
+        "created_at_dt",
+        "text",
+        "image",
+        "audio",
+        "tags_value",
+        "user_id",
+    )
+
+    meme_qs = apply_filters(meme_qs).annotate(
+        created_at_dt=F("created_at"),
+        feed_type=Value("meme", output_field=CharField()),
+        text=F("caption"),
+        image=F("image_url"),
+        audio=Value(None, output_field=CharField()),
+        tags_value=Value(None, output_field=JSONField()),
+    ).values(
+        "feed_type",
+        "created_at_dt",
+        "text",
+        "image",
+        "audio",
+        "tags_value",
+        "user_id",
+    )
+
+    voice_qs = apply_filters(voice_qs).annotate(
+        created_at_dt=F("created_at"),
+        feed_type=Value("voice", output_field=CharField()),
+        text=F("summary"),
+        image=Value(None, output_field=CharField()),
+        audio=F("playback_audio_url"),
+        tags_value=Coalesce(F("tags"), Value([], output_field=JSONField())),
+    ).values(
+        "feed_type",
+        "created_at_dt",
+        "text",
+        "image",
+        "audio",
+        "tags_value",
+        "user_id",
+    )
+
+    combined = shame_qs.union(meme_qs, voice_qs, all=True).order_by("-created_at_dt")
+    items = list(combined[offset : offset + limit])
+
+    herd_member_ids = set()
+    if herd:
+        herd_member_ids = set(herd.members.values_list("id", flat=True))
+
+    results = []
+    for row in items:
+        content = {}
+        if row["feed_type"] == "shame":
+            content = {"text": row["text"], "image_url": row["image"]}
+        elif row["feed_type"] == "meme":
+            content = {"caption": row["text"], "image_url": row["image"]}
+        else:
+            content = {
+                "audio_url": row["audio"],
+                "tags": row["tags_value"] or [],
+                "text": row["text"],
             }
-            if herd and herd.members.filter(id=post.user_id).exists():
-                item["content"]["herd"] = herd.name
-            feed_items.append(item)
+        if herd and row["user_id"] in herd_member_ids:
+            content["herd"] = herd.name
+        results.append({
+            "type": row["feed_type"],
+            "created_at": row["created_at_dt"].isoformat(),
+            "content": content,
+        })
 
-    if not type_filter or type_filter == "meme":
-        for meme in apply_filters(GeneratedMeme.objects.all()):
-            dt = meme.created_at
-            item = {
-                "type": "meme",
-                "created_at": dt,
-                "content": {
-                    "caption": meme.caption,
-                    "image_url": meme.image_url,
-                },
-            }
-            if herd and herd.members.filter(id=meme.user_id).exists():
-                item["content"]["herd"] = herd.name
-            feed_items.append(item)
-
-    if not type_filter or type_filter == "voice":
-        for journal in apply_filters(VoiceJournal.objects.all()):
-            dt = journal.created_at
-            item = {
-                "type": "voice",
-                "created_at": dt,
-                "content": {
-                    "audio_url": journal.playback_audio_url,
-                    "tags": journal.tags or [],
-                    "text": journal.summary,
-                },
-            }
-            if herd and herd.members.filter(id=journal.user_id).exists():
-                item["content"]["herd"] = herd.name
-            feed_items.append(item)
-
-    feed_items.sort(key=lambda x: x["created_at"], reverse=True)
-
-    sliced = feed_items[offset : offset + limit]
-    for item in sliced:
-        item["created_at"] = item["created_at"].isoformat()
-
-    return Response(sliced)
+    return Response(results)
 
 
 @api_view(["POST"])

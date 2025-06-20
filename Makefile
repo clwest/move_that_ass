@@ -47,4 +47,4 @@ reset:
 
 flutter_run:
 	@echo "Starting Flutter app..."
-	cd frontend && cd momentum_flutter && flutter run
+	cd frontend && cd momentum_flutter && flutter run --no-publish-port

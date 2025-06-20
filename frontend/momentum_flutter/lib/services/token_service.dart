@@ -1,28 +1,36 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenService {
-  static final _storage = const FlutterSecureStorage();
-  static const _tokenKey = 'auth_token';
-  static String? _cachedToken;
+  static const _kAccess = 'access_token';
+  static const _kRefresh = 'refresh_token';
+  static String? _access;
+  static String? _refresh;
 
-  static Future<void> saveToken(String token) async {
-    _cachedToken = token;
-    await _storage.write(key: _tokenKey, value: token);
+  /// Load tokens from SharedPreferences into memory.
+  static Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    _access = prefs.getString(_kAccess);
+    _refresh = prefs.getString(_kRefresh);
   }
 
-  static Future<String?> getToken() async {
-    if (_cachedToken != null) return _cachedToken;
-    _cachedToken = await _storage.read(key: _tokenKey);
-    return _cachedToken;
+  static String? get accessToken => _access;
+  static String? get refreshToken => _refresh;
+
+  /// Persist tokens to storage and update cache.
+  static Future<void> save(String access, String refresh) async {
+    _access = access;
+    _refresh = refresh;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kAccess, access);
+    await prefs.setString(_kRefresh, refresh);
   }
 
-  static Future<void> clearToken() async {
-    _cachedToken = null;
-    await _storage.delete(key: _tokenKey);
-  }
-
-  static Future<bool> isAuthenticated() async {
-    final token = await getToken();
-    return token != null && token.isNotEmpty;
+  /// Clear tokens from storage and cache.
+  static Future<void> clear() async {
+    _access = null;
+    _refresh = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kAccess);
+    await prefs.remove(_kRefresh);
   }
 }

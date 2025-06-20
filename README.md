@@ -65,3 +65,9 @@ Flutter widget tests run headlessly. Use `make test-frontend`, which invokes
 required. If the Flutter SDK isn't installed, the Makefile will skip the tests
 and print a message instead.
 
+## Troubleshooting
+
+Stuck on the LoginPage even after entering valid credentials? Ensure the
+app was able to persist your tokens. Clearing app data or reinstalling often
+resolves local storage issues.
+

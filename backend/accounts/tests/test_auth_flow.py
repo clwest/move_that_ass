@@ -6,7 +6,9 @@ class FullAuthFlowTest(APITestCase):
         res = self.client.post(
             "/api/auth/registration/",
             {
-                "username": "tester1",
+
+                "username": "flow",
+
                 "email": "flow@example.com",
                 "password1": "SuperSecret123",
                 "password2": "SuperSecret123",
@@ -17,7 +19,9 @@ class FullAuthFlowTest(APITestCase):
 
         res = self.client.post(
             "/api/auth/login/",
-            {"username": "tester1", "email": "flow@example.com", "password": "SuperSecret123"},
+
+            {"username": "flow", "password": "SuperSecret123"},
+
             format="json",
         )
         self.assertEqual(res.status_code, 200)

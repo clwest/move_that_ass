@@ -21,9 +21,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class CustomRegisterSerializer(BaseRegisterSerializer):
-    """Require explicit username and email fields."""
 
-    username = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
+    """Serializer requiring username, email, and passwords."""
+
+    # No overrides needed; BaseRegisterSerializer already handles validation
+    pass
+
 
 

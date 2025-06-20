@@ -159,15 +159,18 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-# Configure django-allauth for username and email login.
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_SIGNUP_FIELDS = {
-    "username": {"required": True},
-    "email": {"required": True},
-    "password1": {"required": True},
-    "password2": {"required": True},
-}
+
+# Configure django-allauth for username based login.
+# Deprecated settings previously caused runtime warnings.
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "password1*",
+    "password2*",
+    "username",
+]
+ACCOUNT_LOGIN_METHODS = ["username"]
+
 SITE_ID = 1
 REST_USE_JWT = True
 REST_AUTH = {

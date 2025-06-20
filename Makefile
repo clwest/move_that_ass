@@ -43,11 +43,11 @@ test-backend:
 
 test-frontend:
 	cd $(FRONTEND_DIR) && \
-	if [ -n "$$FLUTTER_ROOT" ]; then \
+	if command -v flutter >/dev/null 2>&1; then \
 	flutter test --machine --platform=vm; \
 	else \
 	echo "Skipping flutter tests – SDK not available"; \
-fi
+	fi
 
 lint-backend:
 	@echo "Linting backend..."

@@ -1,8 +1,9 @@
 import requests
 import os
+from django.conf import settings
 
-ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "EXAVITQu4vr4xnSDxMaL")
+ELEVENLABS_API_KEY = settings.ELEVENLABS_API_KEY
+VOICE_ID = settings.VOICE_ID
 
 
 def text_to_speech(text, output_path="output.mp3"):

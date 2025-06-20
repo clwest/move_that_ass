@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -46,5 +46,10 @@ def generate_meme(request):
     """Kick off meme generation via Celery."""
 
     tone = request.data.get("tone", "funny")
+    if generate_meme_task is None:
+        return Response(
+            {"detail": "Celery worker unavailable"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
     task = generate_meme_task.delay(tone)
     return Response({"task_id": task.id}, status=202)

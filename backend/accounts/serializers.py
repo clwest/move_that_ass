@@ -9,9 +9,11 @@ User = get_user_model()
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "is_verified", "date_joined")
-        read_only_fields = ("email", "is_verified", "date_joined")
+        fields = ("username", "email", "is_verified", "date_joined")
+        read_only_fields = ("username", "email", "is_verified", "date_joined")
 
 
 class CustomRegisterSerializer(BaseRegisterSerializer):
-    username = None
+    """Allow registration with username and email."""
+
+    username = serializers.CharField(required=True)

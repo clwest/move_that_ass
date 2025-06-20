@@ -5,14 +5,19 @@ class FullAuthFlowTest(APITestCase):
     def test_register_login_profile_logout(self):
         res = self.client.post(
             "/api/auth/registration/",
-            {"email": "flow@example.com", "password1": "SuperSecret123", "password2": "SuperSecret123"},
+            {
+                "username": "flowuser",
+                "email": "flow@example.com",
+                "password1": "SuperSecret123",
+                "password2": "SuperSecret123",
+            },
             format="json",
         )
         self.assertEqual(res.status_code, 201)
 
         res = self.client.post(
             "/api/auth/login/",
-            {"email": "flow@example.com", "password": "SuperSecret123"},
+            {"username": "flowuser", "password": "SuperSecret123"},
             format="json",
         )
         self.assertEqual(res.status_code, 200)
@@ -28,4 +33,3 @@ class FullAuthFlowTest(APITestCase):
 
         res = self.client.get("/api/core/profile/")
         self.assertIn(res.status_code, [200, 401])
-

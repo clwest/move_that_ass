@@ -12,6 +12,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _password1Controller = TextEditingController();
   final _password2Controller = TextEditingController();
@@ -25,12 +26,13 @@ class _RegisterPageState extends State<RegisterPage> {
     });
     try {
       await AuthService.register(
+        _usernameController.text.trim(),
         _emailController.text.trim(),
         _password1Controller.text,
         _password2Controller.text,
       );
       await AuthService.login(
-        _emailController.text.trim(),
+        _usernameController.text.trim(),
         _password1Controller.text,
       );
       if (!mounted) return;
@@ -46,6 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _emailController.dispose();
     _password1Controller.dispose();
     _password2Controller.dispose();
@@ -61,6 +64,11 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
+            ),
+            const SizedBox(height: 12),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),

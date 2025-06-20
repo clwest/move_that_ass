@@ -8,8 +8,7 @@ import dj_database_url
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ROOT_DIR = BASE_DIR.parent
-load_dotenv(ROOT_DIR / ".env")
+load_dotenv(BASE_DIR / ".env")
 
 IS_TESTING = os.environ.get("RUNNING_TESTS") == "1" or "test" in os.getenv(
     "DJANGO_COMMAND", ""

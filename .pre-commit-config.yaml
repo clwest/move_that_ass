@@ -10,6 +10,7 @@ repos:
     hooks:
       - id: forbid-env-files
         name: forbid-env-files
-        entry: bash -c 'for f in "$@"; do if [[ "$f" == *.env* ]]; then echo "Env files should not be committed: $f"; exit 1; fi; done'
+        entry: >
+          bash -c 'for f in "$@"; do if [[ "$f" == *.env* ]]; then echo "Env files should not be committed: $f"; exit 1; fi; done'
         language: system
         types: [text]

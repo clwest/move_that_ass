@@ -357,7 +357,7 @@ class _TodayPageState extends State<TodayPage> {
               onPressed: () async {
                 final result = await Navigator.of(context).pushNamed(
                   ChallengeResultPage.routeName,
-                  arguments: challenge.text,
+                  arguments: {'id': challenge.id, 'text': challenge.text},
                 );
                 if (result == true && mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(

@@ -65,12 +65,15 @@ class ApiService {
     return data.map((e) => Badge.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  static Future<List<HerdPost>> fetchHerdFeed() async {
+  static Future<List<FeedItem>> Function(int page) fetchHerdFeedPage =
+      _fetchHerdFeedPage;
+
+  static Future<List<FeedItem>> _fetchHerdFeedPage(int page) async {
     final headers = {'Content-Type': 'application/json'};
     headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
-      Uri.parse('$baseUrl/api/core/herd-feed/'),
+      Uri.parse('$baseUrl/api/core/herd-feed/?page=$page'),
       headers: headers,
     );
 
@@ -78,8 +81,9 @@ class ApiService {
       throw Exception('Failed to load herd feed');
     }
 
-    final List data = json.decode(response.body) as List;
-    return data.map((e) => HerdPost.fromJson(e as Map<String, dynamic>)).toList();
+    final Map<String, dynamic> data = json.decode(response.body);
+    final List posts = data['results'] as List? ?? [];
+    return posts.map((e) => FeedItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   static Future<UserProfile> fetchProfile() async {
@@ -250,22 +254,26 @@ class ApiService {
     );
   }
 
-  static Future<Map<String, dynamic>> uploadVoiceJournal(File file) async {
+  static Future<String> Function(String path) uploadVoice = _uploadVoice;
+
+  static Future<String> _uploadVoice(String path) async {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('$baseUrl/api/core/upload-voice/'),
     );
     final auth = await AuthService.authHeaders();
     request.headers.addAll(auth);
-    request.files.add(await http.MultipartFile.fromPath('audio_file', file.path));
+    request.files.add(await http.MultipartFile.fromPath('audio_file', path));
 
     final response = await request.send();
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception('Failed to upload voice journal');
+    if (response.statusCode != 202 && response.statusCode != 200 &&
+        response.statusCode != 201) {
+      throw Exception('Failed to upload voice');
     }
 
     final body = await response.stream.bytesToString();
-    return json.decode(body) as Map<String, dynamic>;
+    final data = json.decode(body) as Map<String, dynamic>;
+    return data['task_id'] as String;
   }
 
   static Future<String> Function(String url, XFile file) uploadImage = _uploadImage;
@@ -276,6 +284,32 @@ class ApiService {
     final streamed = await req.send();
     final res = await http.Response.fromStream(streamed);
     return jsonDecode(res.body)['task_id'] as String;
+  }
+
+  static Future<Map<String, dynamic>> completeChallenge(int id) async {
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
+    final res = await http.post(
+      Uri.parse('$baseUrl/api/core/movement/challenges/$id/complete/'),
+      headers: headers,
+    );
+    if (res.statusCode != 200 && res.statusCode != 201) {
+      throw Exception('Failed to complete challenge');
+    }
+    return json.decode(res.body) as Map<String, dynamic>;
+  }
+
+  static Future<Map<String, dynamic>> toggleLike(int id) async {
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
+    final res = await http.post(
+      Uri.parse('$baseUrl/api/core/herd-feed/$id/like/'),
+      headers: headers,
+    );
+    if (res.statusCode != 200) {
+      throw Exception('Failed to like');
+    }
+    return json.decode(res.body) as Map<String, dynamic>;
   }
 
   static Future<void> logout() async {

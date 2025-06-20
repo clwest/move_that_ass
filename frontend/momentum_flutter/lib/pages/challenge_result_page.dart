@@ -4,7 +4,8 @@ import '../services/api_service.dart';
 import '../utils/text_utils.dart';
 
 class ChallengeResultPage extends StatefulWidget {
-  const ChallengeResultPage({Key? key, required this.challengeText}) : super(key: key);
+  const ChallengeResultPage({Key? key, required this.challengeId, required this.challengeText}) : super(key: key);
+  final int challengeId;
   final String challengeText;
 
   static const routeName = '/challenge-result';
@@ -16,6 +17,49 @@ class ChallengeResultPage extends StatefulWidget {
 class _ChallengeResultPageState extends State<ChallengeResultPage> {
   final TextEditingController _noteController = TextEditingController();
   bool _submitting = false;
+
+  Future<void> _complete() async {
+    setState(() => _submitting = true);
+    try {
+      final res = await ApiService.completeChallenge(widget.challengeId);
+      if (!mounted) return;
+      if (res['badge_code'] != null) {
+        await showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Badge Earned!'),
+            content: Text(res['badge_name'] as String? ?? ''),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await ApiService.shareBadge(res['badge_code'] as String);
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Badge shared!')),
+                    );
+                  }
+                },
+                child: const Text('Share'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        );
+      }
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Failed')));
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   Future<void> _shareResult() async {
     setState(() => _submitting = true);
@@ -66,11 +110,7 @@ class _ChallengeResultPageState extends State<ChallengeResultPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _submitting
-                  ? null
-                  : () {
-                      Navigator.pop(context, true);
-                    },
+              onPressed: _submitting ? null : _complete,
               child: Text('Mark Complete',
                   style: Theme.of(context).textTheme.labelLarge),
             ),

@@ -53,8 +53,12 @@ class MyApp extends StatelessWidget {
           routes: {
             VoiceJournalPage.routeName: (_) => const VoiceJournalPage(),
             ChallengeResultPage.routeName: (context) {
-              final args = ModalRoute.of(context)!.settings.arguments as String;
-              return ChallengeResultPage(challengeText: args);
+              final args = ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
+              return ChallengeResultPage(
+                challengeId: args['id'] as int,
+                challengeText: args['text'] as String,
+              );
             },
           },
         );

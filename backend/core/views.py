@@ -5,7 +5,6 @@ User = get_user_model()
 import uuid
 from datetime import datetime, time, timedelta
 
-from content.models import GeneratedMeme
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status
@@ -14,6 +13,8 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from content.models import GeneratedMeme
 from shame.models import DailyLockout, DonkeyChallenge, Herd, ShamePost
 from shame.serializers import (BadgeSerializer, BadgeShoutoutSerializer,
                                DailyLockoutSerializer,
@@ -315,20 +316,8 @@ def generate_workout_plan(request):
     if not isinstance(activity_types, list):
         activity_types = [str(activity_types)] if activity_types else []
 
-    if generate_plan_task:
-        try:
-            result = generate_plan_task.delay(goal, activity_types, tone)
-            return Response({"task_id": result.id}, status=202)
-        except Exception:  # pragma: no cover - worker/broker failure
-            plan = ai_generate_workout_plan(
-                goal=goal, activity_types=activity_types, tone=tone
-            )
-    else:
-        plan = ai_generate_workout_plan(
-            goal=goal, activity_types=activity_types, tone=tone
-        )
-
-    return Response(plan)
+    task = generate_plan_task.delay(goal, activity_types, tone)
+    return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(["POST"])
@@ -339,14 +328,18 @@ def generate_meal_plan_view(request):
     tone = request.data.get("tone", "supportive")
     mood = request.data.get("mood")
 
-    if generate_meal_plan_task:
-        try:
-            result = generate_meal_plan_task.delay(goal, tone, mood)
-            return Response({"task_id": result.id}, status=202)
-        except Exception:  # pragma: no cover - worker/broker failure
-            plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
-            return Response(plan)
-    else:
-        plan = ai_generate_meal_plan(goal=goal, tone=tone, mood=mood)
+    task = generate_meal_plan_task.delay(goal, tone, mood)
+    return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
 
-    return Response(plan)
+
+class TaskStatusView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, task_id):
+        from django_celery_results.models import TaskResult
+
+        result = TaskResult.objects.filter(task_id=str(task_id)).first()
+        if not result:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"state": result.status, "data": result.result})

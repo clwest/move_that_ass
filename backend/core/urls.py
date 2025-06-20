@@ -1,19 +1,11 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import path
-from .views import (
-    UserViewSet,
-    ProfileViewSet,
-    PaddleLogViewSet,
-    dashboard_feed,
-    update_mood,
-    get_mood_avatar_view,
-    create_movement_goal,
-    daily_goal_view,
-    log_workout,
-    generate_workout_plan,
-    generate_meal_plan_view,
-    CurrentProfileView,
-)
+from rest_framework.routers import DefaultRouter
+
+from .views import (CurrentProfileView, PaddleLogViewSet, ProfileViewSet,
+                    TaskStatusView, UserViewSet, create_movement_goal,
+                    daily_goal_view, dashboard_feed, generate_meal_plan_view,
+                    generate_workout_plan, get_mood_avatar_view, log_workout,
+                    update_mood)
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -26,10 +18,10 @@ urlpatterns = router.urls + [
     path("dashboard/", dashboard_feed),
     path("update-mood/", update_mood),
     path("mood-avatar/", get_mood_avatar_view),
-
     path("daily-goal/", daily_goal_view),
     path("create-goal/", create_movement_goal),
-    path("generate-workout-plan/", generate_workout_plan),
+    path("workout-plan/", generate_workout_plan),
     path("log-workout/", log_workout),
-    path("generate-meal-plan/", generate_meal_plan_view),
+    path("meal-plan/", generate_meal_plan_view),
+    path("tasks/<uuid:task_id>/", TaskStatusView.as_view()),
 ]

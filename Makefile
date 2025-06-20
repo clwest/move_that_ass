@@ -28,7 +28,7 @@ lint-backend:
         cd $(BACKEND_DIR) && black . && isort . && flake8
 
 run-worker:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info
+        cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info --concurrency=4
 
 # == Frontend Commands ==
 run-frontend:

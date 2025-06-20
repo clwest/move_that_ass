@@ -7,11 +7,10 @@ from .models import GeneratedImage, GeneratedMeme, SocialPost
 from .serializers import (GeneratedImageSerializer, GeneratedMemeSerializer,
                           SocialPostSerializer)
 from .utils.caption_engine import generate_caption
-from .utils.meme_engine import fetch_donkey_gif, generate_meme_caption
 
-try:  # Celery tasks may not be available in dev
+try:
     from core.tasks import generate_meme_task
-except Exception:  # pragma: no cover - fallback when Celery missing
+except Exception:  # pragma: no cover - Celery not loaded
     generate_meme_task = None
 
 
@@ -42,27 +41,10 @@ def generate_caption_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_meme(request):
-    """Generate a donkey meme and store it."""
+    """Kick off meme generation via Celery."""
 
     tone = request.data.get("tone", "funny")
-
-    if generate_meme_task:
-        try:
-            result = generate_meme_task.delay(tone)
-            return Response({"task_id": result.id}, status=202)
-        except Exception:  # pragma: no cover - worker or broker failure
-            image_url = fetch_donkey_gif()
-            caption = generate_meme_caption(tone)
-            meme = GeneratedMeme.objects.create(
-                user=request.user, image_url=image_url, caption=caption, tone=tone
-            )
-            return Response(GeneratedMemeSerializer(meme).data)
-    else:
-        image_url = fetch_donkey_gif()
-        caption = generate_meme_caption(tone)
-        meme = GeneratedMeme.objects.create(
-            user=request.user, image_url=image_url, caption=caption, tone=tone
-        )
-        return Response(GeneratedMemeSerializer(meme).data)
+    task = generate_meme_task.delay(tone)
+    return Response({"task_id": task.id}, status=202)

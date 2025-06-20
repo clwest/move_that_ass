@@ -18,13 +18,13 @@ class AuthThrottleTest(APITestCase):
         for _ in range(3):
             res = self.client.post(
                 "/api/auth/login/",
-                {"email": "ratelimit@example.com", "password": "wrong"},
+                {"username": "ratelimit", "password": "wrong"},
                 format="json",
             )
             self.assertEqual(res.status_code, 400)
         res = self.client.post(
             "/api/auth/login/",
-            {"email": "ratelimit@example.com", "password": "wrong"},
+            {"username": "ratelimit", "password": "wrong"},
             format="json",
         )
         self.assertEqual(res.status_code, 429)
@@ -35,6 +35,9 @@ class AuthThrottleTest(APITestCase):
             res = self.client.post(
                 "/api/auth/registration/",
                 {
+
+                    "username": f"rl{i}",
+
                     "email": f"rl{i}@example.com",
                     "password1": "StrongPass123",
                     "password2": "StrongPass123",
@@ -45,6 +48,9 @@ class AuthThrottleTest(APITestCase):
         res = self.client.post(
             "/api/auth/registration/",
             {
+
+                "username": "rl4",
+
                 "email": "rl4@example.com",
                 "password1": "StrongPass123",
                 "password2": "StrongPass123",

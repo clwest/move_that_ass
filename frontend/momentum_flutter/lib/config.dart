@@ -11,8 +11,9 @@ class AppConfig {
   /// 3. Defaults to `http://localhost:8000` (or `http://10.0.2.2:8000` on the
   ///    Android emulator).
   AppConfig({String? baseUrl}) {
+    final envBaseUrl = const String.fromEnvironment('API_BASE_URL');
     AppConfig.baseUrl =
-        baseUrl ?? const String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
+        baseUrl ?? (envBaseUrl.isNotEmpty ? envBaseUrl : _defaultBaseUrl);
   }
 
   static String get _defaultBaseUrl {

@@ -1,8 +1,17 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
+from dj_rest_auth.registration.serializers import (
+    RegisterSerializer as BaseRegisterSerializer,
+    setup_user_email,
+)
+from dj_rest_auth.serializers import LoginSerializer as BaseLoginSerializer
 from allauth.utils import generate_unique_username
+from allauth.account import app_settings as allauth_account_settings
+from allauth.account.models import EmailAddress
+from allauth.account.adapter import get_adapter
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 User = get_user_model()
@@ -16,8 +25,15 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 
-class CustomRegisterSerializer(BaseRegisterSerializer):
-    """Generate a username automatically from the email."""
+class RegisterWithUsernameSerializer(BaseRegisterSerializer):
+    """Generate a username automatically from the email if missing."""
+
+    username = serializers.CharField(required=False, allow_blank=True)
+
+    def validate_username(self, username):
+        if not username:
+            username = generate_unique_username([self.data.get("email", "")])
+        return get_adapter().clean_username(username)
 
 
     def validate_email(self, email):

@@ -13,7 +13,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ("username", "email", "is_verified", "date_joined")
 
 
-class CustomRegisterSerializer(BaseRegisterSerializer):
-    """Allow registration with username and email."""
+from allauth.utils import generate_unique_username
 
-    username = serializers.CharField(required=True)
+
+class CustomRegisterSerializer(BaseRegisterSerializer):
+    """Generate a username automatically from the email."""
+
+    username = None
+
+    def get_cleaned_data(self):
+        data = super().get_cleaned_data()
+        email = data.get("email")
+        data["username"] = generate_unique_username([email]) if email else "user"
+        return data

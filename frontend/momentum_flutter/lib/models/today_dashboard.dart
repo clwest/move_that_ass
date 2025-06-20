@@ -8,11 +8,11 @@ class Challenge {
   Challenge({required this.id, required this.text, required this.expiresAt});
 
   factory Challenge.fromJson(Map<String, dynamic> json) {
-    return Challenge(
-      id: json['id'] as int,
-      text: json['text'] as String,
-      expiresAt: DateTime.parse(json['expires_at'] as String),
-    );
+    final id = json['id'] as int? ?? 0;
+    final text = json['text'] as String? ?? '';
+    final expiresRaw = json['expires_at'] as String? ?? '';
+    final expiresAt = DateTime.tryParse(expiresRaw) ?? DateTime.now();
+    return Challenge(id: id, text: text, expiresAt: expiresAt);
   }
 }
 
@@ -34,13 +34,22 @@ class TodayDashboard {
   });
 
   factory TodayDashboard.fromJson(Map<String, dynamic> json) {
+    final mood = json['mood'] as String? ?? '';
+    final moodAvatar = json['mood_avatar'] as String? ?? '';
+    final challenge = json['challenge'] != null
+        ? Challenge.fromJson(json['challenge'] as Map<String, dynamic>)
+        : null;
+    final workoutPlan =
+        (json['workout_plan'] as List?)?.map((e) => e.toString()).toList();
+    final mealPlan = json['meal_plan'] as Map<String, dynamic>?;
+    final recap = json['azz_recap'] as String? ?? '';
     return TodayDashboard(
-      mood: json['mood'] as String,
-      moodAvatar: json['mood_avatar'] as String? ?? '',
-      challenge: json['challenge'] != null ? Challenge.fromJson(json['challenge'] as Map<String, dynamic>) : null,
-      workoutPlan: (json['workout_plan'] as List?)?.map((e) => e.toString()).toList(),
-      mealPlan: json['meal_plan'] as Map<String, dynamic>?,
-      recap: json['azz_recap'] as String? ?? '',
+      mood: mood,
+      moodAvatar: moodAvatar,
+      challenge: challenge,
+      workoutPlan: workoutPlan,
+      mealPlan: mealPlan,
+      recap: recap,
     );
   }
 }

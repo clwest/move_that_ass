@@ -12,11 +12,15 @@ class HerdPost {
   });
 
   factory HerdPost.fromJson(Map<String, dynamic> json) {
+    final type = json['type'] as String? ?? '';
+    final user = json['user'] as String? ?? '';
+    final createdRaw = json['created_at'] as String? ?? '';
+    final createdAt = DateTime.tryParse(createdRaw) ?? DateTime.now();
     return HerdPost(
-      type: json['type'] as String,
-      user: json['user'] as String,
+      type: type,
+      user: user,
       content: json['content'] as Map<String, dynamic>? ?? {},
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: createdAt,
     );
   }
 }

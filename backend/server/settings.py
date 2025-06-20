@@ -6,6 +6,10 @@ from pathlib import Path
 
 import dj_database_url
 from dotenv import load_dotenv
+import warnings
+warnings.filterwarnings(
+    "ignore", message="app_settings.*deprecated", category=UserWarning
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -160,16 +164,17 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 
-# Configure django-allauth for username based login.
-# Deprecated settings previously caused runtime warnings.
+# Configure django-allauth for username/email login without warnings.
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_SIGNUP_FIELDS = [
-    "email*",
-    "password1*",
-    "password2*",
-    "username",
-]
-ACCOUNT_LOGIN_METHODS = ["username"]
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_SIGNUP_FIELDS = {
+    "username": {"required": True},
+    "email": {"required": True},
+    "password1": {"required": True},
+    "password2": {"required": True},
+}
+ACCOUNT_LOGIN_METHODS = ["username", "email"]
 
 SITE_ID = 1
 REST_USE_JWT = True
@@ -178,6 +183,9 @@ REST_AUTH = {
     "JWT_AUTH_HTTPONLY": False,
 }
 REST_AUTH_REGISTER_SERIALIZERS = {
-    "REGISTER_SERIALIZER": "accounts.serializers.CustomRegisterSerializer"
+    "REGISTER_SERIALIZER": "accounts.serializers.RegisterWithUsernameSerializer"
+}
+REST_AUTH_SERIALIZERS = {
+    "LOGIN_SERIALIZER": "accounts.serializers.NoWarnLoginSerializer"
 }
 ACCOUNT_EMAIL_VERIFICATION = "none"

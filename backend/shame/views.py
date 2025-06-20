@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.core.paginator import Paginator
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -157,14 +158,15 @@ def share_badge(request):
     )
 
     if not herd:
-        return Response({"message": "Badge saved, no herd to notify."})
+        return Response({"message": "Badge saved, no herd to notify."}, status=201)
 
     return Response(
         {
             "message": "Badge shared with herd.",
             "herd": herd.name,
             "shoutout": BadgeShoutoutSerializer(shoutout).data,
-        }
+        },
+        status=201,
     )
 
 
@@ -192,27 +194,31 @@ def share_to_herd(request):
 def herd_feed(request):
     herd = request.user.herds.first()
     if not herd:
-        return Response([])
+        return Response({"results": []})
 
-    posts = HerdPost.objects.filter(user__in=herd.members.all()).order_by(
-        "-created_at"
-    )[:50]
+    posts = HerdPost.objects.filter(user__in=herd.members.all()).order_by("-created_at")
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
 
-    serialized = [
-        {
-            "type": p.type,
-            "user": p.user.username,
-            "content": {
-                "caption": p.caption,
-                "image_url": p.image_url,
-                "emoji": p.emoji,
-                "name": p.badge_name,
-            },
-            "created_at": p.created_at.isoformat(),
-        }
-        for p in posts
-    ]
-    return Response(serialized)
+    serializer = HerdPostSerializer(
+        page_obj.object_list, many=True, context={"request": request}
+    )
+    return Response({"results": serializer.data, "count": paginator.count})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def toggle_like(request, pk):
+    post = get_object_or_404(HerdPost, pk=pk)
+    user = request.user
+    if post.likes.filter(id=user.id).exists():
+        post.likes.remove(user)
+        liked = False
+    else:
+        post.likes.add(user)
+        liked = True
+    return Response({"like_count": post.likes.count(), "liked_by_me": liked})
 
 
 @api_view(["GET"])

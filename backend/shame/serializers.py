@@ -59,7 +59,19 @@ class DonkeyChallengeSerializer(serializers.ModelSerializer):
 
 
 class HerdPostSerializer(serializers.ModelSerializer):
+    like_count = serializers.SerializerMethodField()
+    liked_by_me = serializers.SerializerMethodField()
+
     class Meta:
         model = HerdPost
         fields = "__all__"
         read_only_fields = ["user", "created_at"]
+
+    def get_like_count(self, obj):
+        return obj.likes.count()
+
+    def get_liked_by_me(self, obj):
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            return obj.likes.filter(id=request.user.id).exists()
+        return False

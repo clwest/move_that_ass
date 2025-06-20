@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 
-import '../models/today_dashboard.dart';
+import '../models/dashboard_item.dart';
 import '../services/api_service.dart';
 import '../models/daily_goal.dart';
 import 'badge_grid_page.dart';
@@ -15,7 +15,6 @@ import 'login_page.dart';
 import '../themes/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'voice_journal_page.dart';
-import 'challenge_result_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,7 +30,7 @@ class TodayPage extends StatefulWidget {
 class _TodayPageState extends State<TodayPage> {
   late Future<void> _future;
 
-  TodayDashboard? _dashboard;
+  List<DashboardItem> _items = [];
   DailyGoal? _dailyGoal;
   final ImagePicker _picker = ImagePicker();
 
@@ -69,11 +68,11 @@ class _TodayPageState extends State<TodayPage> {
     final results = await Future.wait([
       ApiService.fetchProfile(),
       ApiService.fetchDailyGoal(),
-      ApiService.fetchTodayDashboard(),
+      ApiService.fetchDashboard(),
     ]);
     if (!mounted) return;
     _dailyGoal = results[1] as DailyGoal?;
-    _dashboard = results[2] as TodayDashboard;
+    _items = results[2] as List<DashboardItem>;
   }
 
   Future<void> _refresh() async {
@@ -241,16 +240,12 @@ class _TodayPageState extends State<TodayPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
-            final dashboard = _dashboard!;
+            final items = _items;
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
                 _buildGoalCard(),
-                _buildMood(dashboard),
-                _buildChallenge(dashboard.challenge),
-                _buildWorkout(dashboard.workoutPlan),
-                _buildMeal(dashboard.mealPlan),
-                _buildRecap(dashboard.recap),
+                ...items.map(_buildItem).toList(),
               ],
             );
           },
@@ -332,144 +327,74 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
-  Widget _buildMood(TodayDashboard dashboard) {
-    return Card(
-      child: ListTile(
-        leading: Text(
-          dashboard.moodAvatar.isNotEmpty ? dashboard.moodAvatar : '😶',
-          style: const TextStyle(fontSize: 32, inherit: true),
-        ),
-        title: Text('Current Mood: ${cleanText(dashboard.mood)}'),
-      ),
-    );
-  }
+}
 
-  Widget _buildChallenge(Challenge? challenge) {
-    if (challenge == null) {
-      return const SizedBox.shrink();
-    }
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+  Widget _buildItem(DashboardItem item) {
+    Widget content;
+    switch (item.type) {
+      case 'meme':
+        content = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              cleanText(challenge.text),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Deadline: ${DateFormat.yMMMMd().add_jm().format(challenge.expiresAt)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.of(context).pushNamed(
-                  ChallengeResultPage.routeName,
-                  arguments: {'id': challenge.id, 'text': challenge.text},
-                );
-                if (result == true && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Challenge completed!')),
-                  );
-                  await _refresh();
-                }
-              },
-              child: Text('Log Result',
-                  style: Theme.of(context).textTheme.labelLarge),
-            ),
+            if ((item.content['image_url'] as String?)?.isNotEmpty ?? false)
+              Image.network(item.content['image_url'] as String),
+            if (item.content['caption'] != null) ...[
+              const SizedBox(height: 8),
+              Text(cleanText(item.content['caption'])),
+            ],
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWorkout(List<String>? plan) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+        );
+        break;
+      case 'shame':
+        content = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Workout Plan',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            if (plan == null || plan.isEmpty)
-              const Text('No plan set today')
-            else
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: plan.map((e) => Text(cleanText(e))).toList(),
-              ),
+            if ((item.content['image_url'] as String?)?.isNotEmpty ?? false)
+              Image.network(item.content['image_url'] as String),
+            if (item.content['text'] != null) ...[
+              const SizedBox(height: 8),
+              Text(cleanText(item.content['text'])),
+            ],
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMeal(Map<String, dynamic>? mealPlan) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+        );
+        break;
+      case 'voice':
+        content = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Meal Plan',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            if (mealPlan == null || mealPlan.isEmpty)
-              const Text('No meal plan today')
-            else
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            if (item.content['text'] != null)
+              Text(cleanText(item.content['text'])),
+            if ((item.content['tags'] as List?)?.isNotEmpty ?? false) ...[
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 4,
                 children: [
-                  if (mealPlan['breakfast'] != null)
-                    Text('🍳 Breakfast: ${cleanText(mealPlan['breakfast'])}'),
-                  if (mealPlan['lunch'] != null)
-                    Text('🥪 Lunch: ${cleanText(mealPlan['lunch'])}'),
-                  if (mealPlan['dinner'] != null)
-                    Text('🍜 Dinner: ${cleanText(mealPlan['dinner'])}'),
-                  if (mealPlan['snacks'] != null) ...[
-                    const Text('🍏 Snacks:'),
-                    ...List<Widget>.from(
-                      (mealPlan['snacks'] as List)
-                          .map((s) => Text('• ${cleanText(s)}')),
-                    ),
-                  ],
+                  ...(item.content['tags'] as List)
+                      .map((t) => Chip(label: Text(cleanText(t.toString()))))
                 ],
               ),
+            ],
           ],
-        ),
-      ),
-    );
-  }
+        );
+        break;
+      default:
+        content = Text(item.content.toString());
+    }
 
-  Widget _buildRecap(String recap) {
+    final ts = DateFormat.yMMMd().add_jm().format(item.createdAt);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Donkey Recap',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(ts, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 8),
-            Text(
-              cleanText(recap),
-              style: const TextStyle(fontStyle: FontStyle.italic, inherit: true),
-            ),
+            content,
           ],
         ),
       ),
     );
   }
-
 }

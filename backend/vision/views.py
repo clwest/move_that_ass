@@ -5,7 +5,7 @@ from django_ratelimit.decorators import ratelimit
 
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 try:
@@ -15,11 +15,9 @@ except Exception:  # pragma: no cover - Celery not loaded
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
-@ratelimit(key="ip", rate="5/m", block=False)
+@permission_classes([IsAuthenticatedOrReadOnly])
+@ratelimit(key="ip", rate="5/m", block=True)
 def identify_image(request):
-    if getattr(request, "limited", False):
-        return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
     file = request.FILES.get("file")
     if not file:
         return Response({"error": "file required"}, status=400)

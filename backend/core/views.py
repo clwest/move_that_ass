@@ -9,6 +9,14 @@ from datetime import datetime, time
 
 
 from django.utils import timezone
+from django.db.models import (
+    F,
+    Value,
+    CharField,
+    DateTimeField,
+    JSONField,
+)
+from django.db.models.functions import Cast, Coalesce
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -27,6 +35,9 @@ from .serializers import (DailyGoalSerializer, MovementGoalSerializer,
                           UserSerializer, WorkoutLogSerializer)
 from .utils.mood_avatar import get_mood_avatar
 from .utils.mood_engine import evaluate_user_mood
+from .utils.plan_engine import generate_workout_plan as ai_generate_workout_plan
+from .utils.meal_engine import generate_meal_plan as ai_generate_meal_plan
+from .utils.digest_engine import generate_daily_digest
 
 
 def generate_invite_code():
@@ -366,7 +377,7 @@ class TaskStatusView(generics.GenericAPIView):
 
         result = TaskResult.objects.filter(task_id=str(task_id)).first()
         if not result:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"state": "PENDING", "data": None})
 
         return Response({"state": result.status, "data": result.result})
 

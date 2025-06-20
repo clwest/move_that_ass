@@ -11,14 +11,15 @@ void main() {
   channel.setMockMethodCallHandler((MethodCall methodCall) async => null);
 
   testWidgets('Successful registration shows SnackBar and navigates to LoginPage', (tester) async {
-    AuthService.register = (String email, String p1, String p2) async => true;
+    AuthService.register = (String u, String e, String p1, String p2) async => true;
 
     await tester.pumpWidget(const MaterialApp(home: RegisterPage()));
     await tester.pump();
 
-    await tester.enterText(find.byType(TextField).at(0), 'a@mail.com');
-    await tester.enterText(find.byType(TextField).at(1), 'pass123');
+    await tester.enterText(find.byType(TextField).at(0), 'tester');
+    await tester.enterText(find.byType(TextField).at(1), 'a@mail.com');
     await tester.enterText(find.byType(TextField).at(2), 'pass123');
+    await tester.enterText(find.byType(TextField).at(3), 'pass123');
     await tester.tap(find.text('Register'));
     await tester.pump();
 
@@ -27,16 +28,17 @@ void main() {
   });
 
   testWidgets('Error shows message text', (tester) async {
-    AuthService.register = (String email, String p1, String p2) async {
+    AuthService.register = (String u, String e, String p1, String p2) async {
       throw Exception('Email exists');
     };
 
     await tester.pumpWidget(const MaterialApp(home: RegisterPage()));
     await tester.pump();
 
-    await tester.enterText(find.byType(TextField).at(0), 'a@mail.com');
-    await tester.enterText(find.byType(TextField).at(1), 'pass123');
+    await tester.enterText(find.byType(TextField).at(0), 'tester');
+    await tester.enterText(find.byType(TextField).at(1), 'a@mail.com');
     await tester.enterText(find.byType(TextField).at(2), 'pass123');
+    await tester.enterText(find.byType(TextField).at(3), 'pass123');
     await tester.tap(find.text('Register'));
     await tester.pump();
 

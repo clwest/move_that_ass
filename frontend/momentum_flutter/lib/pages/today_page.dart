@@ -133,7 +133,17 @@ class _TodayPageState extends State<TodayPage> {
   }
 
   Future<void> _handleImage(XFile file) async {
-    final id = await ApiService.uploadImage('/api/vision/identify/', file);
+    String id;
+    try {
+      id = await ApiService.uploadImage('/api/vision/identify/', file);
+    } on UnauthorizedException {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+      return;
+    }
     final result = await TaskPoller.poll(id);
     if (!mounted) return;
     final data = jsonDecode(result['data'] as String) as Map<String, dynamic>;

@@ -1,4 +1,4 @@
-# Makefile for MoveYourAzz project
+	# Makefile for MoveYourAzz project
 
 PYTHON := python3
 MANAGE := $(PYTHON) backend/manage.py
@@ -51,7 +51,9 @@ fi
 
 lint-backend:
 	@echo "Linting backend..."
+
 	flake8 --select=F backend/
+
 
 clean:
 	@echo "Cleaning .pyc and __pycache__..."

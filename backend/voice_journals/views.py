@@ -1,5 +1,6 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from django.shortcuts import redirect
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -27,3 +28,12 @@ def transcribe_voice(request):
         )
     task = process_voice_journal_task.delay(journal.id)
     return Response({"task_id": task.id}, status=status.HTTP_202_ACCEPTED)
+
+
+@api_view(["POST", "GET"])
+@permission_classes([IsAuthenticated])
+def upload_voice_journal(request):
+    """Deprecated path handling with redirect on GET."""
+    if request.method == "GET":
+        return redirect("/api/voice/upload/", permanent=False)
+    return transcribe_voice.__wrapped__(request._request)

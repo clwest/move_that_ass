@@ -81,8 +81,14 @@ class AsyncEndpointsTest(APITestCase):
         self._check_status(tid, {"voice": "done"})
 
     def test_celery_ping(self):
+        self.client.credentials()  # drop auth
+        res = self.client.get("/api/core/celery-ping/")
+        self.assertEqual(res.status_code, 401)
+
         with patch("core.views.celery_app.control.ping") as mock_ping:
             mock_ping.return_value = ["pong"]
+            for _ in range(10):
+                res = self.client.get("/api/core/celery-ping/")
+                self.assertEqual(res.status_code, 200)
             res = self.client.get("/api/core/celery-ping/")
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.data["status"], "ok")
+        self.assertEqual(res.status_code, 429)

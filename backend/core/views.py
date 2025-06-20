@@ -383,7 +383,7 @@ class TaskStatusView(generics.GenericAPIView):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def celery_ping(request):
     """Check if the Celery worker is responsive."""
     try:
@@ -391,3 +391,5 @@ def celery_ping(request):
     except Exception:
         return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
     return Response({"status": "ok"})
+
+celery_ping.throttle_scope = "celery_ping"

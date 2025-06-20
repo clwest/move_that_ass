@@ -28,7 +28,7 @@ shell:
 
 
 run-worker:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info --concurrency=4
+    cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info --concurrency=4
 
 
 lint:

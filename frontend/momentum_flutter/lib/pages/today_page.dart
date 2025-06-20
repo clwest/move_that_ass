@@ -24,8 +24,9 @@ class TodayPage extends StatefulWidget {
 }
 
 class _TodayPageState extends State<TodayPage> {
-  late Future<TodayDashboard> _future;
+  late Future<void> _future;
 
+  TodayDashboard? _dashboard;
   DailyGoal? _dailyGoal;
 
   final TextEditingController _goalController = TextEditingController();
@@ -34,18 +35,10 @@ class _TodayPageState extends State<TodayPage> {
   @override
   void initState() {
     super.initState();
-    _future = ApiService.fetchTodayDashboard();
-
-    ApiService.fetchDailyGoal().then((data) {
-      if (data != null) {
-        setState(() {
-          _dailyGoal = data;
-        });
-      }
-    });
-    Future.delayed(Duration.zero, () async {
+    _future = _loadAll();
+    Future(() async {
       final prefs = await SharedPreferences.getInstance();
-      final shown = prefs.getBool('welcome_shown') ?? false;
+      final shown = prefs.getBool('has_seen_welcome') ?? false;
       if (!shown && mounted) {
         await showDialog(
           context: context,
@@ -60,25 +53,27 @@ class _TodayPageState extends State<TodayPage> {
             ],
           ),
         );
-        await prefs.setBool('welcome_shown', true);
+        await prefs.setBool('has_seen_welcome', true);
       }
     });
 
   }
 
-  Future<void> _loadGoal() async {
-    final data = await ApiService.fetchDailyGoal();
+  Future<void> _loadAll() async {
+    final results = await Future.wait([
+      ApiService.fetchProfile(),
+      ApiService.fetchDailyGoal(),
+      ApiService.fetchTodayDashboard(),
+    ]);
     if (!mounted) return;
-    setState(() {
-      _dailyGoal = data;
-    });
+    _dailyGoal = results[1] as DailyGoal?;
+    _dashboard = results[2] as TodayDashboard;
   }
 
   Future<void> _refresh() async {
     setState(() {
-      _future = ApiService.fetchTodayDashboard();
+      _future = _loadAll();
     });
-    await _loadGoal();
   }
 
   @override
@@ -145,7 +140,7 @@ class _TodayPageState extends State<TodayPage> {
       ),
       body: RefreshIndicator(
         onRefresh: _refresh,
-        child: FutureBuilder<TodayDashboard>(
+        child: FutureBuilder<void>(
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -153,8 +148,7 @@ class _TodayPageState extends State<TodayPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             }
-
-            final dashboard = snapshot.data!;
+            final dashboard = _dashboard!;
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -192,9 +186,7 @@ class _TodayPageState extends State<TodayPage> {
     if (goal.isEmpty) return;
     await ApiService.setDailyGoal(goal, target);
     if (mounted) {
-      setState(() {
-        _dailyGoal = DailyGoal(goal: goal, target: target, type: 'daily');
-      });
+      await _refresh();
     }
   }
 

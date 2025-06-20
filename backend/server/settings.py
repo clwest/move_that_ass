@@ -162,13 +162,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Configure django-allauth for email based login.
 # Deprecated settings previously caused runtime warnings.
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_SIGNUP_FIELDS = {
-    "email": {"required": True},
-    "password1": {"required": True},
-    "password2": {"required": True},
-    "username": {"required": False},
-}
-ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = [
+    "email*",
+    "password1*",
+    "password2*",
+    "username",
+]
+ACCOUNT_LOGIN_METHODS = ["email"]
 SITE_ID = 1
 REST_USE_JWT = True
 REST_AUTH = {

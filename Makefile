@@ -6,9 +6,15 @@ BACKEND_DIR := backend
 FRONTEND_DIR := frontend/momentum_flutter
 ACTIVATE := . .venv/bin/activate
 
-.PHONY: run migrate makemigrations superuser shell run-worker test-backend test-frontend lint-backend clean reset flutter_run
+.PHONY: run run-backend migrate makemigrations superuser shell run-worker test-backend test-frontend lint-backend clean reset flutter_run
 
 run:
+	@echo "Starting Django development server..."
+	$(MANAGE) runserver
+
+run-backend:
+	@echo "Collecting static files..."
+	$(MANAGE) collectstatic --noinput
 	@echo "Starting Django development server..."
 	$(MANAGE) runserver
 

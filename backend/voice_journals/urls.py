@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import upload_voice_journal
+
+from .views import transcribe_voice
 
 urlpatterns = [
-    path("upload/", upload_voice_journal),
+    path("transcribe/", transcribe_voice),
 ]

@@ -9,6 +9,7 @@ import '../models/today_dashboard.dart';
 import '../models/badge.dart';
 import '../models/meme.dart';
 import '../models/herd_post.dart';
+import '../models/feed_item.dart';
 import '../models/profile.dart';
 import '../models/daily_goal.dart';
 import 'task_poller.dart';

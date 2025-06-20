@@ -162,7 +162,14 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 }
 
-CORS_ALLOWED_ORIGINS = env("ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = [
+    origin
+    for origin in env(
+        "ALLOWED_ORIGINS", "http://localhost:8080,http://localhost:3000"
+    ).split(",")
+    if origin
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [r"^http://localhost:\d+$", r"^http://127\.0\.0\.1:\d+$"]
 
 
 # Configure django-allauth for username/email login without warnings.

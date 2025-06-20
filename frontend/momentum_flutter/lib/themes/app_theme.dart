@@ -36,14 +36,14 @@ class AppTheme {
           // Ensure `inherit` matches the theme's text styles to avoid
           // interpolation errors when the button state changes.
           textStyle:
-              const TextStyle(fontWeight: FontWeight.bold, inherit: false),
+              const TextStyle(fontWeight: FontWeight.bold, inherit: true),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.donkeyGold,
           side: BorderSide(color: AppColors.donkeyGold),
-          textStyle: const TextStyle(),
+          textStyle: const TextStyle(inherit: true),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(

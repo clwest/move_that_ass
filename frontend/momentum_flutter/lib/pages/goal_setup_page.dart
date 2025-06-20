@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
-import 'today_page.dart';
+import '../main.dart';
 
 class GoalSetupPage extends StatefulWidget {
   const GoalSetupPage({super.key});
@@ -23,7 +23,7 @@ class _GoalSetupPageState extends State<GoalSetupPage> {
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const TodayPage()),
+      MaterialPageRoute(builder: (_) => const MyApp()),
     );
   }
 

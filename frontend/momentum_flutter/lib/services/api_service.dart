@@ -10,9 +10,20 @@ import '../models/meme.dart';
 import '../models/herd_post.dart';
 import '../models/profile.dart';
 import '../models/daily_goal.dart';
+import 'task_poller.dart';
 
 class ApiService {
   static String get baseUrl => AppConfig.baseUrl;
+
+  static Future<Map<String, dynamic>> get(String path) async {
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
+    final response = await http.get(Uri.parse('$baseUrl$path'), headers: headers);
+    if (response.statusCode != 200) {
+      throw Exception('Request failed');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
     final headers = {'Content-Type': 'application/json'};
@@ -129,11 +140,57 @@ class ApiService {
     headers.addAll(await AuthService.authHeaders());
 
     final response = await http.post(
-      Uri.parse('$baseUrl/api/content/generate-meme/'),
+      Uri.parse('$baseUrl/api/content/meme/'),
       headers: headers,
     );
-    final jsonData = jsonDecode(response.body) as Map<String, dynamic>;
-    return Meme.fromJson(jsonData);
+    if (response.statusCode != 202) {
+      throw Exception('Failed to start meme generation');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final taskId = data['task_id'] as String;
+    final result = await TaskPoller.poll(taskId);
+    final payload = json.decode(result['data'] as String);
+    return Meme.fromJson(payload as Map<String, dynamic>);
+  }
+
+  static Future<List<String>> generateWorkoutPlan(
+      {String goal = '', List<String> activityTypes = const [], String tone = 'supportive'}) async {
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/workout-plan/'),
+      headers: headers,
+      body: json.encode({
+        'goal': goal,
+        'activity_types': activityTypes,
+        'tone': tone,
+      }),
+    );
+    if (response.statusCode != 202) {
+      throw Exception('Failed to start workout plan generation');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final result = await TaskPoller.poll(data['task_id'] as String);
+    final payload = json.decode(result['data'] as String) as Map<String, dynamic>;
+    final List<dynamic> plan = payload['plan'] as List<dynamic>? ?? [];
+    return plan.map((e) => e.toString()).toList();
+  }
+
+  static Future<Map<String, dynamic>> generateMealPlan(
+      {String goal = '', String tone = 'supportive', String? mood}) async {
+    final headers = {'Content-Type': 'application/json'};
+    headers.addAll(await AuthService.authHeaders());
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/core/meal-plan/'),
+      headers: headers,
+      body: json.encode({'goal': goal, 'tone': tone, 'mood': mood}),
+    );
+    if (response.statusCode != 202) {
+      throw Exception('Failed to start meal plan generation');
+    }
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    final result = await TaskPoller.poll(data['task_id'] as String);
+    return json.decode(result['data'] as String) as Map<String, dynamic>;
   }
 
   static Future<DailyGoal?> fetchDailyGoal() async {

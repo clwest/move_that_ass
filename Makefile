@@ -13,7 +13,9 @@ run:
 	$(MANAGE) runserver
 
 run-backend:
-	@echo "Collecting static files..."
+
+	@echo "Collecting static files if needed..."
+
 	$(MANAGE) collectstatic --noinput
 	@echo "Starting Django development server..."
 	$(MANAGE) runserver

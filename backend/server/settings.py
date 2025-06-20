@@ -159,6 +159,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
 # Configure django-allauth for username based login.
 # Deprecated settings previously caused runtime warnings.
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
@@ -169,11 +170,14 @@ ACCOUNT_SIGNUP_FIELDS = [
     "username",
 ]
 ACCOUNT_LOGIN_METHODS = ["username"]
+
 SITE_ID = 1
 REST_USE_JWT = True
 REST_AUTH = {
-    "REGISTER_SERIALIZER": "accounts.serializers.CustomRegisterSerializer",
     "USE_JWT": True,
     "JWT_AUTH_HTTPONLY": False,
+}
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "accounts.serializers.CustomRegisterSerializer"
 }
 ACCOUNT_EMAIL_VERIFICATION = "none"

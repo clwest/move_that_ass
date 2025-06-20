@@ -21,9 +21,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class CustomRegisterSerializer(BaseRegisterSerializer):
+
     """Serializer requiring username, email, and passwords."""
 
     # No overrides needed; BaseRegisterSerializer already handles validation
     pass
+
 
 

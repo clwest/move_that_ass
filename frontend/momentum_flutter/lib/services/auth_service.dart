@@ -14,11 +14,13 @@ class AuthService {
 
   static String get _baseUrl => AppConfig.baseUrl;
 
+
   static Future<void> login(String username, String password) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/login/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'username': username, 'password': password}),
+
     );
     if (response.statusCode != 200) {
       throw Exception('Login failed');

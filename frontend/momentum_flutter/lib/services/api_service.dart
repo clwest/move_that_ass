@@ -260,7 +260,7 @@ class ApiService {
   static Future<String> _uploadVoice(String path) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('$baseUrl/api/core/upload-voice/'),
+      Uri.parse('$baseUrl/api/voice/upload/'),
     );
     final auth = await AuthService.authHeaders();
     request.headers.addAll(auth);

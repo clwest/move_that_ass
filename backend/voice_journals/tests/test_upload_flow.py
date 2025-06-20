@@ -31,7 +31,7 @@ def test_upload_and_process_voice_journal(monkeypatch):
         "voice_journals.views.process_voice_journal_task.delay", fake_delay
     )
 
-    res = client.post("/api/voice/transcribe/", {"audio_file": audio})
+    res = client.post("/api/voice/upload/", {"audio_file": audio})
     assert res.status_code == 202
 
     journal = VoiceJournal.objects.get()
@@ -60,3 +60,29 @@ def test_upload_and_process_voice_journal(monkeypatch):
     assert journal.tags == ["tag1"]
     assert journal.playback_audio_url
     assert result["id"] == journal.id
+
+
+@pytest.mark.django_db
+def test_old_upload_voice_path_redirects(monkeypatch):
+    User = get_user_model()
+    user = User.objects.create_user(
+        username="vj", email="vj2@example.com", password="pass", is_verified=True
+    )
+    client = APIClient()
+    refresh = RefreshToken.for_user(user)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+    audio = SimpleUploadedFile("voice.wav", b"audio")
+
+    monkeypatch.setattr(
+        "voice_journals.views.process_voice_journal_task.delay",
+        lambda jid: type("R", (), {"id": "task123"})(),
+    )
+
+    res = client.post(
+        "/api/core/upload-voice/",
+        {"audio_file": audio},
+    )
+
+    assert res.status_code == 202
+    assert res.data["task_id"] == "task123"

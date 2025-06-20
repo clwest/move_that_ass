@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'auth_service.dart';
 import '../config.dart';
 
-import '../models/today_dashboard.dart';
+import '../models/dashboard_item.dart';
 import '../models/badge.dart';
 import '../models/meme.dart';
 import '../models/herd_post.dart';
@@ -43,7 +43,7 @@ class ApiService {
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
-  static Future<TodayDashboard> fetchTodayDashboard() async {
+  static Future<List<DashboardItem>> fetchDashboard() async {
     final response = await _send(() {
       final headers = {'Content-Type': 'application/json'};
       headers.addAll(AuthService.authHeaders());
@@ -57,8 +57,10 @@ class ApiService {
       throw Exception('Failed to load dashboard');
     }
 
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return TodayDashboard.fromJson(data);
+    final List data = json.decode(response.body) as List;
+    return data
+        .map((e) => DashboardItem.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<List<Badge>> fetchBadges() async {

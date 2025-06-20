@@ -53,6 +53,7 @@ curl -X POST http://127.0.0.1:8000/api/auth/registration/ \
    -d '{"email":"alice@mail.com","password1":"Pass123!","password2":"Pass123!"}'
 ```
 
+
 ## Running Tests
 
 Backend tests run with `make test-backend`.
@@ -60,3 +61,4 @@ Backend tests run with `make test-backend`.
 Flutter widget tests run headlessly. Use `make test-frontend`, which invokes
 `flutter test --machine --platform=vm` so no emulator or physical device is
 required.
+

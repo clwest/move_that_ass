@@ -14,11 +14,11 @@ class AuthService {
 
   static String get _baseUrl => AppConfig.baseUrl;
 
-  static Future<void> login(String username, String password) async {
+  static Future<void> login(String email, String password) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/login/'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode({'email': email, 'password': password}),
     );
     if (response.statusCode != 200) {
       throw Exception('Login failed');
@@ -33,19 +33,24 @@ class AuthService {
     await _storage.write(key: _refreshKey, value: _refresh);
   }
 
-  static Future<void> register(
-      String username, String email, String p1, String p2) async {
+  static Future<bool> register(String email, String p1, String p2) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/registration/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'username': username,
         'email': email,
         'password1': p1,
         'password2': p2,
       }),
     );
-    if (response.statusCode != 201) {
+    if (response.statusCode == 201) {
+      return true;
+    }
+    try {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final firstError = data.values.first;
+      throw Exception(firstError is List ? firstError.first : firstError.toString());
+    } catch (_) {
       throw Exception('Registration failed');
     }
   }

@@ -42,3 +42,11 @@ celery -A server worker -l info
 
 
 Make sure Redis is running and `REDIS_URL` in your `.env` points at the broker.
+
+## Register via cURL
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/registration/ \
+   -H 'Content-Type: application/json' \
+   -d '{"email":"alice@mail.com","password1":"Pass123!","password2":"Pass123!"}'
+```

@@ -19,7 +19,7 @@ class ApiService {
     headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
-      Uri.parse('$baseUrl/api/core/dashboard-today/'),
+      Uri.parse('$baseUrl/api/core/dashboard/'),
       headers: headers,
     );
 

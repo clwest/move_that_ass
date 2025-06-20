@@ -24,5 +24,12 @@ When running locally you can override it with:
 flutter run --dart-define=API_BASE_URL=http://localhost:8000
 ```
 
+When running on the Android emulator `localhost` points to the emulator
+itself. Use the special host `10.0.2.2` to reach your machine:
+
+```bash
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
+
 If you programmatically embed the app you may also supply a `baseUrl` argument
 to `main()` which will take precedence.

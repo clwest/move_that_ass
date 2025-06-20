@@ -2,10 +2,24 @@ import json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django_celery_results.models import TaskResult
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
 from unittest.mock import patch
 
 
+User = get_user_model()
+
+
 class VisionIdentifyTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="visionuser",
+            email="vision@example.com",
+            password="pass",
+            is_verified=True,
+        )
+        refresh = RefreshToken.for_user(self.user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
     def _mock_success(self, task_id, payload):
         TaskResult.objects.update_or_create(
             task_id=task_id, defaults={"status": "SUCCESS", "result": json.dumps(payload)}

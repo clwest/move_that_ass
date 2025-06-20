@@ -327,8 +327,7 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
-}
-
+  // Build a card for an individual dashboard item
   Widget _buildItem(DashboardItem item) {
     Widget content;
     switch (item.type) {

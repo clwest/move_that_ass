@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../services/api_service.dart';
 import '../services/task_poller.dart';
@@ -10,7 +11,7 @@ import '../utils/text_utils.dart';
 
 class VoiceJournalPage extends StatefulWidget {
   const VoiceJournalPage({Key? key, this.recorder}) : super(key: key);
-  final Record? recorder;
+  final AudioRecorder? recorder;
 
   static const routeName = '/voice-journal';
 
@@ -19,7 +20,7 @@ class VoiceJournalPage extends StatefulWidget {
 }
 
 class _VoiceJournalPageState extends State<VoiceJournalPage> {
-  late final Record _record;
+  late final AudioRecorder _record;
   final AudioPlayer _player = AudioPlayer();
   bool _isRecording = false;
   Map<String, dynamic>? _result;
@@ -28,12 +29,12 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
   @override
   void initState() {
     super.initState();
-    _record = widget.recorder ?? Record();
+    _record = widget.recorder ?? AudioRecorder();
   }
 
   Future<void> _startRec() async {
     final perm = await Permission.microphone.request();
-    if (!perm.isGranted) {
+    if (!perm.isGranted || !await _record.hasPermission()) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Microphone permission denied')),
@@ -41,7 +42,11 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
       }
       return;
     }
-    await _record.start();
+
+    final dir = await getTemporaryDirectory();
+    final path =
+        '${dir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    await _record.start(const RecordConfig(), path: path);
     setState(() => _isRecording = true);
   }
 

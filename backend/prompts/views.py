@@ -1,12 +1,11 @@
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Prompt, PromptResponse
-from .serializers import PromptSerializer, PromptResponseSerializer
+from .serializers import PromptResponseSerializer, PromptSerializer
 
 
 class PromptViewSet(viewsets.ModelViewSet):
-
     """CRUD API for prompt templates."""
 
     queryset = Prompt.objects.all()
@@ -15,7 +14,6 @@ class PromptViewSet(viewsets.ModelViewSet):
 
 
 class PromptResponseViewSet(viewsets.ModelViewSet):
-
     """Manage stored AI prompt responses."""
 
     queryset = PromptResponse.objects.all()

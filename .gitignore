@@ -1,12 +1,10 @@
 __pycache__/
 *.py[cod]
-*.sqlite3
 db.sqlite3
-backend/db.sqlite3
+.venv/
+.env
 backend/media/
 backend/static/
-.env
-.venv/
 
 # Flutter project generated files
 .flutter-plugins

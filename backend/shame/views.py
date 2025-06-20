@@ -1,5 +1,5 @@
-from datetime import datetime, time, timedelta
 import uuid
+from datetime import datetime, time, timedelta
 
 from django.contrib.auth import get_user_model
 
@@ -8,46 +8,35 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import (
-    DailyLockout,
-    ShamePost,
-    Herd,
-    Badge,
-    BadgeShoutout,
-    DonkeyChallenge,
-    HerdPost,
-)
-from .serializers import (
-    DailyLockoutSerializer,
-    ShamePostSerializer,
-    HerdSerializer,
-    BadgeSerializer,
-    BadgeShoutoutSerializer,
-    DonkeyChallengeSerializer,
-    HerdPostSerializer,
-)
-from .utils.shame_engine import check_and_trigger_shame
+
+from .models import (Badge, BadgeShoutout, DailyLockout, DonkeyChallenge, Herd,
+                     HerdPost, ShamePost)
+from .serializers import (BadgeSerializer, BadgeShoutoutSerializer,
+                          DailyLockoutSerializer, DonkeyChallengeSerializer,
+                          HerdPostSerializer, HerdSerializer,
+                          ShamePostSerializer)
 from .utils.badge_engine import evaluate_badges
-from .utils.herdmood_engine import evaluate_herd_mood
 from .utils.challenge_engine import generate_challenge as ai_generate_challenge
+from .utils.herdmood_engine import evaluate_herd_mood
+from .utils.shame_engine import check_and_trigger_shame
 
 
 class DailyLockoutViewSet(viewsets.ModelViewSet):
     queryset = DailyLockout.objects.all()
     serializer_class = DailyLockoutSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 class ShamePostViewSet(viewsets.ModelViewSet):
     queryset = ShamePost.objects.all()
     serializer_class = ShamePostSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def trigger_shame_view(request):
     post = check_and_trigger_shame(request.user)
     if not post:
@@ -69,7 +58,7 @@ def generate_invite_code():
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def create_herd(request):
     name = request.data.get("name")
     tone = request.data.get("tone", "mixed")
@@ -86,7 +75,7 @@ def create_herd(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def join_herd(request):
     code = request.data.get("invite_code")
     herd = get_object_or_404(Herd, invite_code=code)
@@ -99,7 +88,7 @@ def join_herd(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def leave_herd(request):
     for herd in request.user.herds.all():
         herd.members.remove(request.user)
@@ -107,7 +96,7 @@ def leave_herd(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def my_herd(request):
     herd = request.user.herds.first()
     if herd:
@@ -116,7 +105,7 @@ def my_herd(request):
 
 
 @api_view(["POST", "GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def check_badges(request):
     evaluate_badges(request.user)
     earned_ids = set(request.user.profile.badges.values_list("id", flat=True))
@@ -135,7 +124,7 @@ def check_badges(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def list_badges(request):
     earned_ids = set(request.user.profile.badges.values_list("id", flat=True))
     badges = Badge.objects.filter(is_active=True)
@@ -153,7 +142,7 @@ def list_badges(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def share_badge(request):
     code = request.data.get("badge_code")
     message = request.data.get("message", "")
@@ -180,7 +169,7 @@ def share_badge(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def share_to_herd(request):
     post_type = request.data.get("type")
     if post_type not in {"meme", "badge"}:
@@ -199,7 +188,7 @@ def share_to_herd(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def herd_feed(request):
     herd = request.user.herds.first()
     if not herd:
@@ -227,7 +216,7 @@ def herd_feed(request):
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def herd_mood_view(request):
     herd = request.user.herds.first()
     if not herd:
@@ -245,7 +234,7 @@ def herd_mood_view(request):
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def generate_donkey_challenge(request):
     tone = request.data.get("tone") or "mixed"
     user = request.user

@@ -1,19 +1,18 @@
 import uuid
+
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
 from .models import VoiceJournal
 from .serializers import VoiceJournalSerializer
-from .utils.voice_helpers import (
-    transcribe_audio,
-    summarize_text,
-    generate_tags_from_text,
-)
 from .utils.tts_helpers import text_to_speech
+from .utils.voice_helpers import (generate_tags_from_text, summarize_text,
+                                  transcribe_audio)
 
 
 @api_view(["POST"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def upload_voice_journal(request):
     audio_file = request.FILES.get("audio_file")
     if not audio_file:

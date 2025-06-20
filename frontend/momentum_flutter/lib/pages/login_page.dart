@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import 'register_page.dart';
-import '../main.dart';
+import '../utils/navigation_utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,10 +29,7 @@ class _LoginPageState extends State<LoginPage> {
         _passwordController.text,
       );
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MyApp()),
-      );
+      await navigateToAppHome(context);
     } catch (e) {
       setState(() => _error = 'Login failed');
     } finally {

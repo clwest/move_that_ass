@@ -33,7 +33,10 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.donkeyGold,
           foregroundColor: Colors.black,
-          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+          // Ensure `inherit` matches the theme's text styles to avoid
+          // interpolation errors when the button state changes.
+          textStyle:
+              const TextStyle(fontWeight: FontWeight.bold, inherit: false),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(

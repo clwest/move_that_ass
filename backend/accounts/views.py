@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
-from .serializers import ProfileSerializer, CustomRegisterSerializer
+from .serializers import (
+    ProfileSerializer,
+    RegisterWithUsernameSerializer,
+)
 from dj_rest_auth.registration.serializers import (
     VerifyEmailSerializer,
     ResendEmailVerificationSerializer,
@@ -44,7 +47,7 @@ sensitive_post_parameters_m = method_decorator(
 class CustomRegisterView(CreateAPIView):
     """Register a new user without triggering deprecation warnings."""
 
-    serializer_class = CustomRegisterSerializer
+    serializer_class = RegisterWithUsernameSerializer
     permission_classes = api_settings.REGISTER_PERMISSION_CLASSES
     token_model = TokenModel
     throttle_scope = "dj_rest_auth"

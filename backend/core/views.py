@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 
 User = get_user_model()
 import uuid
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone as dt_timezone
 
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -142,7 +142,7 @@ def dashboard_feed(request):
     if not type_filter or type_filter == "shame":
         for post in apply_filters(ShamePost.objects.all()):
             dt = datetime.combine(post.date, time.min)
-            dt = timezone.make_aware(dt, timezone.utc) if timezone.is_naive(dt) else dt
+            dt = timezone.make_aware(dt, dt_timezone.utc) if timezone.is_naive(dt) else dt
             item = {
                 "type": "shame",
                 "created_at": dt,

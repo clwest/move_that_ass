@@ -14,6 +14,20 @@ jobs:
         with: {python-version: '3.11'}
       - run: make test-backend
       - run: make lint-backend
+      - name: Verify registration endpoint
+        run: |
+          cd backend
+          . .venv/bin/activate
+          python manage.py migrate --noinput
+          python manage.py runserver 8000 &
+          PID=$!
+          sleep 5
+          code=$(curl -s -o out.json -w "%{http_code}" -X POST http://127.0.0.1:8000/api/auth/registration/ \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"alice","email":"a@b.com","password1":"Demo1234!","password2":"Demo1234!"}')
+          kill $PID
+          cat out.json
+          test "$code" = "201"
   flutter:
     runs-on: ubuntu-latest
     steps:

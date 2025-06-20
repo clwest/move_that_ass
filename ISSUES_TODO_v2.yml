@@ -1,0 +1,53 @@
+- title: Lock down anonymous vision endpoint
+  priority: medium
+  files:
+    - backend/vision/views.py
+  estimate: 30m
+  status: carried_over
+- title: Clean up unused endpoints and skip decorators
+  priority: low
+  files:
+    - backend/content/views.py
+    - backend/core/views.py
+    - backend/movement/views.py
+  estimate: 2h
+  status: carried_over
+- title: Implement upload-voice endpoint or remove call in ApiService
+  priority: medium
+  files:
+    - frontend/momentum_flutter/lib/services/api_service.dart
+    - backend/voice_journals/urls.py
+  estimate: 1h
+  status: new
+- title: Add challenge completion API or remove client call
+  priority: medium
+  files:
+    - frontend/momentum_flutter/lib/services/api_service.dart
+    - backend/movement/views.py
+  estimate: 1h
+  status: new
+- title: Remove AllowAny from celery_ping view
+  priority: low
+  files:
+    - backend/core/views.py
+  estimate: 15m
+  status: new
+- title: Remove legacy @unittest.skip decorators
+  priority: medium
+  files:
+    - backend/core/tests.py
+    - backend/content/tests.py
+  estimate: 30m
+  status: new
+- title: Address flake8 errors across backend
+  priority: low
+  files:
+    - backend
+  estimate: 2h
+  status: new
+- title: Optimize dashboard_feed query logic
+  priority: medium
+  files:
+    - backend/core/views.py
+  estimate: 2h
+  status: new

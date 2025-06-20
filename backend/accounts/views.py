@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
-from .serializers import (
-    ProfileSerializer,
-    CustomRegisterSerializer,
+from .serializers import ProfileSerializer, CustomRegisterSerializer
+from dj_rest_auth.registration.serializers import (
     VerifyEmailSerializer,
     ResendEmailVerificationSerializer,
 )

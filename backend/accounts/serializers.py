@@ -6,6 +6,7 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from allauth.socialaccount.models import EmailAddress
 from allauth.utils import get_username_max_length
+from dj_rest_auth.registration.serializers import RegisterSerializer as BaseRegisterSerializer
 
 
 User = get_user_model()

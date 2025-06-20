@@ -2,8 +2,11 @@
 
 PYTHON := python3
 MANAGE := $(PYTHON) backend/manage.py
+BACKEND_DIR := backend
+FRONTEND_DIR := frontend/momentum_flutter
+ACTIVATE := . .venv/bin/activate
 
-.PHONY: run migrate makemigrations superuser shell run-worker test-backend lint-backend clean reset flutter_run
+.PHONY: run migrate makemigrations superuser shell run-worker test-backend test-frontend lint-backend clean reset flutter_run
 
 run:
 	@echo "Starting Django development server..."
@@ -28,8 +31,10 @@ run-worker:
 	cd backend && ../venv/bin/python -m celery -A server worker -l info --concurrency=4
 
 test-backend:
-	@echo "Running backend tests..."
-	pytest
+	cd $(BACKEND_DIR) && $(ACTIVATE) && pytest -q
+
+test-frontend:
+	cd $(FRONTEND_DIR) && if [ -n "$$FLUTTER_ROOT" ]; then flutter test; else echo "Skipping flutter tests – SDK not available"; fi
 
 lint-backend:
 	@echo "Linting backend..."

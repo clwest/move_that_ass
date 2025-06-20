@@ -10,34 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          . venv/bin/activate
-          pip install -r backend/requirements.txt
-      - name: Start Celery worker
-        run: |
-          . venv/bin/activate
-          make run-worker &
-      - name: Run backend tests
-        run: |
-          . venv/bin/activate
-          pytest
-      - name: Lint backend
-        run: |
-          . venv/bin/activate
-          flake8 backend
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-      - name: Install Flutter dependencies
-        run: |
-          cd frontend/momentum_flutter
-          flutter pub get
-      - name: Run Flutter tests
-        run: |
-          cd frontend/momentum_flutter
-          flutter test
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: make test-backend
+      - run: make lint-backend
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with: {channel: 'stable'}
+      - run: make test-frontend

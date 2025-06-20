@@ -12,7 +12,10 @@ User = get_user_model()
 class AsyncEndpointsTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="async@example.com", password="pass", is_verified=True
+            username="asyncuser",
+            email="async@example.com",
+            password="pass",
+            is_verified=True,
         )
         from rest_framework_simplejwt.tokens import RefreshToken
 

@@ -1,15 +1,16 @@
-import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:record/record.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../services/api_service.dart';
+import '../services/task_poller.dart';
 import '../utils/text_utils.dart';
 
 class VoiceJournalPage extends StatefulWidget {
-  const VoiceJournalPage({super.key});
+  const VoiceJournalPage({Key? key, this.recorder}) : super(key: key);
+  final Record? recorder;
 
   static const routeName = '/voice-journal';
 
@@ -18,49 +19,50 @@ class VoiceJournalPage extends StatefulWidget {
 }
 
 class _VoiceJournalPageState extends State<VoiceJournalPage> {
-  final AudioRecorder _record = AudioRecorder();
+  late final Record _record;
   final AudioPlayer _player = AudioPlayer();
-
   bool _isRecording = false;
-  String? _summary;
-  String? _audioUrl;
-  List<dynamic>? _tags;
-  bool _uploading = false;
+  Map<String, dynamic>? _result;
+  bool _loading = false;
 
-  Future<void> _startRecording() async {
-    if (await _record.hasPermission()) {
-      final dir = await getTemporaryDirectory();
-      final filePath =
-          '${dir.path}/journal_${DateTime.now().millisecondsSinceEpoch}.m4a';
-      await _record.start(const RecordConfig(), path: filePath);
-      setState(() => _isRecording = true);
-    }
+  @override
+  void initState() {
+    super.initState();
+    _record = widget.recorder ?? Record();
   }
 
-  Future<void> _stopAndUpload() async {
+  Future<void> _startRec() async {
+    final perm = await Permission.microphone.request();
+    if (!perm.isGranted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Microphone permission denied')),
+        );
+      }
+      return;
+    }
+    await _record.start();
+    setState(() => _isRecording = true);
+  }
+
+  Future<void> _stopRec() async {
     final path = await _record.stop();
     setState(() => _isRecording = false);
     if (path == null) return;
-
-    setState(() => _uploading = true);
+    setState(() => _loading = true);
     try {
-      final result = await ApiService.uploadVoiceJournal(File(path));
+      final taskId = await ApiService.uploadVoice(path);
+      final res = await TaskPoller.poll(taskId);
+      final data = json.decode(res['data'] as String) as Map<String, dynamic>;
       if (!mounted) return;
-      setState(() {
-        _summary = cleanText(result['summary'] as String? ?? '');
-        _audioUrl = result['playback_audio_url'] as String?;
-        _tags = result['tags'] as List<dynamic>?;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Journal uploaded!')),
-      );
-      Navigator.pop(context, true);
+      setState(() => _result = data);
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Upload failed')));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Upload failed')));
+      }
     } finally {
-      if (mounted) setState(() => _uploading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -80,42 +82,34 @@ class _VoiceJournalPageState extends State<VoiceJournalPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_summary != null) ...[
-              Text(
-                _summary!,
-                style:
-                    const TextStyle(fontStyle: FontStyle.italic, inherit: true),
-              ),
+            if (_result != null) ...[
+              Text(cleanText(_result!['summary'] as String? ?? '')),
               const SizedBox(height: 12),
-            ],
-            if (_tags != null) ...[
-              Wrap(
-                spacing: 8,
-                children:
-                    _tags!.map((t) => Chip(label: Text(t.toString()))).toList(),
-              ),
-              const SizedBox(height: 12),
-            ],
-            if (_audioUrl != null)
               ElevatedButton(
                 onPressed: () async {
-                  final url = '${ApiService.baseUrl}$_audioUrl';
+                  final url = '${ApiService.baseUrl}${_result!['audio_url']}';
                   await _player.play(UrlSource(url));
                 },
-                child: Text('Play Summary',
-                    style: Theme.of(context).textTheme.labelLarge),
+                child:
+                    Text('Play', style: Theme.of(context).textTheme.labelLarge),
               ),
-            if (_uploading) ...[
-              const SizedBox(height: 20),
-              const Center(child: CircularProgressIndicator()),
-            ]
+            ],
+            if (_loading) const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _isRecording ? _stopAndUpload : _startRecording,
-        child: Icon(_isRecording ? Icons.stop : Icons.mic),
-      ),
+      floatingActionButton: _isRecording
+          ? FloatingActionButton(
+              onPressed: _stopRec,
+              child: const Icon(Icons.stop),
+            )
+          : GestureDetector(
+              onLongPress: _startRec,
+              child: const CircleAvatar(
+                radius: 28,
+                child: Icon(Icons.mic),
+              ),
+            ),
     );
   }
 }

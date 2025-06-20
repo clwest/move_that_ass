@@ -1,13 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 class Challenge {
+  final int id;
   final String text;
   final DateTime expiresAt;
 
-  Challenge({required this.text, required this.expiresAt});
+  Challenge({required this.id, required this.text, required this.expiresAt});
 
   factory Challenge.fromJson(Map<String, dynamic> json) {
     return Challenge(
+      id: json['id'] as int,
       text: json['text'] as String,
       expiresAt: DateTime.parse(json['expires_at'] as String),
     );

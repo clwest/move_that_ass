@@ -53,9 +53,12 @@ curl -X POST http://127.0.0.1:8000/api/auth/registration/ \
    -d '{"email":"alice@mail.com","password1":"Pass123!","password2":"Pass123!"}'
 ```
 
-### ⚠️ Do Not Reintroduce Deprecated Auth Settings
 
-The backend uses the latest `django-allauth` configuration. Avoid adding
-`ACCOUNT_AUTHENTICATION_METHOD`, `ACCOUNT_EMAIL_REQUIRED`, or
-`ACCOUNT_USERNAME_REQUIRED` back into `server/settings.py`. Those options are
-deprecated and will trigger runtime warnings.
+## Running Tests
+
+Backend tests run with `make test-backend`.
+
+Flutter widget tests run headlessly. Use `make test-frontend`, which invokes
+`flutter test --machine --platform=vm` so no emulator or physical device is
+required.
+

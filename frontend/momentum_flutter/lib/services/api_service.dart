@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'auth_service.dart';
 import '../config.dart';
 
@@ -265,6 +266,16 @@ class ApiService {
 
     final body = await response.stream.bytesToString();
     return json.decode(body) as Map<String, dynamic>;
+  }
+
+  static Future<String> Function(String url, XFile file) uploadImage = _uploadImage;
+
+  static Future<String> _uploadImage(String url, XFile file) async {
+    final req = http.MultipartRequest('POST', Uri.parse(baseUrl + url));
+    req.files.add(await http.MultipartFile.fromPath('file', file.path));
+    final streamed = await req.send();
+    final res = await http.Response.fromStream(streamed);
+    return jsonDecode(res.body)['task_id'] as String;
   }
 
   static Future<void> logout() async {

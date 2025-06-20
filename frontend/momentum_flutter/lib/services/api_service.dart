@@ -32,11 +32,11 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> get(String path) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final response = await _send(
-      () => http.get(Uri.parse('$baseUrl$path'), headers: headers),
-    );
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(Uri.parse('$baseUrl$path'), headers: headers);
+    });
     if (response.statusCode != 200) {
       throw Exception('Request failed');
     }
@@ -44,15 +44,14 @@ class ApiService {
   }
 
   static Future<TodayDashboard> fetchTodayDashboard() async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.get(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/dashboard/'),
         headers: headers,
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load dashboard');
@@ -63,22 +62,24 @@ class ApiService {
   }
 
   static Future<List<Badge>> fetchBadges() async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
     // ensure badges are evaluated on the server
-    await _send(
-      () => http.get(
+    await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/check-badges/'),
         headers: headers,
-      ),
-    );
+      );
+    });
 
-    final response = await _send(
-      () => http.get(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/badges/'),
         headers: headers,
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load badges');
@@ -92,15 +93,14 @@ class ApiService {
       _fetchHerdFeedPage;
 
   static Future<List<FeedItem>> _fetchHerdFeedPage(int page) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.get(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/herd-feed/?page=$page'),
         headers: headers,
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load herd feed');
@@ -112,15 +112,14 @@ class ApiService {
   }
 
   static Future<UserProfile> fetchProfile() async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.get(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/profile/'),
         headers: headers,
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load profile');
@@ -131,16 +130,15 @@ class ApiService {
   }
 
   static Future<UserProfile> updateDisplayName(String name) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.put(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.put(
         Uri.parse('$baseUrl/api/core/profile/'),
         headers: headers,
         body: json.encode({'display_name': name}),
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update profile');
@@ -152,16 +150,15 @@ class ApiService {
 
 
   static Future<DailyGoal> setDailyGoal(String goal, int target) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.post(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/daily-goal/'),
         headers: headers,
         body: json.encode({'goal': goal, 'target': target, 'type': 'daily'}),
-      ),
-    );
+      );
+    });
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to save goal');
@@ -172,15 +169,14 @@ class ApiService {
   }
 
   static Future<Meme> generateMeme() async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-
-    final response = await _send(
-      () => http.post(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/content/meme/'),
         headers: headers,
-      ),
-    );
+      );
+    });
     if (response.statusCode != 202) {
       throw Exception('Failed to start meme generation');
     }
@@ -193,10 +189,10 @@ class ApiService {
 
   static Future<List<String>> generateWorkoutPlan(
       {String goal = '', List<String> activityTypes = const [], String tone = 'supportive'}) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final response = await _send(
-      () => http.post(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/workout-plan/'),
         headers: headers,
         body: json.encode({
@@ -204,8 +200,8 @@ class ApiService {
           'activity_types': activityTypes,
           'tone': tone,
         }),
-      ),
-    );
+      );
+    });
     if (response.statusCode != 202) {
       throw Exception('Failed to start workout plan generation');
     }
@@ -218,15 +214,15 @@ class ApiService {
 
   static Future<Map<String, dynamic>> generateMealPlan(
       {String goal = '', String tone = 'supportive', String? mood}) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final response = await _send(
-      () => http.post(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/meal-plan/'),
         headers: headers,
         body: json.encode({'goal': goal, 'tone': tone, 'mood': mood}),
-      ),
-    );
+      );
+    });
     if (response.statusCode != 202) {
       throw Exception('Failed to start meal plan generation');
     }
@@ -236,14 +232,14 @@ class ApiService {
   }
 
   static Future<DailyGoal?> fetchDailyGoal() async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final response = await _send(
-      () => http.get(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.get(
         Uri.parse('$baseUrl/api/core/daily-goal/'),
         headers: headers,
-      ),
-    );
+      );
+    });
     if (response.statusCode != 200) {
       return null;
     }
@@ -269,15 +265,15 @@ class ApiService {
   // Registration and login moved to AuthService
 
   static Future<String> shareBadge(String badgeCode, {String message = ''}) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final response = await _send(
-      () => http.post(
+    final response = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/share-badge/'),
         headers: headers,
         body: json.encode({'badge_code': badgeCode, 'message': message}),
-      ),
-    );
+      );
+    });
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to share badge');
     }
@@ -286,15 +282,15 @@ class ApiService {
   }
 
   static Future<void> shareToHerd(Map<String, dynamic> data) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    await _send(
-      () => http.post(
+    await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/share-to-herd/'),
         headers: headers,
         body: json.encode(data),
-      ),
-    );
+      );
+    });
   }
 
   static Future<String> Function(String path) uploadVoice = _uploadVoice;
@@ -343,14 +339,14 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> completeChallenge(int id) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final res = await _send(
-      () => http.post(
+    final res = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/movement/challenges/$id/complete/'),
         headers: headers,
-      ),
-    );
+      );
+    });
     if (res.statusCode != 200 && res.statusCode != 201) {
       throw Exception('Failed to complete challenge');
     }
@@ -358,14 +354,14 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> toggleLike(int id) async {
-    final headers = {'Content-Type': 'application/json'};
-    headers.addAll(AuthService.authHeaders());
-    final res = await _send(
-      () => http.post(
+    final res = await _send(() {
+      final headers = {'Content-Type': 'application/json'};
+      headers.addAll(AuthService.authHeaders());
+      return http.post(
         Uri.parse('$baseUrl/api/core/herd-feed/$id/like/'),
         headers: headers,
-      ),
-    );
+      );
+    });
     if (res.statusCode != 200) {
       throw Exception('Failed to like');
     }

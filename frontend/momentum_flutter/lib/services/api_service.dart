@@ -75,7 +75,7 @@ class ApiService {
     headers.addAll(await AuthService.authHeaders());
 
     final response = await http.get(
-      Uri.parse('$baseUrl/api/core/profiles/'),
+      Uri.parse('$baseUrl/api/core/profile/'),
       headers: headers,
     );
 

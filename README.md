@@ -62,5 +62,6 @@ Backend tests run with `make test-backend`.
 
 Flutter widget tests run headlessly. Use `make test-frontend`, which invokes
 `flutter test --machine --platform=vm` so no emulator or physical device is
-required.
+required. If the Flutter SDK isn't installed, the Makefile will skip the tests
+and print a message instead.
 

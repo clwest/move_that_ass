@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/auth_service.dart';
 import 'login_page.dart';
-import '../main.dart';
+import '../utils/navigation_utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -34,10 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
         _password1Controller.text,
       );
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MyApp()),
-      );
+      await navigateToAppHome(context);
     } catch (e) {
       setState(() => _error = 'Registration failed');
     } finally {

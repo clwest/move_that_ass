@@ -1,0 +1,59 @@
+- title: Remove committed virtual environment
+  priority: high
+  files:
+    - backend/.venv
+    - backend/.gitignore
+  estimate: 30m
+- title: Wire Celery tasks for async AI operations
+  priority: high
+  files:
+    - backend/core/tasks.py
+    - backend/core/views.py
+    - docs/ASYNC_AI.md
+  estimate: 3h
+- title: Correct API route paths in Flutter client
+  priority: high
+  files:
+    - frontend/momentum_flutter/lib/services/api_service.dart
+  estimate: 1h
+- title: Lock down anonymous vision endpoint
+  priority: medium
+  files:
+    - backend/vision/views.py
+  estimate: 30m
+- title: Implement tests for voice journals and movement apps
+  priority: medium
+  files:
+    - backend/voice_journals/tests
+    - backend/movement/tests.py
+  estimate: 4h
+- title: Move ELEVENLABS voice ID to environment variable
+  priority: medium
+  files:
+    - backend/voice_journals/utils/tts_helpers.py
+    - backend/.env.sample
+  estimate: 30m
+- title: Update .gitignore to exclude db.sqlite3 at root and backend
+  priority: low
+  files:
+    - .gitignore
+    - backend/.gitignore
+  estimate: 15m
+- title: Clean up unused endpoints and skip decorators
+  priority: low
+  files:
+    - backend/content/views.py
+    - backend/core/views.py
+    - backend/movement/views.py
+  estimate: 2h
+- title: Fix GitHub Actions to run `pytest` and `flake8`
+  priority: medium
+  files:
+    - .github/workflows/ci.yml
+    - Makefile
+  estimate: 45m
+- title: Update dependencies to latest secure versions
+  priority: low
+  files:
+    - backend/requirements.txt
+  estimate: 1h

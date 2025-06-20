@@ -1,62 +1,45 @@
-# Root Makefile for MoveYourAzz
-SHELL := /bin/bash
+# Makefile for MoveThatAss project
 
-BACKEND_DIR := backend
-FRONTEND_DIR := frontend/momentum_flutter
-ACTIVATE = source .venv/bin/activate || true
+# Python & Django settings
+PYTHON := python3
+MANAGE := $(PYTHON) backend/manage.py
 
-.PHONY: run-backend migrate makemigrations test-backend lint-backend run-worker \
-    run-frontend test-frontend lint-frontend install-backend install-frontend \
-    azzify reset-db refresh reset-all
+# Targets
+.PHONY: run migrate makemigrations superuser shell test lint clean reset
 
-# == Backend Commands ==
-run-backend:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && \
-        python manage.py collectstatic --noinput && \
-        python manage.py runserver
+run:
+	@echo "Starting Django development server..."
+	$(MANAGE) runserver
 
 migrate:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py migrate
+	@echo "Applying migrations..."
+	$(MANAGE) migrate
 
 makemigrations:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py makemigrations
+	@echo "Creating new migrations..."
+	$(MANAGE) makemigrations
 
-test-backend:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py test
+superuser:
+	@echo "Creating superuser..."
+	$(MANAGE) createsuperuser
 
-lint-backend:
-        cd $(BACKEND_DIR) && black . && isort . && flake8
+shell:
+	$(MANAGE) shell
 
-run-worker:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && celery -A server worker -l info
+test:
+	@echo "Running tests..."
+	$(MANAGE) test
 
-# == Frontend Commands ==
-run-frontend:
-        cd $(FRONTEND_DIR) && \
-        flutter run --no-publish-port
+lint:
+	@echo "Linting Python code..."
+	flake8 backend/
 
-test-frontend:
-        cd $(FRONTEND_DIR) && flutter test
+clean:
+	@echo "Cleaning .pyc and __pycache__..."
+	find . -type f -name '*.pyc' -delete
+	find . -type d -name '__pycache__' -delete
 
-lint-frontend:
-        cd $(FRONTEND_DIR) && flutter analyze
-
-# == Setup ==
-install-backend:
-        cd $(BACKEND_DIR) && python3 -m venv .venv && $(ACTIVATE) && pip install -r requirements.txt
-
-install-frontend:
-        cd $(FRONTEND_DIR) && flutter pub get
-
-# == Utilities ==
-azzify:
-        cd $(BACKEND_DIR) && python manage.py azzify_texts
-
-reset-db:
-        cd $(BACKEND_DIR) && $(ACTIVATE) && python manage.py flush
-
-refresh:
-        $(MAKE) migrate && $(MAKE) run-backend
-
-reset-all:
-        $(MAKE) reset-db && $(MAKE) run-frontend
+reset:
+	@echo "Resetting database (use with caution)..."
+	rm -f db.sqlite3
+	$(MANAGE) migrate

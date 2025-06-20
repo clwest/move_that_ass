@@ -14,11 +14,11 @@ class AuthService {
 
   static String get _baseUrl => AppConfig.baseUrl;
 
-  static Future<void> login(String email, String password) async {
+  static Future<void> login(String username, String password) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/login/'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
+      body: jsonEncode({'username': username, 'password': password}),
     );
     if (response.statusCode != 200) {
       throw Exception('Login failed');
@@ -33,11 +33,13 @@ class AuthService {
     await _storage.write(key: _refreshKey, value: _refresh);
   }
 
-  static Future<bool> register(String email, String p1, String p2) async {
+  static Future<bool> register(
+      String username, String email, String p1, String p2) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/registration/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
+        'username': username,
         'email': email,
         'password1': p1,
         'password2': p2,

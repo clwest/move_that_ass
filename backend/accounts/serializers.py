@@ -20,18 +20,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 
-from allauth.utils import generate_unique_username
-
-
 class CustomRegisterSerializer(BaseRegisterSerializer):
-    """Generate a username automatically from the email."""
+    """Serializer requiring username, email, and passwords."""
 
-    username = None
-
-    def get_cleaned_data(self):
-        data = super().get_cleaned_data()
-        email = data.get("email")
-        data["username"] = generate_unique_username([email]) if email else "user"
-        return data
+    # No overrides needed; BaseRegisterSerializer already handles validation
+    pass
 
 

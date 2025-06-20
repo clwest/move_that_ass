@@ -5,7 +5,7 @@ This repo contains the Django backend and Flutter frontend projects.
 
 ## Getting Started
 
-1. Copy `backend/.env.sample` to `backend/.env` and fill in the required API
+1. Copy the sample env: `cp backend/.env.sample backend/.env` and edit the
    keys.
 2. Install backend dependencies and set up a Python virtual environment
    (or run `make install-backend` which performs these steps):

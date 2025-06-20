@@ -24,6 +24,8 @@ pip install -r requirements.txt
 make migrate
 make run-backend
 ```
+`run-backend` will collect static files before starting the server, so your
+local environment matches production.
 
 4. Install git hooks:
 

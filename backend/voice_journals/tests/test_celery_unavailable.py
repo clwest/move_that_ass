@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 
 @pytest.mark.django_db
-def test_voice_transcribe_returns_503_when_celery_unavailable(monkeypatch):
+def test_voice_upload_returns_503_when_celery_unavailable(monkeypatch):
     User = get_user_model()
     user = User.objects.create_user(
         username="vj", email="vj@example.com", password="pass", is_verified=True
@@ -20,7 +20,7 @@ def test_voice_transcribe_returns_503_when_celery_unavailable(monkeypatch):
 
     monkeypatch.setattr("voice_journals.views.process_voice_journal_task", None)
 
-    res = client.post("/api/voice/transcribe/", {"audio_file": audio})
+    res = client.post("/api/voice/upload/", {"audio_file": audio})
 
     assert res.status_code == status.HTTP_503_SERVICE_UNAVAILABLE
     assert res.data["detail"] == "Celery worker unavailable"

@@ -3,7 +3,7 @@ from rest_framework import generics, viewsets
 
 User = get_user_model()
 import uuid
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone as dt_timezone
 
 from django.db.models import (
     Case,
@@ -138,6 +138,7 @@ def dashboard_feed(request):
     def apply_filters(qs):
         if mine_only:
             qs = qs.filter(user=user)
+
         if herd_only:
             if not herd:
                 return qs.none()
@@ -172,6 +173,7 @@ def dashboard_feed(request):
         "tags_value",
         "user_id",
     )
+
 
     meme_qs = apply_filters(meme_qs).annotate(
         created_at_dt=F("created_at"),

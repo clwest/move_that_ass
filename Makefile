@@ -1,11 +1,9 @@
-# Makefile for MoveThatAss project
+# Makefile for MoveYourAzz project
 
-# Python & Django settings
 PYTHON := python3
 MANAGE := $(PYTHON) backend/manage.py
 
-# Targets
-.PHONY: run migrate makemigrations superuser shell test lint clean reset flutter_run
+.PHONY: run migrate makemigrations superuser shell run-worker test-backend lint-backend clean reset flutter_run
 
 run:
 	@echo "Starting Django development server..."
@@ -26,13 +24,15 @@ superuser:
 shell:
 	$(MANAGE) shell
 
-
 run-worker:
-    cd backend && ../venv/bin/python -m celery -A server worker -l info --concurrency=4
+	cd backend && ../venv/bin/python -m celery -A server worker -l info --concurrency=4
 
+test-backend:
+	@echo "Running backend tests..."
+	pytest
 
-lint:
-	@echo "Linting Python code..."
+lint-backend:
+	@echo "Linting backend..."
 	flake8 backend/
 
 clean:
@@ -47,4 +47,4 @@ reset:
 
 flutter_run:
 	@echo "Starting Flutter app..."
-	cd frontend && cd momentum_flutter && flutter run --no-publish-port
+	cd frontend/momentum_flutter && flutter run --no-publish-port

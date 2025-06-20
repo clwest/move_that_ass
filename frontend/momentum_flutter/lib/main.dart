@@ -10,74 +10,48 @@ import 'pages/challenge_result_page.dart';
 import 'themes/app_theme.dart';
 import 'services/auth_service.dart';
 import 'services/api_service.dart';
+import 'services/token_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 
 
 
-void main({String? baseUrl}) {
+Future<void> main({String? baseUrl}) async {
+  WidgetsFlutterBinding.ensureInitialized();
   // Initialize global configuration.
   AppConfig(baseUrl: baseUrl);
-  runApp(const MyApp());
+  await TokenService.init();
+  final prefs = await SharedPreferences.getInstance();
+  final hasToken = prefs.getString('access_token') != null;
+  runApp(MyApp(startAtHome: hasToken));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool startAtHome;
+  const MyApp({super.key, this.startAtHome = false});
 
   @override
   Widget build(BuildContext context) {
 
-    return FutureBuilder<Widget>(
-      future: _determineHome(),
-
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return MaterialApp(
-            title: 'MoveYourAzz',
-            theme: AppTheme.theme,
-            home: const LoginPage(),
+    return MaterialApp(
+      title: 'MoveYourAzz',
+      theme: AppTheme.theme,
+      initialRoute: startAtHome ? '/today' : '/login',
+      routes: {
+        '/login': (_) => const LoginPage(),
+        '/today': (_) => const TodayPage(),
+        '/profile': (_) => const ProfilePage(),
+        '/goal-setup': (_) => const GoalSetupPage(),
+        VoiceJournalPage.routeName: (_) => const VoiceJournalPage(),
+        ChallengeResultPage.routeName: (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return ChallengeResultPage(
+            challengeId: args['id'] as int,
+            challengeText: args['text'] as String,
           );
-        }
-
-        if (!snapshot.hasData) {
-          return const MaterialApp(
-            home: Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
-          );
-        }
-
-        return MaterialApp(
-          title: 'MoveYourAzz',
-          theme: AppTheme.theme,
-          home: snapshot.data!,
-          routes: {
-            VoiceJournalPage.routeName: (_) => const VoiceJournalPage(),
-            ChallengeResultPage.routeName: (context) {
-              final args = ModalRoute.of(context)!.settings.arguments
-                  as Map<String, dynamic>;
-              return ChallengeResultPage(
-                challengeId: args['id'] as int,
-                challengeText: args['text'] as String,
-              );
-            },
-          },
-        );
+        },
       },
     );
-  }
-
-  Future<Widget> _determineHome() async {
-    final authed = await AuthService.isAuthenticated();
-    if (!authed) return const LoginPage();
-
-    final profile = await ApiService.fetchProfile();
-    if (profile.displayName.isEmpty) return const ProfilePage();
-
-    final goal = await ApiService.fetchDailyGoal();
-    if (goal == null) return const GoalSetupPage();
-
-    return const TodayPage();
-
-
   }
 }

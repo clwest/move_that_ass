@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:momentum_flutter/pages/voice_journal_page.dart';
 import 'package:momentum_flutter/services/api_service.dart';
 import 'package:momentum_flutter/services/task_poller.dart';
 import 'package:record/record.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FakeRecord extends Fake implements Record {
   @override
@@ -16,9 +16,8 @@ class FakeRecord extends Fake implements Record {
 }
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/flutter_secure_storage');
   TestWidgetsFlutterBinding.ensureInitialized();
-  channel.setMockMethodCallHandler((MethodCall methodCall) async => null);
+  SharedPreferences.setMockInitialValues({});
 
   testWidgets('VoiceJournalPage shows result after upload', (tester) async {
     ApiService.uploadVoice = (String path) async => '1';

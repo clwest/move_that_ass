@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:momentum_flutter/pages/today_page.dart';
 import 'package:momentum_flutter/services/task_poller.dart';
 import 'package:momentum_flutter/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/flutter_secure_storage');
   TestWidgetsFlutterBinding.ensureInitialized();
-  channel.setMockMethodCallHandler((MethodCall methodCall) async {
-    return null;
-  });
+  SharedPreferences.setMockInitialValues({});
 
   testWidgets('Vision flow shows result sheet', (WidgetTester tester) async {
     TestWidgetsFlutterBinding.ensureInitialized();

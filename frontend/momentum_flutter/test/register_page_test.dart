@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:momentum_flutter/pages/register_page.dart';
 import 'package:momentum_flutter/pages/login_page.dart';
 import 'package:momentum_flutter/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/flutter_secure_storage');
   TestWidgetsFlutterBinding.ensureInitialized();
-  channel.setMockMethodCallHandler((MethodCall methodCall) async => null);
+  SharedPreferences.setMockInitialValues({});
 
   testWidgets('Successful registration shows SnackBar and navigates to LoginPage', (tester) async {
     AuthService.register = (String u, String e, String p1, String p2) async => true;

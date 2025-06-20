@@ -1,18 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:momentum_flutter/main.dart';
 import 'package:momentum_flutter/pages/goal_setup_page.dart';
 import 'package:momentum_flutter/pages/today_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/flutter_secure_storage');
   TestWidgetsFlutterBinding.ensureInitialized();
-  channel.setMockMethodCallHandler((MethodCall methodCall) async {
-    return null;
-  });
+  SharedPreferences.setMockInitialValues({});
 
   testWidgets('Saving goal navigates to TodayPage', (WidgetTester tester) async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);

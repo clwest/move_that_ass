@@ -1,38 +1,30 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../config.dart';
+import 'token_service.dart';
 
 class AuthService {
-  static final _storage = const FlutterSecureStorage();
   static http.Client client = http.Client();
-  static const _accessKey = 'access_token';
-  static const _refreshKey = 'refresh_token';
-  static String? _access;
-  static String? _refresh;
 
   static String get _baseUrl => AppConfig.baseUrl;
-
 
   static Future<void> login(String username, String password) async {
     final response = await client.post(
       Uri.parse('$_baseUrl/api/auth/login/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'username': username, 'password': password}),
-
     );
     if (response.statusCode != 200) {
       throw Exception('Login failed');
     }
     final data = jsonDecode(response.body) as Map<String, dynamic>;
-    _access = data['access'] as String?;
-    _refresh = data['refresh'] as String?;
-    if (_access == null || _refresh == null) {
+    final access = data['access'] as String?;
+    final refresh = data['refresh'] as String?;
+    if (access == null || refresh == null) {
       throw Exception('Invalid response');
     }
-    await _storage.write(key: _accessKey, value: _access);
-    await _storage.write(key: _refreshKey, value: _refresh);
+    await TokenService.save(access, refresh);
   }
 
   static Future<bool> register(
@@ -60,7 +52,7 @@ class AuthService {
   }
 
   static Future<void> logout() async {
-    final refresh = await getRefreshToken();
+    final refresh = TokenService.refreshToken;
     if (refresh != null) {
       await client.post(
         Uri.parse('$_baseUrl/api/auth/logout/'),
@@ -68,34 +60,31 @@ class AuthService {
         body: jsonEncode({'refresh': refresh}),
       );
     }
-    await clearTokens();
+    await TokenService.clear();
   }
 
-  static Future<String?> getAccessToken() async {
-    if (_access != null) return _access;
-    _access = await _storage.read(key: _accessKey);
-    return _access;
-  }
-
-  static Future<String?> getRefreshToken() async {
-    if (_refresh != null) return _refresh;
-    _refresh = await _storage.read(key: _refreshKey);
-    return _refresh;
-  }
-
-  static Future<void> clearTokens() async {
-    _access = null;
-    _refresh = null;
-    await _storage.delete(key: _accessKey);
-    await _storage.delete(key: _refreshKey);
-  }
-
-  static Future<Map<String, String>> authHeaders() async {
-    final token = await getAccessToken();
+  static Map<String, String> authHeaders() {
+    final token = TokenService.accessToken;
     if (token == null) return {};
     return {'Authorization': 'Bearer $token'};
   }
 
-  static Future<bool> isAuthenticated() async =>
-      (await getAccessToken()) != null;
+  static bool get isAuthenticated => TokenService.accessToken != null;
+
+  static Future<bool> refresh() async {
+    final refresh = TokenService.refreshToken;
+    if (refresh == null) return false;
+    final res = await client.post(
+      Uri.parse('$_baseUrl/api/auth/token/refresh/'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'refresh': refresh}),
+    );
+    if (res.statusCode != 200) return false;
+    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    final access = data['access'] as String?;
+    final newRefresh = data['refresh'] as String? ?? refresh;
+    if (access == null) return false;
+    await TokenService.save(access, newRefresh);
+    return true;
+  }
 }

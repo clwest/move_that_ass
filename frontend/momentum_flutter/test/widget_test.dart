@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:momentum_flutter/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/flutter_secure_storage');
   TestWidgetsFlutterBinding.ensureInitialized();
-  channel.setMockMethodCallHandler((MethodCall methodCall) async {
-    return null;
-  });
+  SharedPreferences.setMockInitialValues({});
 
   testWidgets('Shows login screen when not authenticated',
       (WidgetTester tester) async {

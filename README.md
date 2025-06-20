@@ -52,3 +52,10 @@ curl -X POST http://127.0.0.1:8000/api/auth/registration/ \
    -H 'Content-Type: application/json' \
    -d '{"email":"alice@mail.com","password1":"Pass123!","password2":"Pass123!"}'
 ```
+
+### ⚠️ Do Not Reintroduce Deprecated Auth Settings
+
+The backend uses the latest `django-allauth` configuration. Avoid adding
+`ACCOUNT_AUTHENTICATION_METHOD`, `ACCOUNT_EMAIL_REQUIRED`, or
+`ACCOUNT_USERNAME_REQUIRED` back into `server/settings.py`. Those options are
+deprecated and will trigger runtime warnings.

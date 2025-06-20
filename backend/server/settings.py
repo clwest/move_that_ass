@@ -66,6 +66,12 @@ INSTALLED_APPS = [
     "django_celery_results",
 ]
 
+# Support email-based login with django-allauth
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -142,11 +148,15 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+# Configure django-allauth for email based login.
+# Deprecated settings previously caused runtime warnings.
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_SIGNUP_FIELDS = ["email", "password1", "password2"]
+ACCOUNT_SIGNUP_FIELDS = {
+    "email": {"required": True},
+    "password1": {"required": True},
+    "password2": {"required": True},
+    "username": {"required": False},
+}
 ACCOUNT_LOGIN_METHODS = {"email"}
 SITE_ID = 1
 REST_USE_JWT = True

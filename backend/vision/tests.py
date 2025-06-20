@@ -29,7 +29,7 @@ class VisionIdentifyTest(APITestCase):
     def test_rate_limit(self):
         with patch("vision.views.identify_image_task.delay") as mock_delay:
             mock_delay.return_value.id = "1"
-            for _ in range(10):
+            for _ in range(5):
                 img = SimpleUploadedFile("t.jpg", b"hi", content_type="image/jpeg")
                 res = self.client.post("/api/vision/identify/", {"file": img})
                 self.assertEqual(res.status_code, 202)

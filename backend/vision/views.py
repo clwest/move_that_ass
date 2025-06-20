@@ -1,7 +1,6 @@
 import os
 import uuid
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
 from django_ratelimit.decorators import ratelimit
 
 from rest_framework import status
@@ -15,11 +14,12 @@ except Exception:  # pragma: no cover - Celery not loaded
     identify_image_task = None
 
 
-@csrf_exempt
 @api_view(["POST"])
 @permission_classes([AllowAny])
-@ratelimit(key="ip", rate="10/m", block=True)
+@ratelimit(key="ip", rate="5/m", block=False)
 def identify_image(request):
+    if getattr(request, "limited", False):
+        return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
     file = request.FILES.get("file")
     if not file:
         return Response({"error": "file required"}, status=400)

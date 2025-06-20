@@ -18,14 +18,22 @@ def identify_image_task(self, task_id: str, image_path: str):
                     "role": "user",
                     "content": [
                         {"type": "text", "text": "Identify the primary subject"},
-                        {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{data}"}},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/jpeg;base64,{data}"},
+                        },
                     ],
                 }
             ],
             "max_tokens": 5,
         }
         headers = {"Authorization": f"Bearer {settings.OPENAI_API_KEY}"}
-        res = requests.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers, timeout=20)
+        res = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            json=payload,
+            headers=headers,
+            timeout=20,
+        )
         label = res.json()["choices"][0]["message"]["content"].strip().split("\n")[0]
     except Exception:
         pass

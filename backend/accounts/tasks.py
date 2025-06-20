@@ -1,7 +1,6 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
 from django.conf import settings
-from django.urls import reverse
 from django.core.mail import EmailMessage
 from rest_framework_simplejwt.tokens import RefreshToken
 

@@ -23,10 +23,6 @@ from rest_framework.permissions import AllowAny
 
 User = get_user_model()
 
-
-
-
-
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -34,12 +30,9 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-
-
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters("password1", "password2")
 )
-
 
 class CustomRegisterView(CreateAPIView):
     """Register a new user without triggering deprecation warnings."""
@@ -108,7 +101,6 @@ class CustomRegisterView(CreateAPIView):
         )
         return user
 
-
 class VerifyEmailView(APIView, ConfirmEmailView):
     """Verifies the email associated with the provided key."""
 
@@ -128,7 +120,6 @@ class VerifyEmailView(APIView, ConfirmEmailView):
         confirmation = self.get_object()
         confirmation.confirm(self.request)
         return Response({"detail": _("ok")}, status=status.HTTP_200_OK)
-
 
 class ResendEmailVerificationView(CreateAPIView):
     """Resends another email to an unverified email."""

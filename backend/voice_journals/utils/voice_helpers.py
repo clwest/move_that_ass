@@ -1,10 +1,10 @@
 """Helpers for working with voice journals using the OpenAI SDK."""
 
-# NOTE: This file uses the OpenAI v1 SDK (client-based). Do not revert to old ChatCompletion or Audio.transcribe calls.
+# NOTE: This file uses the OpenAI v1 SDK (client-based). Do not revert to
+# old ChatCompletion or Audio.transcribe calls.
 
 from openai import OpenAI
 from dotenv import load_dotenv
-import os
 
 from core.utils import clean_text
 
@@ -75,7 +75,10 @@ def generate_tags_from_text(text: str):
                 messages=[
                     {
                         "role": "system",
-                        "content": "You're a smart assistant that labels journal entries with short tags.",
+                        "content": (
+                            "You're a smart assistant that labels journal "
+                            "entries with short tags."
+                        ),
                     },
                     {"role": "user", "content": prompt},
                 ],

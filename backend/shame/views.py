@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, time, timedelta
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 
@@ -7,17 +7,20 @@ User = get_user_model()
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import (Badge, BadgeShoutout, DailyLockout, DonkeyChallenge, Herd,
                      HerdPost, ShamePost)
-from .serializers import (BadgeSerializer, BadgeShoutoutSerializer,
-                          DailyLockoutSerializer, DonkeyChallengeSerializer,
-                          HerdPostSerializer, HerdSerializer,
-                          ShamePostSerializer)
+from .serializers import (
+    BadgeShoutoutSerializer,
+    DailyLockoutSerializer,
+    HerdPostSerializer,
+    HerdSerializer,
+    ShamePostSerializer,
+)
 from .utils.badge_engine import evaluate_badges
 from .utils.challenge_engine import generate_challenge as ai_generate_challenge
 from .utils.herdmood_engine import evaluate_herd_mood

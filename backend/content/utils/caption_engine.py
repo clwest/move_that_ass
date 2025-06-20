@@ -1,6 +1,3 @@
-from typing import Any
-
-
 def generate_caption(description: str, tone: str = "funny") -> str:
     if tone == "funny":
         return f"When you're just trying to vibe but gravity wins. ({description})"

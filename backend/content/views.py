@@ -1,11 +1,10 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import GeneratedImage, GeneratedMeme, SocialPost
-from .serializers import (GeneratedImageSerializer, GeneratedMemeSerializer,
-                          SocialPostSerializer)
+from .models import GeneratedImage, SocialPost
+from .serializers import GeneratedImageSerializer, SocialPostSerializer
 from .utils.caption_engine import generate_caption
 
 try:

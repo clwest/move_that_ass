@@ -1,7 +1,6 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 from typing import List, Dict
-import os
 
 from . import clean_text
 
@@ -12,7 +11,11 @@ except Exception:
     client = None
 
 
-def generate_workout_plan(goal: str, activity_types: List[str] | None = None, tone: str = "supportive") -> Dict[str, List[str]]:
+def generate_workout_plan(
+    goal: str,
+    activity_types: List[str] | None = None,
+    tone: str = "supportive",
+) -> Dict[str, List[str]]:
     """Generate a simple 7-day workout plan using OpenAI."""
     goal_text = goal or "general fitness"
     activities = ", ".join(activity_types) if activity_types else "any activities"

@@ -5,6 +5,7 @@ from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
+from django.core.cache import cache
 
 
 User = get_user_model()
@@ -12,6 +13,7 @@ User = get_user_model()
 
 class VisionIdentifyTest(APITestCase):
     def setUp(self):
+        cache.clear()
         self.user = User.objects.create_user(
             username="visionuser",
             email="vision@example.com",

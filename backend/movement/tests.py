@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.utils import timezone
 from rest_framework.test import APITestCase
-import unittest
 
 
 class MovementAPITest(APITestCase):

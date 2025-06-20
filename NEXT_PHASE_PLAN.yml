@@ -1,0 +1,41 @@
+- phase: "Production-ready hardening"
+  goals:
+    - Docker compose for prod with gunicorn
+    - Enforce HTTPS and secure headers
+    - Limit CORS to trusted origins
+  estimate: "2 days"
+
+- phase: "Push notifications"
+  goals:
+    - Integrate Firebase/FCM for alerts
+    - Add user opt-in settings
+    - Schedule daily movement reminders
+  estimate: "3 days"
+
+- phase: "Performance optimization"
+  goals:
+    - Reduce SQL queries in dashboard_feed
+    - Add indexes on feed tables
+    - Monitor Celery queue latency
+  estimate: "2 days"
+
+- phase: "Feature completion"
+  goals:
+    - Implement challenge completion API
+    - Finalize voice journal playback
+    - Remove unused endpoints
+  estimate: "4 days"
+
+- phase: "UI polish & onboarding"
+  goals:
+    - Wire GoalSetupPage into navigation
+    - Fix iOS meme-save crash
+    - Create onboarding tutorial screens
+  estimate: "3 days"
+
+- phase: "Compliance & documentation"
+  goals:
+    - Harden `.env.sample` and secrets handling
+    - Expand test coverage and ensure flake8 passes
+    - Document Docker deployment
+  estimate: "2 days"
